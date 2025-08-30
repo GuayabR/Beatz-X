@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://da55mf3b65c15"]
+
+[ext_resource type="Script" uid="uid://dbsnmgebktn3w" path="res://Scenes/visualizer.gd" id="1_nq7id"]
+[ext_resource type="AudioStream" uid="uid://mrwe0570iq5w" path="res://Resources/Songs/Black Knife.mp3" id="2_gaplp"]
+
+[node name="Visualizer" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nq7id")
+type = "Line"
+circle_size = 19.0
+exponent_strength = 4.3
+
+[node name="Song_left" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_gaplp")
+autoplay = true
+bus = &"Song left signal"
+
+[node name="Song_right" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_gaplp")
+autoplay = true
+bus = &"Song right signal"

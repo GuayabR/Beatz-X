@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cv1dqxco1dgyg"
+path="res://.godot/imported/Born Survivor.mp3-fac718225195ac303d89ef6d3807a1b2.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Born Survivor.mp3"
+dest_files=["res://.godot/imported/Born Survivor.mp3-fac718225195ac303d89ef6d3807a1b2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

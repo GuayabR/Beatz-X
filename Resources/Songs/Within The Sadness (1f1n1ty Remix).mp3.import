@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dqhuk2pbuv5ut"
+path="res://.godot/imported/Within The Sadness (1f1n1ty Remix).mp3-b9637787bcc724618a122f9e875cc31f.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Within The Sadness (1f1n1ty Remix).mp3"
+dest_files=["res://.godot/imported/Within The Sadness (1f1n1ty Remix).mp3-b9637787bcc724618a122f9e875cc31f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

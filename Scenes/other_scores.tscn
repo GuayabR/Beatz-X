@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://bt6xvyl0hbrfh"]
+
+[node name="other_scores" type="VBoxContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -232.5
+offset_top = -161.5
+offset_right = 232.5
+offset_bottom = 161.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="latest" type="RichTextLabel" parent="."]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 50
+text = "07/13/2025 SCORE:"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_score" type="RichTextLabel" parent="."]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 65
+text = "100,000!"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_date_achieved" type="RichTextLabel" parent="."]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "---- 07/13/2025 ----"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 2
+
+[node name="latest_ex" type="RichTextLabel" parent="GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Exacts: 352"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_ins" type="RichTextLabel" parent="GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Insanes: 456"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_perfs" type="RichTextLabel" parent="GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Perfects: 292"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_misses" type="RichTextLabel" parent="GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Misses: 2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1

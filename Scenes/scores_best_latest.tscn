@@ -1,0 +1,192 @@
+[gd_scene load_steps=4 format=3 uid="uid://r6qovbob2hq4"]
+
+[ext_resource type="Script" uid="uid://jtowl7f26uy6" path="res://Scenes/scores_board.gd" id="1_6ntdh"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="2_0ogiu"]
+[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="3_c154o"]
+
+[node name="scores" type="ScrollContainer"]
+z_index = 7
+custom_minimum_size = Vector2(0, 825)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -232.5
+offset_top = -412.5
+offset_right = 232.5
+offset_bottom = 412.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+horizontal_scroll_mode = 0
+script = ExtResource("1_6ntdh")
+
+[node name="scores_cont" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="best_cont" type="VBoxContainer" parent="scores_cont"]
+layout_mode = 2
+alignment = 1
+
+[node name="best_label" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_fonts/normal_font = ExtResource("2_0ogiu")
+theme_override_font_sizes/normal_font_size = 50
+text = "BEST SCORE:"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_fonts/normal_font = ExtResource("3_c154o")
+theme_override_font_sizes/normal_font_size = 65
+text = "100,000!"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_date_achieved" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "---- 05/12/2025 ----"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_exacts" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Exacts: 352"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_insanes" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Insanes: 456"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_perfects" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Perfects: 292"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_most_misses" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Misses: 2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="other_sep" type="RichTextLabel" parent="scores_cont/best_cont"]
+visible = false
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "---- Other Scores ----"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest" type="VBoxContainer" parent="scores_cont"]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="latest" type="RichTextLabel" parent="scores_cont/latest"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 50
+text = "LATEST SCORE:"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_score" type="RichTextLabel" parent="scores_cont/latest"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 65
+text = "100,000!"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_date_achieved" type="RichTextLabel" parent="scores_cont/latest"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "---- 07/13/2025 ----"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="scores_cont/latest"]
+layout_mode = 2
+columns = 2
+
+[node name="latest_ex" type="RichTextLabel" parent="scores_cont/latest/GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Exacts: 352"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_ins" type="RichTextLabel" parent="scores_cont/latest/GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Insanes: 456"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_perfs" type="RichTextLabel" parent="scores_cont/latest/GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Perfects: 292"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="latest_misses" type="RichTextLabel" parent="scores_cont/latest/GridContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 38
+text = "Misses: 2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1

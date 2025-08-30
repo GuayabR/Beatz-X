@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b1oiaqdn5b5pc"
+path="res://.godot/imported/Sky and Soul.mp3-9b4bdd6cf331b7e93f85c43d90865cb8.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Sky and Soul.mp3"
+dest_files=["res://.godot/imported/Sky and Soul.mp3-9b4bdd6cf331b7e93f85c43d90865cb8.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

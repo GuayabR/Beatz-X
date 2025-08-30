@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://co047isipcih2"]
+
+[ext_resource type="Script" uid="uid://d4f6q7txw6ks2" path="res://Scenes/main.gd" id="1_attmm"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="1_d1d0k"]
+[ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="2_rkxai"]
+[ext_resource type="Texture2D" uid="uid://8qm55yafn6jw" path="res://Resources/Arrows/NoteDown.png" id="3_ak233"]
+[ext_resource type="Script" uid="uid://mcgn2e1dm5dd" path="res://Scenes/notes.gd" id="3_hpc31"]
+[ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="4_wtjg2"]
+[ext_resource type="Texture2D" uid="uid://m0mup57j474t" path="res://Resources/Arrows/NoteRight.png" id="5_stajb"]
+
+[node name="playScene" type="Node"]
+script = ExtResource("1_attmm")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+scale = Vector2(0.666667, 0.666667)
+texture = ExtResource("1_d1d0k")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchor_left = 0.5
+anchor_right = 0.859
+anchor_bottom = 0.192
+offset_right = -459.52
+offset_bottom = 25.76
+grow_horizontal = 2
+
+[node name="stationaryNotes" type="HBoxContainer" parent="Control"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -334.0
+offset_right = 334.0
+offset_bottom = 164.0
+grow_horizontal = 2
+scale = Vector2(0.65, 0.65)
+size_flags_horizontal = 3
+script = ExtResource("3_hpc31")
+
+[node name="noteLeftSprite" type="TextureRect" parent="Control/stationaryNotes"]
+layout_mode = 2
+texture = ExtResource("2_rkxai")
+
+[node name="noteDownSprite" type="TextureRect" parent="Control/stationaryNotes"]
+layout_mode = 2
+texture = ExtResource("3_ak233")
+
+[node name="noteUpSprite" type="TextureRect" parent="Control/stationaryNotes"]
+layout_mode = 2
+texture = ExtResource("4_wtjg2")
+
+[node name="noteRightSprite" type="TextureRect" parent="Control/stationaryNotes"]
+layout_mode = 2
+texture = ExtResource("5_stajb")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5t0lioff7gvs"]
+
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="1_dmfht"]
+[ext_resource type="Script" uid="uid://buq0ox13utd3h" path="res://Scenes/fps.gd" id="1_rgkm5"]
+
+[node name="fps" type="Label"]
+offset_right = 27.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("1_dmfht")
+theme_override_font_sizes/font_size = 25
+script = ExtResource("1_rgkm5")

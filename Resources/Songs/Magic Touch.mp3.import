@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://poalmdhj1603"
+path="res://.godot/imported/Magic Touch.mp3-4b9c7843bb6286ed88c0b8205e0a765d.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Magic Touch.mp3"
+dest_files=["res://.godot/imported/Magic Touch.mp3-4b9c7843bb6286ed88c0b8205e0a765d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,1019 @@
+[gd_scene load_steps=24 format=3 uid="uid://72iwv8sulrfp"]
+
+[ext_resource type="Script" uid="uid://b8v6i072uumyo" path="res://Scenes/main_list.gd" id="1_53lae"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="1_t4y1h"]
+[ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="3_l6r1o"]
+[ext_resource type="Texture2D" uid="uid://mjcknvwk0q5k" path="res://Resources/misc/SongListText.png" id="3_yqah5"]
+[ext_resource type="Theme" uid="uid://brpctj3pblpnn" path="res://Resources/Themes/main_list_theme.tres" id="4_53t5k"]
+[ext_resource type="Texture2D" uid="uid://6cvc1r2mkha7" path="res://Resources/BeatzCoverX.png" id="4_d7qip"]
+[ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="4_yqah5"]
+[ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="6_1wh5s"]
+[ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="7_1wh5s"]
+[ext_resource type="AudioStream" uid="uid://b11pbqdgeoxrk" path="res://Resources/SFX/hover.wav" id="8_85nfu"]
+[ext_resource type="AudioStream" uid="uid://dxq0i86kkonyh" path="res://Resources/SFX/hoverBtn.mp3" id="9_eobli"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="12_ckusj"]
+
+[sub_resource type="Animation" id="Animation_yqah5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("back:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-947, 13)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("back:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.7, 0.7)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TransitionRect:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("loading_text:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("song_list_sprite:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-960, -436)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("back:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("NoteUp:self_modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("NoteUp:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("cover_sel:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("cover_sel:self_modulate")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.0333333),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("song_list:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-756, 169)]
+}
+
+[sub_resource type="Animation" id="Animation_l6r1o"]
+resource_name = "back"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("back:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.466667, 0.7),
+"transitions": PackedFloat32Array(0.378929, 1, 4.24265, 1),
+"update": 0,
+"values": [Vector2(-947, 13), Vector2(-895, 65), Vector2(-895, 64.999), Vector2(0, 540)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("back:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.466667, 0.7),
+"transitions": PackedFloat32Array(0.378929, 1, 6.1, 1),
+"update": 0,
+"values": [Vector2(0.7, 0.7), Vector2(1.5, 1.5), Vector2(1.5, 1.5), Vector2(30, 30)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TransitionRect:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5, 0.7),
+"transitions": PackedFloat32Array(3.24901, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = false
+tracks/3/path = NodePath("loading_text:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.433333, 0.7),
+"transitions": PackedFloat32Array(1.62451, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("song_list_sprite:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.333333, 0.533333, 0.7),
+"transitions": PackedFloat32Array(0.659754, 5.85634, 1),
+"update": 0,
+"values": [Vector2(-960, -436), Vector2(-960, -420), Vector2(-960, -750)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("back:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("song_list:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.333333, 0.7),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(-750, 169), Vector2(-750, 205)]
+}
+
+[sub_resource type="Animation" id="Animation_y17wg"]
+resource_name = "finish_back"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("back:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.266667, 0.366667, 1),
+"transitions": PackedFloat32Array(1.30108, 1, 1.93187, 1),
+"update": 0,
+"values": [Vector2(-110, 540), Vector2(-895, 65), Vector2(-895, 65), Vector2(-947, 13)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("back:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.266667, 0.366667, 1),
+"transitions": PackedFloat32Array(2.34519, 1, 1.93187, 1),
+"update": 0,
+"values": [Vector2(30, 30), Vector2(1.5, 1.5), Vector2(1.5, 1.5), Vector2(0.75, 0.75)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TransitionRect:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.133333),
+"transitions": PackedFloat32Array(1, 1.7411),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("back:mouse_filter")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.266667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [2, 0]
+}
+
+[sub_resource type="Animation" id="Animation_eobli"]
+resource_name = "go_to_selected"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("NoteUp:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(9.51364, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(30, 30)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("NoteUp:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.366667, 0.5),
+"transitions": PackedFloat32Array(4.43828, 1, 4.43828),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("cover_sel:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0666667, 0.833333),
+"transitions": PackedFloat32Array(7.21, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(30, 30)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("cover_sel:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.266667, 0.533333),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("TransitionRect:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.6, 0.833333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("loading_text:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.6, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1wh5s"]
+_data = {
+&"RESET": SubResource("Animation_yqah5"),
+&"back": SubResource("Animation_l6r1o"),
+&"finish_back": SubResource("Animation_y17wg"),
+&"go_to_selected": SubResource("Animation_eobli")
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d7qip"]
+bg_color = Color(0.00784314, 0.00784314, 0.00784314, 0.94902)
+
+[sub_resource type="Animation" id="Animation_5r41q"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("del_custom_panel:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("del_custom_panel/del_no:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("del_custom_panel/del_no:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(555, 146)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("del_custom_panel/del_yes:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(70, 146)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("del_custom_panel/del_no:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_53t5k"]
+resource_name = "cancel_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("del_custom_panel:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.733333),
+"transitions": PackedFloat32Array(4.75683, 0.176777),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1e-05, 1e-05)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("del_custom_panel/del_no:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.266667, 0.733333),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(555, 146), Vector2(555, 100)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("del_custom_panel/del_yes:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.166667, 0.7),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(70, 146), Vector2(70, 100)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("del_custom_panel/del_no:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.266667, 0.733333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("del_custom_panel/del_yes:self_modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.166667, 0.7),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("del_custom_panel/del_no:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.666667),
+"transitions": PackedFloat32Array(0.210224, 3.24901, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 1.15), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ckusj"]
+resource_name = "confirm_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("del_custom_panel:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.2, 0.733333),
+"transitions": PackedFloat32Array(4.75683, 0.176777),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1e-05, 1e-05)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("del_custom_panel/del_no:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.1, 0.6),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(555, 146), Vector2(555, 100)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("del_custom_panel/del_yes:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.266667, 0.7),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(70, 146), Vector2(70, 100)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("del_custom_panel/del_no:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.1, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("del_custom_panel/del_yes:self_modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.266667, 0.7),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("del_custom_panel/del_yes:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.666667),
+"transitions": PackedFloat32Array(0.210224, 3.24901, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 1.15), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_d7qip"]
+resource_name = "popup_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("del_custom_panel:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(0.176777, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("del_custom_panel/del_no:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.566667),
+"transitions": PackedFloat32Array(0.420448, 1),
+"update": 0,
+"values": [Vector2(555, 100), Vector2(555, 146)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("del_custom_panel/del_yes:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3, 0.766667),
+"transitions": PackedFloat32Array(0.258816, 1),
+"update": 0,
+"values": [Vector2(70, 100), Vector2(70, 146)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("del_custom_panel/del_no:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.733333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("del_custom_panel/del_yes:self_modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.3, 0.9),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3gvlj"]
+_data = {
+&"RESET": SubResource("Animation_5r41q"),
+&"cancel_panel": SubResource("Animation_53t5k"),
+&"confirm_panel": SubResource("Animation_ckusj"),
+&"popup_panel": SubResource("Animation_d7qip")
+}
+
+[node name="main_list" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+script = ExtResource("1_53lae")
+
+[node name="background" type="TextureRect" parent="."]
+modulate = Color(0.529067, 0.529067, 0.529067, 1)
+z_index = -1
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("1_t4y1h")
+
+[node name="song_list_sprite" type="TextureRect" parent="."]
+z_index = -1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -960.0
+offset_top = -436.0
+offset_right = 960.0
+offset_bottom = 644.0
+grow_horizontal = 2
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("3_yqah5")
+
+[node name="song_list" type="ItemList" parent="."]
+z_index = 2
+custom_minimum_size = Vector2(1517, 200)
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -756.0
+offset_top = 169.0
+offset_right = 761.0
+offset_bottom = 1077.0
+grow_horizontal = 2
+tooltip_text = "Select a song to play!"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_53t5k")
+theme_override_colors/guide_color = Color(0, 0, 0, 0)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hovered_color = Color(0.600299, 0.962921, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_constants/v_separation = 12
+theme_override_constants/line_separation = 50
+theme_override_constants/icon_margin = 8
+theme_override_constants/h_separation = 12
+theme_override_font_sizes/font_size = 22
+text_overrun_behavior = 4
+item_count = 1
+fixed_column_width = 1517
+fixed_icon_size = Vector2i(90, 90)
+item_0/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_0/icon = ExtResource("4_d7qip")
+
+[node name="search" type="LineEdit" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 361.0
+offset_top = 60.0
+offset_right = 904.0
+offset_bottom = 118.0
+grow_horizontal = 2
+tooltip_text = "The list will select an item with a text that matches your input. Press Enter to play the found song."
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 36
+placeholder_text = "Search Songs"
+
+[node name="TransitionRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -960.0
+offset_right = 960.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("1_t4y1h")
+
+[node name="back" type="TextureButton" parent="."]
+z_index = 2
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -947.0
+offset_top = 13.0
+offset_right = -783.0
+offset_bottom = 177.0
+grow_horizontal = 2
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(82, 82)
+tooltip_text = "Back to Main Menu."
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("3_l6r1o")
+texture_pressed = ExtResource("4_yqah5")
+
+[node name="NoteUp" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = 465.0
+offset_right = 75.0
+offset_bottom = 615.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(75, 75)
+mouse_filter = 2
+texture = ExtResource("6_1wh5s")
+expand_mode = 1
+
+[node name="cover_sel" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = 465.0
+offset_right = 75.0
+offset_bottom = 615.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(75, 75)
+mouse_filter = 2
+texture = ExtResource("7_1wh5s")
+expand_mode = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_1wh5s")
+}
+
+[node name="loading_text" type="RichTextLabel" parent="."]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 6
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -104.5
+offset_top = 980.0
+offset_right = 104.5
+offset_bottom = 1043.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 45
+text = "Loading..."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="hover_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_85nfu")
+bus = &"SFX"
+
+[node name="click_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_eobli")
+bus = &"SFX"
+
+[node name="reload" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -931.0
+offset_top = 210.0
+offset_right = -777.0
+offset_bottom = 273.0
+grow_horizontal = 0
+tooltip_text = "Reload the song list (to see changes made to custom songs)"
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 40
+text = "Reload"
+
+[node name="edit" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -744.0
+offset_top = 56.0
+offset_right = -636.0
+offset_bottom = 119.0
+grow_horizontal = 0
+tooltip_text = "Delete a custom song."
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 40
+text = "Edit"
+
+[node name="scrl_up" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 801.0
+offset_top = 417.0
+offset_right = 909.0
+offset_bottom = 537.0
+grow_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 60
+text = "^"
+
+[node name="scrl_down" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 909.0
+offset_top = 670.0
+offset_right = 1017.0
+offset_bottom = 790.0
+grow_horizontal = 0
+rotation = 3.14159
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 60
+text = "^"
+
+[node name="open_beatz_bxzip" type="Button" parent="."]
+layout_mode = 0
+offset_left = -565.0
+offset_top = 42.0
+offset_right = -344.0
+offset_bottom = 134.0
+tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
+Beatz will then decompress it and you will now be able to play your custom chart!"
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 30
+text = "Upload
+Custom Song"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open File(s)"
+size = Vector2i(800, 500)
+ok_button_text = "Open"
+file_mode = 1
+access = 2
+filters = PackedStringArray("*.beatz", "*.bxzip", "*.zip")
+
+[node name="del_custom_panel" type="Panel" parent="."]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -382.5
+offset_top = 400.0
+offset_right = 382.5
+offset_bottom = 700.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(382.5, 150)
+theme_override_styles/panel = SubResource("StyleBoxFlat_d7qip")
+
+[node name="title_del_custom_s" type="Label" parent="del_custom_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -416.0
+offset_top = 15.0
+offset_right = 416.0
+offset_bottom = 128.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 35
+text = "Are you sure you want to delete
+this custom song? (This cannot be undone.)"
+horizontal_alignment = 1
+
+[node name="del_no" type="Button" parent="del_custom_panel"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -4.0
+offset_right = -35.0
+offset_bottom = 56.0
+grow_horizontal = 0
+grow_vertical = 2
+pivot_offset = Vector2(87.5, 30)
+theme_override_font_sizes/font_size = 25
+text = "Cancel"
+
+[node name="del_yes" type="Button" parent="del_custom_panel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 70.0
+offset_top = -4.0
+offset_right = 245.0
+offset_bottom = 56.0
+grow_vertical = 2
+pivot_offset = Vector2(87.5, 30)
+theme_override_font_sizes/font_size = 25
+text = "Confirm"
+
+[node name="del_custom_anim" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_3gvlj")
+}
+
+[connection signal="item_activated" from="song_list" to="." method="_on_song_selected"]
+[connection signal="item_selected" from="song_list" to="." method="_on_song_selected"]
+[connection signal="text_changed" from="search" to="." method="_on_search_bar_text_changed"]
+[connection signal="text_submitted" from="search" to="." method="_on_search_bar_text_submitted"]
+[connection signal="button_up" from="back" to="." method="_on_back_button_up"]
+[connection signal="pressed" from="reload" to="." method="_on_reload_pressed"]
+[connection signal="pressed" from="edit" to="." method="_on_edit_pressed"]
+[connection signal="pressed" from="scrl_up" to="." method="_on_scrl_up_pressed"]
+[connection signal="pressed" from="scrl_down" to="." method="_on_scrl_down_pressed"]
+[connection signal="pressed" from="open_beatz_bxzip" to="." method="_on_open_beatz_bxzip_pressed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
+[connection signal="pressed" from="del_custom_panel/del_no" to="." method="_on_edit_cancel_pressed"]
+[connection signal="pressed" from="del_custom_panel/del_yes" to="." method="_on_edit_confirm_pressed"]

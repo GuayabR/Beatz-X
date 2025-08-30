@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cp7r6qkvwvyxw"
+path="res://.godot/imported/CHEGOU 3.mp3-37ecb37e7a7c595b6806c94d3f21184d.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/CHEGOU 3.mp3"
+dest_files=["res://.godot/imported/CHEGOU 3.mp3-37ecb37e7a7c595b6806c94d3f21184d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

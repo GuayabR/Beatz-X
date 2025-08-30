@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://mrwe0570iq5w"
+path="res://.godot/imported/Black Knife.mp3-8fbdbc4102f4e88fdce883a4eefc7875.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Black Knife.mp3"
+dest_files=["res://.godot/imported/Black Knife.mp3-8fbdbc4102f4e88fdce883a4eefc7875.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

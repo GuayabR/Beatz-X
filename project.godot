@@ -11,10 +11,11 @@ config_version=5
 [application]
 
 config/name="Beatz X!"
-config/description="Beatz X! Desktop Port.
-By GuayabR"
-config/version="1.0.0"
-config/tags=PackedStringArray("demo", "game", "rhythm")
+config/description="Beatz! X.
+SENSE. YOUR RHYTHM.
+By GuayabR."
+config/version="1.3.6"
+config/tags=PackedStringArray("beatz", "demo", "game", "rhythm")
 run/main_scene="uid://4puupvbpclaw"
 config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/fullsize=false
@@ -31,8 +32,18 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="viewport"
 
+[dotnet]
+
+project/assembly_name="Beatz X!"
+
 [input]
 
+ui_cancel={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194305,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194376,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
 noteUpleft={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":49,"key_label":0,"unicode":49,"location":0,"echo":false,"script":null)

@@ -1,0 +1,19 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://6tjyismiskq8"]
+
+[ext_resource type="StyleBox" uid="uid://1tvf3o2gqwvv" path="res://Resources/Themes/scroll_bar_grabber.tres" id="1_b45f7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_biorc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0uwpb"]
+bg_color = Color(0, 0, 0, 1)
+
+[resource]
+CheckBox/constants/icon_max_width = 200
+OptionButton/constants/h_separation = 15
+OptionButton/constants/icon_max_width = 650
+OptionButton/font_sizes/font_size = 40
+OptionButton/styles/pressed = SubResource("StyleBoxFlat_biorc")
+OptionButton/styles/pressed_mirrored = SubResource("StyleBoxFlat_0uwpb")
+PopupMenu/constants/icon_max_width = 80
+VBoxContainer/constants/separation = 10
+VScrollBar/styles/grabber = ExtResource("1_b45f7")

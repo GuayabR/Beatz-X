@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cnrde0iws34mb"
+path="res://.godot/imported/Calling All My Lovelies.mp3-08e2f188acd60a8ce37a8d7dd8dd328e.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Calling All My Lovelies.mp3"
+dest_files=["res://.godot/imported/Calling All My Lovelies.mp3-08e2f188acd60a8ce37a8d7dd8dd328e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

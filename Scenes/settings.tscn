@@ -1,0 +1,645 @@
+[gd_scene load_steps=13 format=3 uid="uid://diftyasf40ssh"]
+
+[ext_resource type="Script" uid="uid://do6awrxpel5i7" path="res://Scenes/settings_scn.gd" id="1_6kysc"]
+[ext_resource type="Texture2D" uid="uid://cok6hw77fkwqk" path="res://Resources/misc/Settings_text.png" id="2_6vr2p"]
+[ext_resource type="Theme" uid="uid://cc40g6w54ebkq" path="res://Resources/Themes/settings_theme.tres" id="3_f60ng"]
+[ext_resource type="Texture2D" uid="uid://c8j07g2itxkeh" path="res://Resources/Arrows/dance.png" id="4_bismi"]
+[ext_resource type="Texture2D" uid="uid://owb022syma0y" path="res://Resources/Arrows/techno.png" id="5_rgw85"]
+[ext_resource type="Texture2D" uid="uid://c5xoinmryyr1n" path="res://Resources/Arrows/para.png" id="6_l7vst"]
+
+[sub_resource type="Theme" id="Theme_6kysc"]
+CheckButton/constants/h_separation = 25
+
+[sub_resource type="Theme" id="Theme_6vr2p"]
+CheckButton/constants/h_separation = 25
+
+[sub_resource type="Theme" id="Theme_35cvv"]
+CheckButton/constants/h_separation = 25
+
+[sub_resource type="Animation" id="Animation_6vr2p"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("saved_settings_popup:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(796.5, 1080)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("saved_settings_popup:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("saved_settings_popup:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_6kysc"]
+resource_name = "save"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("saved_settings_popup:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.566667, 0.6),
+"transitions": PackedFloat32Array(0.120742, 1, 0.120742),
+"update": 0,
+"values": [Vector2(796.5, 1080), Vector2(796.5, 980), Vector2(796.5, 1080)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("saved_settings_popup:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.566667, 0.6),
+"transitions": PackedFloat32Array(0.406126, 1, 0.406126),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 1.15), Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("saved_settings_popup:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3, 0.566667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f60ng"]
+_data = {
+&"RESET": SubResource("Animation_6vr2p"),
+&"save": SubResource("Animation_6kysc")
+}
+
+[node name="settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6kysc")
+
+[node name="settings_sprite" type="TextureRect" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -960.0
+offset_top = -350.0
+offset_right = 960.0
+offset_bottom = 730.0
+grow_horizontal = 2
+texture = ExtResource("2_6vr2p")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -428.5
+offset_top = 160.0
+offset_right = 428.5
+offset_bottom = 1080.0
+grow_horizontal = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="settings_list" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+theme = ExtResource("3_f60ng")
+
+[node name="space" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 50
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="space2" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 50
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="game_separator" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 55
+text = "------- Game -------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Song Volume: 80 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+scrollable = false
+
+[node name="menu_song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Menu Song Volume: 75 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="menu_song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+scrollable = false
+
+[node name="sfx_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- SFX Volume: 45 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="sfx_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+scrollable = false
+
+[node name="mbl_btn_layout_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- MOBILE: Button Layout ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="mbl_btn_layout_drop" type="OptionButton" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+tooltip_text = "Change the look of your notes."
+theme = ExtResource("3_f60ng")
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "4 Buttons"
+popup/item_0/icon = ExtResource("4_bismi")
+popup/item_0/id = 0
+popup/item_1/text = "2 + 2 Buttons"
+popup/item_1/icon = ExtResource("5_rgw85")
+popup/item_1/id = 1
+
+[node name="note_anim_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6kysc")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Note Animations"
+
+[node name="HBoxContainer" type="GridContainer" parent="ScrollContainer/settings_list"]
+visible = false
+layout_mode = 2
+columns = 2
+
+[node name="player_notes_pulse_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Pulse On Click"
+
+[node name="notes_tint_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Tints On Hit"
+
+[node name="notes_rotates_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Rotates On Hit"
+
+[node name="notes_fades_in_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Fades In On Spawn"
+
+[node name="notes_fades_out_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Fades Out On
+Bad Hit"
+
+[node name="notes_fades_out_tgl2" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 35
+text = "Note Fades Out On
+Bad Hit"
+
+[node name="note_style_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Style ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="note_style_drop" type="OptionButton" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+tooltip_text = "Change the look of your notes."
+theme = ExtResource("3_f60ng")
+alignment = 1
+selected = 0
+item_count = 3
+popup/item_0/text = "Dance"
+popup/item_0/icon = ExtResource("4_bismi")
+popup/item_0/id = 0
+popup/item_1/text = "Techno"
+popup/item_1/icon = ExtResource("5_rgw85")
+popup/item_1/id = 1
+popup/item_2/text = "Para"
+popup/item_2/icon = ExtResource("6_l7vst")
+popup/item_2/id = 2
+
+[node name="note_speed_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Speed ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="note_speed_drop" type="OptionButton" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How fast notes drop down to the hit zone."
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 2
+item_count = 6
+popup/item_0/text = "5.0"
+popup/item_0/id = 0
+popup/item_1/text = "8.0"
+popup/item_1/id = 1
+popup/item_2/text = "10.0"
+popup/item_2/id = 2
+popup/item_3/text = "13.0"
+popup/item_3/id = 3
+popup/item_4/text = "15.0"
+popup/item_4/id = 4
+popup/item_5/text = "20.0"
+popup/item_5/id = 5
+
+[node name="note_offset_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Offset (ms) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="note_offset_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+tooltip_text = "The offset in ms of when the notes will spawn, useful is your bluetooth device has delay.
+(Negative number: notes spawn earlier. 
+Positive number: notes spawn later.)"
+theme_override_font_sizes/font_size = 30
+text = "10.0"
+placeholder_text = "Note spawn time offset (in ms)"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="speed_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Game Speed ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="game_speed_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+tooltip_text = "The speed of the game (like a speedhack, useful if you wanna practice, or give yourself a challenge)"
+theme_override_font_sizes/font_size = 30
+text = "1.0"
+placeholder_text = "Note spawn time offset (in ms)"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="menu_separator" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 55
+text = "------- Menu -------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="reduce_motion_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Disables animations."
+theme = SubResource("Theme_35cvv")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Reduce Motion"
+
+[node name="fps_separator" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 55
+text = "------- Display -------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="fpsCheck" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_35cvv")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Show FPS"
+
+[node name="fps_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Max FPS / V-Sync ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="fps_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+alignment = 1
+selected = 0
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="custom_fps" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Enter Custom FPS"
+alignment = 1
+
+[node name="res_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Window Resolution ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="display_resolutions" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+alignment = 1
+selected = 0
+item_count = 4
+popup/item_0/text = "3840x2160"
+popup/item_0/id = 1
+popup/item_1/text = "2560x1440"
+popup/item_1/id = 2
+popup/item_2/text = "1920x1080"
+popup/item_2/id = 3
+popup/item_3/text = "1280x720"
+popup/item_3/id = 4
+
+[node name="window_modes_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Window Modes ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="display_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+alignment = 1
+selected = 0
+item_count = 5
+popup/item_0/text = "Exclusive Fullscreen"
+popup/item_0/id = 1
+popup/item_1/text = "Fullscreen"
+popup/item_1/id = 2
+popup/item_2/text = "Maximized"
+popup/item_2/id = 3
+popup/item_3/text = "Minimized"
+popup/item_3/id = 4
+popup/item_4/text = "Windowed"
+popup/item_4/id = 4
+
+[node name="borderless_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_35cvv")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Borderless"
+
+[node name="extra_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 45
+text = "---- Extra ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="credits_btn" type="Button" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Credits"
+
+[node name="slogan" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 30)
+layout_mode = 2
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 22
+text = "FEEL. YOUR RHYTHM."
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="ver" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 30)
+layout_mode = 2
+tooltip_text = "!"
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 15
+text = "Beatz! X (Desktop Port) VERSION"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="save_anim" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_f60ng")
+}
+
+[node name="saved_settings_popup" type="RichTextLabel" parent="."]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -163.5
+offset_top = 1080.0
+offset_right = 163.5
+offset_bottom = 1143.0
+grow_horizontal = 2
+pivot_offset = Vector2(163.5, 31.5)
+mouse_filter = 2
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/normal_font_size = 45
+text = "Saved Settings!"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[connection signal="value_changed" from="ScrollContainer/settings_list/song_vol_slider" to="." method="_on_song_vol_slider_value_changed"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/menu_song_vol_slider" to="." method="_on_menu_song_vol_slider_value_changed"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/sfx_vol_slider" to="." method="_on_sfx_vol_slider_value_changed"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/mbl_btn_layout_drop" to="." method="_on_mbl_btn_layout_drop_item_selected"]
+[connection signal="toggled" from="ScrollContainer/settings_list/note_anim_toggle" to="." method="_on_note_anim_toggled"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/note_style_drop" to="." method="_on_note_style_item_selected"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/note_speed_drop" to="." method="_on_note_speed_item_selected"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/note_offset_edit" to="." method="_on_note_offset_text_submitted"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/game_speed_edit" to="." method="_on_game_speed_text_submitted"]
+[connection signal="toggled" from="ScrollContainer/settings_list/reduce_motion_check" to="." method="_on_reduce_motion_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/fpsCheck" to="." method="_on_fps_check_toggled"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/fps_options" to="." method="_on_fps_options_item_selected"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/custom_fps" to="." method="_on_custom_fps_text_submitted"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/display_resolutions" to="." method="_on_display_item_selected"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/display_options" to="." method="_on_display_options_selected"]
+[connection signal="toggled" from="ScrollContainer/settings_list/borderless_check" to="." method="_on_borderless_check_toggled"]
+[connection signal="pressed" from="ScrollContainer/settings_list/credits_btn" to="." method="_on_credits_btn_pressed"]

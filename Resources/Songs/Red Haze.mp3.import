@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bqelds3kot8dx"
+path="res://.godot/imported/Red Haze.mp3-4f9c877be8de781d65d32b06f413a901.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Red Haze.mp3"
+dest_files=["res://.godot/imported/Red Haze.mp3-4f9c877be8de781d65d32b06f413a901.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
