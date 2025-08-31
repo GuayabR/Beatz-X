@@ -17,6 +17,8 @@ var difficulty_order := [
 	"easy", "normal", "hard", "extreme", "insanity", "impossible"
 ]
 
+var all_items: Array = []
+
 func load_song_info():
 	var file := FileAccess.open("res://song_info.json", FileAccess.READ)
 	if file == null:
@@ -54,9 +56,16 @@ func _process(delta):
 		var entry = item["entry"]
 		var idx = $song_list.add_item(entry["text"], entry["cover"])
 		$song_list.set_item_metadata(idx, entry["metadata"])
-		print("Added item ", idx)
+		#print("Added item ", idx)
 	
 	if processing_index >= add_queue.size():
+		for i in range($song_list.get_item_count()):
+			all_items.append({
+				"text": $song_list.get_item_text(i),
+				"icon": $song_list.get_item_icon(i),
+				"metadata": $song_list.get_item_metadata(i),
+				"disabled": $song_list.is_item_disabled(i),
+			})
 		print("Done")
 		# Once done, stop processing
 		set_process(false)
@@ -66,48 +75,23 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 	if not beatz_file:
 		return
 
-	var _song_name := ""
-	var _file_chart_name := ""
-	var _file_charter := ""
-	var _file_bpm := 0
-	var _file_note_mode := 0
-	var _file_note_speed := 0.0
-	var _file_note_spawn_y := 0
-	var _file_start_wait := 0
-	var _file_p_start := 0.0
-	var _file_p_end := 30.0
-	var _file_difficulty := "easy"
-
 	var content := beatz_file.get_as_text()
 	beatz_file.close()
 
-	var sections := content.split("\\")
-	if sections.size() == 1:
-		sections = content.split("\\\\")
+	# Use import_beatz_file() to avoid duplicate parsing logic
+	var parsed := Globals.import_beatz_file(content)
 
-	for section in sections:
-		if section.begins_with("Song:"):
-			_song_name = section.replace("Song:", "").strip_edges()
-		elif section.begins_with("Charter:"):
-			_file_charter = section.replace("Charter:", "").strip_edges()
-		elif section.begins_with("ChartName:"):
-			_file_chart_name = section.replace("ChartName:", "").strip_edges()
-		elif section.begins_with("noteMode:"):
-			_file_note_mode = int(section.replace("noteMode:", "").strip_edges())
-		elif section.begins_with("BPM:"):
-			_file_bpm = int(section.replace("BPM:", "").strip_edges())
-		elif section.begins_with("noteSpeed:"):
-			_file_note_speed = float(section.replace("noteSpeed:", "").strip_edges())
-		elif section.begins_with("noteSpawnY:"):
-			_file_note_spawn_y = int(section.replace("noteSpawnY:", "").strip_edges())
-		elif section.begins_with("StartWait:"):
-			_file_start_wait = int(section.replace("StartWait:", "").strip_edges())
-		elif section.begins_with("PrevStart:"):
-			_file_p_start = float(section.replace("PrevStart:", "").strip_edges())
-		elif section.begins_with("PrevEnd:"):
-			_file_p_end = float(section.replace("PrevEnd:", "").strip_edges())
-		elif section.begins_with("Difficulty:"):
-			_file_difficulty = section.replace("Difficulty:", "").strip_edges()
+	var _song_name = parsed["song"]
+	var _file_chart_name = parsed["chart_name"]
+	var _file_charter = parsed["charter"]
+	var _file_bpm = parsed["bpm"]
+	var _file_note_speed = parsed["note_speed"]
+	var _file_note_spawn_y = parsed["note_spawn_y"]
+	var _file_start_wait = parsed["start_wait"]
+	var _file_p_start = parsed["preview_start"]
+	var _file_p_end = parsed["preview_end"]
+	var _file_difficulty = parsed["difficulty"]
+	var _decoded_notes = parsed["notes"]
 
 	var song_index = -1
 	for i in range(song_info.size()):
@@ -211,7 +195,9 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 					"speed": _file_note_speed,
 					"start_wait": _file_start_wait,
 					"cover_texture": cover_texture,
-					"stream": new_stream
+					"stream": new_stream,
+					"notes": _decoded_notes,
+					"note_count": _decoded_notes.size()
 				}
 			}
 
@@ -238,7 +224,9 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 
 		cover_texture = load("res://Resources/Covers/noCover.png")
 
-		var text = "  %s | (Not in song_info.json) %s, by %s | %d  " % [_file_difficulty.to_pascal_case(), _song_name, artist_name, year]
+		var text = "  %s | (Not in song_info.json) %s, by %s | %d  " % [
+			_file_difficulty.to_pascal_case(), _song_name, artist_name, year
+		]
 
 		var entry := {
 			"text": text,
@@ -254,13 +242,16 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 				"speed": _file_note_speed,
 				"start_wait": _file_start_wait,
 				"cover_texture": cover_texture,
-				"stream": new_stream
+				"stream": new_stream,
+				"notes": _decoded_notes,
+				"note_count": _decoded_notes.size()
 			}
 		}
 
 		if not grouped_songs.has(_file_difficulty):
 			grouped_songs[_file_difficulty] = []
 		grouped_songs[_file_difficulty].append(entry)
+
 
 var scan_threads := []
 var scan_results := []
@@ -424,7 +415,7 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	while file != "":
 		if file.ends_with(".beatz"):
 			beatz_path = folder + "/" + file
-		elif file.ends_with(".mp3") or file.ends_with(".ogg") or file.ends_with(".wav") or file.ends_with(".flac"):
+		elif file.ends_with(".mp3") or file.ends_with(".ogg") or file.ends_with(".wav"):
 			audio_path = folder + "/" + file
 		elif file.ends_with(".png") or file.ends_with(".jpg") or file.ends_with(".jpeg"):
 			image_path = folder + "/" + file
@@ -443,7 +434,7 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	var beatz_content := beatz_file.get_as_text()
 	beatz_file.close()
 	
-	var beatz = import_beatz_file(beatz_content)
+	var beatz = Globals.import_beatz_file(beatz_content)
 	
 	var difficulty = beatz["difficulty"]
 	var nspeed = beatz["note_speed"]
@@ -610,7 +601,7 @@ func _on_song_selected(index: int) -> void:
 		
 		var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
 		var content := beatz_file.get_as_text()
-		var beatz_data := import_beatz_file(content)
+		var beatz_data := Globals.import_beatz_file(content)
 		
 		var main = load("res://Scenes/selected_song.tscn").instantiate() # Load selected song scene and set all of the song variables
 		main.set("selected_stream", selected_stream)
@@ -650,146 +641,6 @@ func _on_song_selected(index: int) -> void:
 		get_tree().current_scene.queue_free()
 		get_tree().current_scene = main
 
-# Utility function
-func _capitalize_first_letter(s: String) -> String:
-	return s.substr(0, 1).to_upper() + s.substr(1)
-
-# Map direction abbreviation to full name
-var reverse_note_type_map := {
-	"U": "Up",
-	"D": "Down",
-	"L": "Left",
-	"R": "Right",
-	"UL": "Upleft",
-	"DL": "Downleft",
-	"UR": "Upright",
-	"DR": "Downright"
-}
-
-func import_beatz_file(content: String) -> Dictionary:
-	var sections := content.split("\\")
-	if sections.size() == 1:
-		sections = content.split("\\\\")
-	
-	var song := ""
-	var charter := ""
-	var chart_name := ""
-	var decoded_bpm := 0
-	var decoded_note_speed := 0.0
-	var decoded_note_spawn_y := 0.0
-	var decoded_start_wait := 0.0
-	var decoded_prev_start := 0.0
-	var decoded_prev_end := 30.0
-	var decoded_difficulty := "hard"
-	var notes_line := ""
-	var decoded_notes := []
-	
-	for section in sections:
-		if section.begins_with("Song:"):
-			song = section.replace("Song:", "").strip_edges()
-		elif section.begins_with("Charter:"):
-			charter = section.replace("Charter:", "").strip_edges()
-		elif section.begins_with("ChartName:"):
-			chart_name = section.replace("ChartName:", "").strip_edges()
-		elif section.begins_with("BPM:"):
-			decoded_bpm = int(section.replace("BPM:", "").strip_edges())
-		elif section.begins_with("noteSpeed:"):
-			decoded_note_speed = float(section.replace("noteSpeed:", "").strip_edges())
-		elif section.begins_with("noteSpawnY:"):
-			decoded_note_spawn_y = int(section.replace("noteSpawnY:", "").strip_edges())
-		elif section.begins_with("Difficulty:"):
-			decoded_difficulty = section.replace("Difficulty:", "").strip_edges()
-		elif section.begins_with("StartWait:"):
-			decoded_start_wait = float(section.replace("StartWait:", "").strip_edges())
-			push_warning("decoded start wait ", decoded_start_wait)
-		elif section.begins_with("PrevStart:"):
-			decoded_prev_start = float(section.replace("PrevStart:", "").strip_edges())
-		elif section.begins_with("PrevEnd:"):
-			decoded_prev_end = float(section.replace("PrevEnd:", "").strip_edges())
-		elif section.begins_with("Notes:"):
-			notes_line = section.replace("Notes:", "").strip_edges()
-			
-	if notes_line.find("/") != -1:
-		for note_str in notes_line.split(","):
-			var regex := RegEx.new()
-			regex.compile(r"((?:S)?[LRUD]{1,2}|E|RND)/(-?\d+)(?:!([^,]+))?")
-			var result := regex.search(note_str)
-			if result == null:
-				continue
-				
-			var type_char := result.get_string(1)
-			var timestamp := float(result.get_string(2))
-			var properties_str := result.get_string(3)
-			
-			var note_type := ""
-			if type_char == "E":
-				note_type = "Effect"
-			elif type_char == "RND":
-				note_type = "Random"
-			else:
-				note_type = _capitalize_first_letter(reverse_note_type_map.get(type_char, type_char))
-				
-			var note := {
-				"type": note_type,
-				"timestamp": timestamp,
-				"newShake": null,
-				"newBPM": null,
-				"newSpeed": null,
-				"newSpawnY": null,
-				"FSinc": null,
-				"smallFSinc": null,
-				"bpmPulseInc": null,
-				"ownSpeed": null,
-				"ownSpawnY": null
-			}
-			
-			if properties_str != "":
-				for prop in properties_str.split(";"):
-					var kv := prop.split("=")
-					if kv.size() != 2:
-						continue
-					var key := kv[0].strip_edges().lstrip("!")
-					var value := kv[1].strip_edges()
-					
-					match key:
-						"ownSpeed":
-							note["ownSpeed"] = float(value)
-						"ownSpawnY":
-							note["ownSpawnY"] = int(value)
-						"shake":
-							var parts := value.split(".")
-							if parts.size() == 4:
-								note["shake"] = {
-									"strength": float(parts[0]),
-									"speed": float(parts[1]),
-									"duration": float(parts[2]),
-									"fade": float(parts[3])
-								}
-						_:
-							if value.is_valid_float():
-								note[key] = float(value)
-							else:
-								note[key] = value
-							
-			decoded_notes.append(note)
-			
-	decoded_notes.sort_custom(func(a, b): return a["timestamp"] < b["timestamp"])
-	
-	return {
-		"notes": decoded_notes,
-		"note_count": decoded_notes.size(),
-		"song": song,
-		"chart_name": chart_name,
-		"charter": charter,
-		"bpm": decoded_bpm,
-		"note_speed": decoded_note_speed,
-		"note_spawn_y": decoded_note_spawn_y,
-		"difficulty": decoded_difficulty,
-		"start_wait": decoded_start_wait,
-		"preview_start": decoded_prev_start,
-		"preview_end": decoded_prev_end
-	}
-
 func _on_back_button_up() -> void:
 	$back.release_focus()
 	if Globals.settings.misc_settings.reduce_motion:
@@ -799,8 +650,32 @@ func _on_back_button_up() -> void:
 		await get_tree().create_timer(0.7).timeout
 	went_back.emit()
 
+func _on_search_focus_entered() -> void:
+	get_parent().can_random = false
+
+func _on_search_focus_exited() -> void:
+	get_parent().can_random = true
+
 func _on_search_bar_text_changed(new_text: String):
-	search_item(new_text)
+	filter_items(new_text)
+
+func filter_items(query: String):
+	$song_list.clear()
+	var first_match_highlighted := false
+
+	for item in all_items:
+		if query == "" or query.to_lower() in item["text"].to_lower():
+			var idx = $song_list.add_item(item["text"], item["icon"])
+			$song_list.set_item_metadata(idx, item["metadata"])
+			if item["disabled"]:
+				$song_list.set_item_disabled(idx, true)
+				$song_list.set_item_selectable(idx, false)
+			elif not first_match_highlighted:
+				# highlight the first non-disabled match
+				$song_list.select(idx)
+				$song_list.ensure_current_is_visible()
+				first_match_highlighted = true
+
 
 func search_item(query: String):
 	var match_found := false
@@ -826,6 +701,7 @@ func _on_search_bar_text_submitted(new_text: String) -> void:
 			$song_list.ensure_current_is_visible()
 			_on_song_selected(i)
 			match_found = true
+			get_parent().can_random = true
 			break
 	if not match_found:
 		for j in $song_list.get_item_count():
@@ -837,6 +713,7 @@ func _on_reload_pressed() -> void:
 	set_process(true)
 	
 	$song_list.clear()
+	all_items.clear()
 	load_song_info()
 	_load_songs()
 	$reload.release_focus()
@@ -855,7 +732,6 @@ func _on_open_beatz_bxzip_pressed() -> void:
 		print("Failed to show native file dialog.")
 		
 func _on_file_dialog_file_selected(path: String) -> void:
-	
 	var extension := path.get_extension().to_lower()
 	if extension in ["bx", "zip"]:
 		var file_name := path.get_file().get_basename()
@@ -1244,3 +1120,10 @@ func _on_edit_confirm_pressed() -> void:
 	$del_custom_anim.play("confirm_panel")
 	await $del_custom_anim.animation_finished
 	_on_reload_pressed()
+
+func _on_create_pressed() -> void:
+	var edit = Globals.EDITOR.instantiate()
+	
+	get_tree().root.add_child(edit)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = edit

@@ -1,0 +1,36 @@
+if noteType == "Upleft":
+		$noteImg.region_rect.position = Vector2(0, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		$noteImg.rotation_degrees = 45
+		self.position.x = -spriteWidth * 3.5
+	elif noteType == "Downleft":
+		$noteImg.region_rect.position = Vector2(0, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		$noteImg.rotation_degrees = -45
+		self.position.x = -spriteWidth * 2.5
+	elif noteType == "Left":
+		$noteImg.region_rect.position = Vector2(0, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		self.position.x = -spriteWidth * 1.5
+	elif noteType == "Down":
+		$noteImg.region_rect.position = Vector2(spriteWidth, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		self.position.x = -halfWidth
+	elif noteType == "Up":
+		$noteImg.region_rect.position = Vector2(spriteWidth * 2, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		self.position.x = halfWidth
+	elif noteType == "Right":
+		$noteImg.region_rect.position = Vector2(spriteWidth * 3, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		self.position.x = spriteWidth * 1.5
+	elif noteType == "Downright":
+		$noteImg.region_rect.position = Vector2(spriteWidth * 3, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		$noteImg.rotation_degrees = 45
+		self.position.x = spriteWidth * 2.5
+	elif noteType == "Upright":
+		$noteImg.region_rect.position = Vector2(spriteWidth * 3, 0)
+		$noteImg.region_rect.size = Vector2(spriteWidth, spriteWidth)
+		$noteImg.rotation_degrees = -45
+		self.position.x = spriteWidth * 3.5

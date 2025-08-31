@@ -734,7 +734,7 @@ offset_top = 60.0
 offset_right = 904.0
 offset_bottom = 118.0
 grow_horizontal = 2
-tooltip_text = "The list will select an item with a text that matches your input. Press Enter to play the found song."
+tooltip_text = "The list will filter out all items that don't match your search."
 theme = ExtResource("12_ckusj")
 theme_override_font_sizes/font_size = 36
 placeholder_text = "Search Songs"
@@ -870,16 +870,44 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -744.0
-offset_top = 56.0
-offset_right = -636.0
-offset_bottom = 119.0
+offset_left = -904.0
+offset_top = 293.0
+offset_right = -799.0
+offset_bottom = 362.0
 grow_horizontal = 0
 tooltip_text = "Delete a custom song."
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
 theme_override_font_sizes/font_size = 40
 text = "Edit"
+
+[node name="open_beatz_bxzip" type="Button" parent="."]
+layout_mode = 0
+offset_left = -753.0
+offset_top = 61.0
+offset_right = -573.0
+offset_bottom = 131.0
+tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
+Beatz will then decompress it and you will now be able to play your custom chart!"
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 24
+text = "Upload
+Custom Song"
+
+[node name="create" type="Button" parent="."]
+layout_mode = 0
+offset_left = -524.0
+offset_top = 61.0
+offset_right = -344.0
+offset_bottom = 131.0
+tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
+Beatz will then decompress it and you will now be able to play your custom chart!"
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 24
+text = "CREATE
+Custom Song"
 
 [node name="scrl_up" type="Button" parent="."]
 layout_mode = 1
@@ -911,20 +939,6 @@ mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
 theme_override_font_sizes/font_size = 60
 text = "^"
-
-[node name="open_beatz_bxzip" type="Button" parent="."]
-layout_mode = 0
-offset_left = -565.0
-offset_top = 42.0
-offset_right = -344.0
-offset_bottom = 134.0
-tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
-Beatz will then decompress it and you will now be able to play your custom chart!"
-mouse_default_cursor_shape = 2
-theme = ExtResource("12_ckusj")
-theme_override_font_sizes/font_size = 30
-text = "Upload
-Custom Song"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open File(s)"
@@ -1005,14 +1019,17 @@ libraries = {
 
 [connection signal="item_activated" from="song_list" to="." method="_on_song_selected"]
 [connection signal="item_selected" from="song_list" to="." method="_on_song_selected"]
+[connection signal="focus_entered" from="search" to="." method="_on_search_focus_entered"]
+[connection signal="focus_exited" from="search" to="." method="_on_search_focus_exited"]
 [connection signal="text_changed" from="search" to="." method="_on_search_bar_text_changed"]
 [connection signal="text_submitted" from="search" to="." method="_on_search_bar_text_submitted"]
 [connection signal="button_up" from="back" to="." method="_on_back_button_up"]
 [connection signal="pressed" from="reload" to="." method="_on_reload_pressed"]
 [connection signal="pressed" from="edit" to="." method="_on_edit_pressed"]
+[connection signal="pressed" from="open_beatz_bxzip" to="." method="_on_open_beatz_bxzip_pressed"]
+[connection signal="pressed" from="create" to="." method="_on_create_pressed"]
 [connection signal="pressed" from="scrl_up" to="." method="_on_scrl_up_pressed"]
 [connection signal="pressed" from="scrl_down" to="." method="_on_scrl_down_pressed"]
-[connection signal="pressed" from="open_beatz_bxzip" to="." method="_on_open_beatz_bxzip_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
 [connection signal="pressed" from="del_custom_panel/del_no" to="." method="_on_edit_cancel_pressed"]

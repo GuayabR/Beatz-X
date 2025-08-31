@@ -12,6 +12,10 @@ var SONG_ID_ARR_PATH : String = "user://Custom/.songids" if OS.get_name() == "Wi
 
 const SETTINGS_PATH := "user://settings.json"
 
+const MENU := preload("res://Scenes/main_menu.tscn")
+const MAIN := preload("res://Scenes/main.tscn")
+const EDITOR := preload("res://Scenes/editor.tscn")
+
 var settings: Dictionary = {
 	"game": {
 		"mbl_btn_layout": 0, # 0 for 4 btn layout, 1 for 2 + 2 btn layout
@@ -34,6 +38,13 @@ var settings: Dictionary = {
 		"reduce_motion": false
 	}
 }
+
+func _input(event: InputEvent) -> void:
+	if Input.is_action_just_pressed("debug_reload_scene"):
+		print("------------------------------")
+		print_rich("[color=orange]DEBUG: Reloading current scene[/color]")
+		print("------------------------------")
+		get_tree().reload_current_scene()
 
 func _ready() -> void:
 	if OS.get_name() == "Android":
@@ -136,10 +147,23 @@ func ensure_songids_file_exists():
 		else:
 			print("Failed to create .songids file.")
 
+func format_time(seconds: float) -> String:
+	var total_seconds = int(seconds)
+	var hrs = total_seconds / 3600
+	var mins = (total_seconds % 3600) / 60
+	var secs = total_seconds % 60
+	var frac = int((seconds - total_seconds) * 100)  # hundredths of a second
 
-# Utility function
+	if hrs > 0:
+		return "%d:%02d:%02d.%02d" % [hrs, mins, secs, frac]
+	else:
+		return "%02d:%02d.%02d" % [mins, secs, frac]
+
+# Utility function to capitalize first letter
 func _capitalize_first_letter(s: String) -> String:
-	return s.substr(0, 1).to_upper() + s.substr(1)
+	if s.length() == 0:
+		return s
+	return s.substr(0, 1).to_upper() + s.substr(1, s.length() - 1)
 
 # Map direction abbreviation to full name
 const REVERSE_NOTE_TYPE_MAP := {
@@ -153,6 +177,51 @@ const REVERSE_NOTE_TYPE_MAP := {
 	"DR": "Downright"
 }
 
+const NOTE_TYPE_MAP := {
+	"Up": "U",
+	"Down": "D",
+	"Left": "L",
+	"Right": "R",
+	"Upleft": "UL",
+	"Downleft": "DL",
+	"Upright": "UR",
+	"Downright": "DR"
+}
+
+# Encode notes array into .beatz style string
+func encode_notes(notes: Array) -> String:
+	var encoded := []
+	for note in notes:
+		var type_str := _capitalize_first_letter(note.type)
+		var type_char = NOTE_TYPE_MAP.get(type_str, "")
+		var base := "%s/%d" % [type_char, note.timestamp]
+		if note.has("hold") and note.hold != null:
+			base += "!hold=%d" % note.hold
+		encoded.append(base)
+	return ",".join(encoded)
+
+# Decode .beatz style string into notes array
+func decode_notes(encoded_notes: String) -> Dictionary:
+	var decoded := []
+	for note_str in encoded_notes.split(","):
+		var parts := note_str.split("/")
+		if parts.size() < 2:
+			continue
+		var type_char := parts[0]
+		var timestamp := int(parts[1])
+		var note_type := _capitalize_first_letter(REVERSE_NOTE_TYPE_MAP.get(type_char, ""))
+		var note_dict := {
+			"type": note_type,
+			"timestamp": timestamp
+		}
+		# Check for hold property
+		if "!" in note_str:
+			var hold_parts := note_str.split("!hold=")
+			if hold_parts.size() > 1:
+				note_dict.hold = int(hold_parts[1])
+		decoded.append(note_dict)
+	return {"notes": decoded}
+
 func import_beatz_file(content: String) -> Dictionary:
 	var sections := content.split("\\")
 	if sections.size() == 1:
@@ -163,8 +232,8 @@ func import_beatz_file(content: String) -> Dictionary:
 	var chart_name := ""
 	var decoded_bpm := 0
 	var decoded_note_speed := 0.0
-	var decoded_note_spawn_y := 0
-	var decoded_start_wait := 0
+	var decoded_note_spawn_y := 0.0
+	var decoded_start_wait := 0.0
 	var decoded_prev_start := 0.0
 	var decoded_prev_end := 30.0
 	var decoded_difficulty := "hard"

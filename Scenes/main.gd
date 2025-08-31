@@ -276,6 +276,19 @@ func _ready():
 	$Visualizer/Song_left.pitch_scale = Engine.time_scale
 	$Visualizer/Song_right.pitch_scale = Engine.time_scale
 	
+	var start_wait := 0
+	var earliest_negative = null
+
+	for n in customNotes:
+		if n.timestamp < 0:
+			if earliest_negative == null or n.timestamp < earliest_negative:
+				earliest_negative = n.timestamp
+
+	if earliest_negative != null:
+		start_wait = abs(earliest_negative)
+		print(start_wait)
+
+	
 	if start_wait > 0:
 		print("Waiting ", (start_wait + 500) / 1000.0)
 		await get_tree().create_timer((start_wait + 500) / 1000.0).timeout
@@ -387,10 +400,11 @@ func _process(delta):
 				continue
 			
 			if Globals.settings.misc_settings.note_anims == true:
-				var ani: AnimationPlayer = get_node("stationary_notes/note_" + n.type.to_lower())
-				
-				ani.play("RESET")
-				ani.play(n.type.to_lower() + "_pulse")
+				if n.type in ["Left", "Down", "Up", "Right"]:
+					var ani: AnimationPlayer = get_node("stationary_notes/note_" + n.type.to_lower())
+					
+					ani.play("RESET")
+					ani.play(n.type.to_lower() + "_pulse")
 			highlightedNotes[n.type] = true
 			registerHit(n.type)
 				
@@ -491,11 +505,15 @@ func spawn_note(direction: String = "Up", rec: bool = false) -> void:
 	var new_note = note.instantiate()
 	var x: float = 0.0
 	match direction:
-		"Left": x = $stationary_notes/noteLeftSprite.position.x# - 960
-		"Down": x = $stationary_notes/noteDownSprite.position.x# - 990
-		"Up": x = $stationary_notes/noteUpSprite.position.x # - 930
-		"Right": x = $stationary_notes/noteRightSprite.global_position.x# - 872
-		_: x = $stationary_notes/noteUpSprite.global_position.x #- 1000
+		"Upleft": x = $stationary_notes/noteUpleftSprite.position.x
+		"Downleft": x = $stationary_notes/noteDownleftSprite.position.x
+		"Left": x = $stationary_notes/noteLeftSprite.position.x
+		"Down": x = $stationary_notes/noteDownSprite.position.x
+		"Up": x = $stationary_notes/noteUpSprite.position.x
+		"Right": x = $stationary_notes/noteRightSprite.global_position.x
+		"Downright": x = $stationary_notes/noteDownrightSprite.position.x
+		"Upright": x = $stationary_notes/noteUprightSprite.position.x
+		_: x = $stationary_notes/noteUpSprite.global_position.x
 	new_note.position = Vector2(x, noteSpawnY)
 	new_note.scale = Vector2(0.65, 0.65)
 	new_note.set_type(direction)
@@ -904,7 +922,9 @@ var difficulty: String = "easy"
 var charter: String
 
 func _on_edit_btn_pressed() -> void:
-	var edit = preload("res://Scenes/editor.tscn").instantiate()
+	var edit = Globals.EDITOR.instantiate()
+	
+	edit.new_beatzmap = false
 	
 	edit.set("start_wait", start_wait)
 	

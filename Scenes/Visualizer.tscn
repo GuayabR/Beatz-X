@@ -13,7 +13,6 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_nq7id")
-type = "Line"
 circle_size = 19.0
 exponent_strength = 4.3
 

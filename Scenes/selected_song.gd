@@ -1,8 +1,5 @@
 extends Control
 
-const main := preload("res://Scenes/main.tscn")
-const editor := preload("res://Scenes/editor.tscn")
-
 var selected_stream: AudioStream
 
 var selected_title: String
@@ -269,7 +266,7 @@ func _on_play_button_up() -> void:
 		$AnimationPlayer.play("play_song")
 		await get_tree().create_timer(1.0).timeout
 		
-	var game = main.instantiate()
+	var game = Globals.MAIN.instantiate()
 	
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
@@ -325,12 +322,12 @@ func _on_go_to_stgs_pressed() -> void:
 	screen = "settings"
 
 func _on_edit_pressed() -> void:
-	var edit = editor.instantiate()
-	
-	edit.set("start_wait", start_wait)
-	print("set start wait ", start_wait)
+	var edit = Globals.EDITOR.instantiate()
 	
 	edit.set("selected_stream", selected_stream)
+	
+	edit.new_beatzmap = false
+	
 	edit.set("selected_title", selected_title)
 	edit.set("selected_album", selected_album)
 	
@@ -340,6 +337,8 @@ func _on_edit_pressed() -> void:
 	
 	edit.set("preview_start", preview_start)
 	edit.set("preview_end",preview_end)
+	
+	edit.set("start_wait", start_wait)
 	
 	edit.set("selected_difficulty", selected_difficulty)
 	edit.set("notes", notes)

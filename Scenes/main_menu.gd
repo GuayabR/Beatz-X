@@ -6,6 +6,8 @@ var current_menu = "main" # main / list / settings / loading | loading is select
 
 var spectrum: AudioEffectSpectrumAnalyzerInstance
 
+var can_random := true
+
 func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	spectrum = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Menu Song"), 0) as AudioEffectSpectrumAnalyzerInstance
@@ -300,7 +302,7 @@ func _input(_event: InputEvent) -> void:
 	if Input.is_action_pressed("ui_cancel"):
 		_handle_back_pressed()
 	
-	if Input.is_action_pressed("randomize_menu_song"):
+	if Input.is_action_pressed("randomize_menu_song") and can_random:
 		play_random_song()
 
 func _notification(what: int) -> void:

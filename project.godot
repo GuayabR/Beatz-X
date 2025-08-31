@@ -17,10 +17,10 @@ By GuayabR."
 config/version="1.3.6"
 config/tags=PackedStringArray("beatz", "demo", "game", "rhythm")
 run/main_scene="uid://4puupvbpclaw"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 boot_splash/fullsize=false
 boot_splash/image="uid://byed1ljwunwsj"
-config/icon="uid://6cvc1r2mkha7"
+config/icon="uid://bjucqx1y5qt2x"
 
 [autoload]
 
@@ -145,6 +145,11 @@ record_stop={
 fast_restart={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":82,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug_reload_scene={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":true,"shift_pressed":true,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":82,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

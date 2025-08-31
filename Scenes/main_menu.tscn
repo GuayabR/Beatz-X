@@ -18,6 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="13_6dk6o"]
 [ext_resource type="Texture2D" uid="uid://cok6hw77fkwqk" path="res://Resources/misc/Settings_text.png" id="13_8dnnj"]
 [ext_resource type="Texture2D" uid="uid://bfdk83nri34jl" path="res://Resources/breakingnews.png" id="14_jr6u5"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="15_5n0dv"]
 [ext_resource type="Texture2D" uid="uid://btaomc2egvyqx" path="res://Resources/micho.png" id="15_6m47u"]
 [ext_resource type="Texture2D" uid="uid://c5xoinmryyr1n" path="res://Resources/Arrows/para.png" id="15_wyh8j"]
 [ext_resource type="Texture2D" uid="uid://djdiurv65qcub" path="res://Resources/Ranith.png" id="16_84iac"]
@@ -2283,9 +2284,6 @@ _data = {
 &"scene_load": SubResource("Animation_n45e2")
 }
 
-[sub_resource type="Theme" id="Theme_6dk6o"]
-PopupMenu/constants/icon_max_width = 75
-
 [sub_resource type="Theme" id="Theme_5egv6"]
 CheckButton/constants/h_separation = 25
 
@@ -2381,10 +2379,15 @@ _data = {
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jr6u5"]
 bg_color = Color(0, 0, 0, 0.831373)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 16
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 16
 shadow_color = Color(0, 0, 0, 0.188235)
 shadow_size = 100
 
@@ -2494,7 +2497,6 @@ anchor_bottom = 1.0
 offset_top = 1080.0
 offset_bottom = 1080.0
 grow_vertical = 0
-type = "Bars"
 reaction = "None"
 custom_colors = true
 colors = Array[Color]([Color(1, 0.137255, 0, 1), Color(1, 0, 0.701961, 1), Color(0.537255, 0, 1, 1), Color(0, 0, 1, 1), Color(0, 0.541176, 1, 1)])
@@ -2660,6 +2662,12 @@ layout_mode = 1
 offset_left = -750.0
 offset_right = 767.0
 
+[node name="del_no" parent="main_list/del_custom_panel" index="1"]
+mouse_default_cursor_shape = 2
+
+[node name="del_yes" parent="main_list/del_custom_panel" index="2"]
+mouse_default_cursor_shape = 2
+
 [node name="loading_text" type="RichTextLabel" parent="."]
 modulate = Color(1, 1, 1, 0)
 top_level = true
@@ -2773,6 +2781,7 @@ theme = ExtResource("12_m3bi6")
 [node name="space" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/normal_font_size = 50
 fit_content = true
 scroll_active = false
@@ -2782,6 +2791,7 @@ justification_flags = 162
 [node name="space2" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/normal_font_size = 50
 fit_content = true
 scroll_active = false
@@ -2791,6 +2801,7 @@ justification_flags = 162
 [node name="game_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
 text = "------- Game -------"
@@ -2803,6 +2814,7 @@ justification_flags = 162
 visible = false
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Theme  ----"
@@ -2814,7 +2826,8 @@ justification_flags = 162
 [node name="game_theme_drop" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
 visible = false
 layout_mode = 2
-theme = SubResource("Theme_6dk6o")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/icon_max_width = 75
 selected = 0
 item_count = 6
@@ -2840,6 +2853,7 @@ popup/item_5/id = 5
 [node name="song_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Song Volume: 80 ----"
@@ -2850,11 +2864,14 @@ justification_flags = 162
 
 [node name="song_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 scrollable = false
 
 [node name="menu_song_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Menu Song Volume: 75 ----"
@@ -2865,11 +2882,14 @@ justification_flags = 162
 
 [node name="menu_song_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 scrollable = false
 
 [node name="sfx_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- SFX Volume: 45 ----"
@@ -2880,11 +2900,15 @@ justification_flags = 162
 
 [node name="sfx_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 scrollable = false
 
 [node name="change_binds_btn" type="Button" parent="settings_layer/ScrollContainer/settings_list"]
 visible = false
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 45
 text = "Change Keybinds"
 
@@ -2892,6 +2916,7 @@ text = "Change Keybinds"
 visible = false
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- MOBILE: Button Layout ----"
@@ -2905,7 +2930,8 @@ visible = false
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
 tooltip_text = "Change the look of your notes."
-theme = ExtResource("12_m3bi6")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 alignment = 1
 selected = 0
 item_count = 2
@@ -2919,6 +2945,7 @@ popup/item_1/id = 1
 [node name="note_style_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Note Style ----"
@@ -2931,7 +2958,7 @@ justification_flags = 162
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
 tooltip_text = "Change the look of your notes."
-theme = ExtResource("12_m3bi6")
+mouse_default_cursor_shape = 2
 alignment = 1
 selected = 0
 item_count = 3
@@ -2948,7 +2975,8 @@ popup/item_2/id = 2
 [node name="note_anim_toggle" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme = SubResource("Theme_5egv6")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 40
 text = "Note Animations"
@@ -2956,11 +2984,13 @@ text = "Note Animations"
 [node name="HBoxContainer" type="GridContainer" parent="settings_layer/ScrollContainer/settings_list"]
 visible = false
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 columns = 2
 
 [node name="player_notes_pulse_tgl" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -2969,6 +2999,7 @@ text = "Note Pulse On Click"
 [node name="notes_tint_tgl" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -2977,6 +3008,7 @@ text = "Note Tints On Hit"
 [node name="notes_rotates_tgl" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -2985,6 +3017,7 @@ text = "Note Rotates On Hit"
 [node name="notes_fades_in_tgl" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -2993,6 +3026,7 @@ text = "Note Fades In On Spawn"
 [node name="notes_fades_out_tgl" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -3002,6 +3036,7 @@ Bad Hit"
 [node name="notes_fades_out_tgl2" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_5egv6")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -3011,6 +3046,7 @@ Bad Hit"
 [node name="note_speed_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Note Speed ----"
@@ -3023,6 +3059,8 @@ justification_flags = 162
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 2
@@ -3043,6 +3081,7 @@ popup/item_5/id = 5
 [node name="note_offset_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Note Offset (ms) ----"
@@ -3056,6 +3095,7 @@ layout_mode = 2
 tooltip_text = "The offset in ms of when the notes will spawn, useful is your bluetooth device has delay.
 (Negative number: notes spawn earlier. 
 Positive number: notes spawn later.)"
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 30
 text = "10.0"
 placeholder_text = "Note spawn time offset (in ms)"
@@ -3067,6 +3107,7 @@ caret_blink = true
 [node name="speed_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Game Speed ----"
@@ -3078,6 +3119,7 @@ justification_flags = 162
 [node name="game_speed_edit" type="LineEdit" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
 tooltip_text = "The speed of the game (like a speedhack, useful if you wanna practice, or give yourself a challenge)"
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 30
 text = "1.0"
 placeholder_text = "Note spawn time offset (in ms)"
@@ -3089,6 +3131,7 @@ caret_blink = true
 [node name="menu_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
 text = "------- Menu -------"
@@ -3101,7 +3144,8 @@ justification_flags = 162
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Disables animations."
-theme = SubResource("Theme_5egv6")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
 text = "Reduce Motion"
@@ -3109,6 +3153,7 @@ text = "Reduce Motion"
 [node name="fps_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
 text = "------- Display -------"
@@ -3120,7 +3165,8 @@ justification_flags = 162
 [node name="fpsCheck" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme = SubResource("Theme_5egv6")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
 text = "Show FPS"
@@ -3128,6 +3174,7 @@ text = "Show FPS"
 [node name="fps_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Max FPS / V-Sync ----"
@@ -3138,6 +3185,8 @@ justification_flags = 162
 
 [node name="fps_options" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 alignment = 1
 selected = 0
 item_count = 13
@@ -3172,6 +3221,7 @@ popup/item_12/id = 12
 visible = false
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Enter Custom FPS"
 alignment = 1
@@ -3179,6 +3229,7 @@ alignment = 1
 [node name="res_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Window Resolution ----"
@@ -3189,6 +3240,8 @@ justification_flags = 162
 
 [node name="display_resolutions" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 alignment = 1
 selected = 0
 item_count = 4
@@ -3204,6 +3257,7 @@ popup/item_3/id = 4
 [node name="window_modes_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
 text = "---- Window Modes ----"
@@ -3214,6 +3268,8 @@ justification_flags = 162
 
 [node name="display_options" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 alignment = 1
 selected = 0
 item_count = 5
@@ -3231,7 +3287,8 @@ popup/item_4/id = 4
 [node name="borderless_check" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme = SubResource("Theme_5egv6")
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
 text = "Borderless"
@@ -3239,6 +3296,7 @@ text = "Borderless"
 [node name="extra_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 10)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 45
 text = "---- Extra ----"
@@ -3249,12 +3307,15 @@ justification_flags = 162
 
 [node name="credits_btn" type="Button" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 50
 text = "Credits"
 
 [node name="slogan" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 30)
 layout_mode = 2
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/normal_font_size = 22
 text = "FEEL. YOUR RHYTHM."
@@ -3267,6 +3328,7 @@ justification_flags = 162
 custom_minimum_size = Vector2(650, 30)
 layout_mode = 2
 tooltip_text = "!"
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/normal_font_size = 15
 text = "Beatz! X (Desktop Port) VERSION"
@@ -3463,12 +3525,14 @@ offset_left = 211.0
 offset_top = 30.0
 offset_right = 1088.0
 offset_bottom = 113.0
+theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 60
 text = "Are you sure you want to exit?"
 fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Accept" type="Button" parent="popup_leave/Panel"]
 layout_mode = 0
@@ -3477,6 +3541,7 @@ offset_top = 278.0
 offset_right = 636.0
 offset_bottom = 335.0
 mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 35
 text = "Leave"
 
@@ -3487,6 +3552,7 @@ offset_top = 278.0
 offset_right = 800.0
 offset_bottom = 335.0
 mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/font_size = 35
 text = "Cancel"
 

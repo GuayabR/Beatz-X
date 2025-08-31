@@ -230,6 +230,7 @@ visible = false
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
 tooltip_text = "Change the look of your notes."
+mouse_default_cursor_shape = 2
 theme = ExtResource("3_f60ng")
 alignment = 1
 selected = 0
@@ -244,6 +245,7 @@ popup/item_1/id = 1
 [node name="note_anim_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6kysc")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 40
@@ -257,6 +259,7 @@ columns = 2
 [node name="player_notes_pulse_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -265,6 +268,7 @@ text = "Note Pulse On Click"
 [node name="notes_tint_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -273,6 +277,7 @@ text = "Note Tints On Hit"
 [node name="notes_rotates_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -281,6 +286,7 @@ text = "Note Rotates On Hit"
 [node name="notes_fades_in_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -289,6 +295,7 @@ text = "Note Fades In On Spawn"
 [node name="notes_fades_out_tgl" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -298,6 +305,7 @@ Bad Hit"
 [node name="notes_fades_out_tgl2" type="CheckButton" parent="ScrollContainer/settings_list/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 35
@@ -319,6 +327,7 @@ justification_flags = 162
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
 tooltip_text = "Change the look of your notes."
+mouse_default_cursor_shape = 2
 theme = ExtResource("3_f60ng")
 alignment = 1
 selected = 0
@@ -348,6 +357,7 @@ justification_flags = 162
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 30
 alignment = 1
 selected = 2
@@ -426,6 +436,7 @@ justification_flags = 162
 layout_mode = 2
 size_flags_horizontal = 4
 tooltip_text = "Disables animations."
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_35cvv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
@@ -445,6 +456,7 @@ justification_flags = 162
 [node name="fpsCheck" type="CheckButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_35cvv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
@@ -463,6 +475,7 @@ justification_flags = 162
 
 [node name="fps_options" type="OptionButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 alignment = 1
 selected = 0
 item_count = 13
@@ -514,6 +527,7 @@ justification_flags = 162
 
 [node name="display_resolutions" type="OptionButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 alignment = 1
 selected = 0
 item_count = 4
@@ -539,6 +553,7 @@ justification_flags = 162
 
 [node name="display_options" type="OptionButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 alignment = 1
 selected = 0
 item_count = 5
@@ -556,6 +571,7 @@ popup/item_4/id = 4
 [node name="borderless_check" type="CheckButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
 theme = SubResource("Theme_35cvv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
@@ -574,6 +590,7 @@ justification_flags = 162
 
 [node name="credits_btn" type="Button" parent="ScrollContainer/settings_list"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 50
 text = "Credits"
 
