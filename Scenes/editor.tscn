@@ -638,8 +638,36 @@ _data = {
 [node name="editor" type="Node2D"]
 script = ExtResource("1_exjlx")
 
-[node name="cam" type="Camera2D" parent="."]
-position = Vector2(960, 540)
+[node name="TransitionRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+show_behind_parent = true
+z_index = 10
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("2_nfgmo")
+
+[node name="overlay" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 7
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("2_nfgmo")
 
 [node name="settings" parent="." instance=ExtResource("22_u6te5")]
 z_index = 7
@@ -651,6 +679,12 @@ anchor_bottom = 0.5
 offset_left = 1920.0
 offset_right = 3840.0
 offset_bottom = 1080.0
+
+[node name="cam" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+
+[node name="song" type="AudioStreamPlayer" parent="."]
+bus = &"Song"
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -687,7 +721,7 @@ offset_bottom = 1080.0
 texture = ExtResource("2_nfgmo")
 
 [node name="back" type="TextureButton" parent="Control"]
-z_index = 7
+z_index = 15
 layout_mode = 0
 offset_left = 13.0
 offset_top = -200.0
@@ -790,6 +824,7 @@ offset_top = 23.0
 offset_right = 84.0
 offset_bottom = 79.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 55
@@ -845,7 +880,7 @@ layout_mode = 1
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-mouse_filter = 2
+mouse_filter = 1
 
 [node name="song_title" type="RichTextLabel" parent="Control/song_details"]
 z_index = 3
@@ -934,6 +969,7 @@ offset_right = 106.0
 offset_bottom = 103.0
 scale = Vector2(7.07676, 7.07676)
 pivot_offset = Vector2(50, 50)
+mouse_filter = 2
 texture = ExtResource("7_pee1p")
 expand_mode = 1
 stretch_mode = 5
@@ -942,6 +978,7 @@ stretch_mode = 5
 layout_mode = 0
 offset_right = 100.0
 offset_bottom = 100.0
+mouse_filter = 2
 texture = ExtResource("8_3lyd6")
 expand_mode = 1
 
@@ -954,7 +991,7 @@ anchor_right = 1.0
 offset_left = -40.0
 offset_bottom = 40.0
 grow_horizontal = 0
-mouse_filter = 2
+mouse_filter = 1
 
 [node name="chart_name" type="RichTextLabel" parent="Control/chart_details"]
 z_index = 3
@@ -983,9 +1020,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -160.0
+offset_left = -160.001
 offset_top = 62.0
-offset_right = -25.0004
+offset_right = -25.0015
 offset_bottom = 101.0
 grow_horizontal = 0
 pivot_offset = Vector2(135, 0)
@@ -1004,9 +1041,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -153.0
+offset_left = -153.001
 offset_top = 101.0
-offset_right = -25.0004
+offset_right = -25.0015
 offset_bottom = 132.0
 grow_horizontal = 0
 pivot_offset = Vector2(128, 0)
@@ -1487,6 +1524,7 @@ offset_top = -468.0
 offset_right = 166.0
 offset_bottom = -428.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 36
@@ -1701,6 +1739,7 @@ offset_right = 60.5
 offset_bottom = 71.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 16
@@ -1853,6 +1892,7 @@ offset_top = -468.0
 offset_right = 166.0
 offset_bottom = -428.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 36
@@ -2027,6 +2067,7 @@ offset_right = 60.5
 offset_bottom = 71.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 16
@@ -2129,12 +2170,13 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -60.5
+offset_left = -235.5
 offset_top = 369.0
-offset_right = 60.5
+offset_right = 235.5
 offset_bottom = 386.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 16
@@ -2222,6 +2264,7 @@ offset_top = -144.0
 offset_right = 166.0
 offset_bottom = -104.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 36
@@ -2244,6 +2287,7 @@ offset_right = 362.0
 offset_bottom = -46.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 28
@@ -2367,6 +2411,7 @@ offset_top = -138.0
 offset_right = 166.0
 offset_bottom = -98.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 36
@@ -2389,6 +2434,7 @@ offset_right = 361.5
 offset_bottom = 56.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 36
@@ -2544,6 +2590,7 @@ offset_top = -333.0
 offset_right = 58.0
 offset_bottom = -277.0
 grow_horizontal = 2
+mouse_filter = 2
 theme = ExtResource("4_cnbw5")
 theme_override_constants/outline_size = 8
 theme_override_constants/line_separation = 3
@@ -2575,6 +2622,7 @@ offset_top = -256.0
 offset_right = 207.0
 offset_bottom = -212.0
 grow_horizontal = 2
+mouse_filter = 2
 theme = ExtResource("4_cnbw5")
 theme_override_constants/outline_size = 8
 theme_override_constants/line_separation = 3
@@ -2598,9 +2646,6 @@ theme = ExtResource("8_cnbw5")
 theme_override_font_sizes/font_size = 26
 placeholder_text = "Offset (ms)"
 alignment = 1
-
-[node name="song" type="AudioStreamPlayer" parent="."]
-bus = &"Song"
 
 [node name="notes" type="Node2D" parent="."]
 z_index = 2
@@ -2927,36 +2972,7 @@ libraries = {
 }
 autoplay = "cover_spin"
 
-[node name="TransitionRect" type="TextureRect" parent="."]
-modulate = Color(1, 1, 1, 0)
-top_level = true
-z_index = 10
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -960.0
-offset_right = 960.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-pivot_offset = Vector2(960, 540)
-mouse_filter = 2
-texture = ExtResource("2_nfgmo")
-
-[node name="overlay" type="TextureRect" parent="."]
-modulate = Color(1, 1, 1, 0)
-top_level = true
-z_index = 6
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -960.0
-offset_right = 960.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-pivot_offset = Vector2(960, 540)
-mouse_filter = 2
-texture = ExtResource("2_nfgmo")
-
+[connection signal="finished" from="song" to="." method="_on_song_finished"]
 [connection signal="pressed" from="Control/back" to="." method="_on_back_pressed"]
 [connection signal="value_changed" from="Control/zoom_scroll" to="." method="_on_zoom_scroll_value_changed"]
 [connection signal="pressed" from="Control/editor_controls/place_btn" to="." method="_on_place_btn_pressed"]
@@ -2995,4 +3011,3 @@ texture = ExtResource("2_nfgmo")
 [connection signal="pressed" from="Control/tools/tools_exit" to="." method="_on_tools_exit_pressed"]
 [connection signal="text_changed" from="Control/tools/offset_all" to="." method="_on_offset_all_text_changed"]
 [connection signal="text_submitted" from="Control/tools/offset_all" to="." method="_on_offset_all_text_submitted"]
-[connection signal="finished" from="song" to="." method="_on_song_finished"]

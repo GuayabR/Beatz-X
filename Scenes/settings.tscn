@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://bfdk83nri34jl" path="res://Resources/breakingnews.png" id="6_vmqi3"]
 [ext_resource type="Texture2D" uid="uid://btaomc2egvyqx" path="res://Resources/micho.png" id="7_g8dc3"]
 [ext_resource type="Texture2D" uid="uid://djdiurv65qcub" path="res://Resources/Ranith.png" id="8_d6lvq"]
-[ext_resource type="Texture2D" uid="uid://d1riimbry7wh0" path="res://Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png" id="9_mth80"]
 [ext_resource type="Texture2D" uid="uid://81tjbqfe28x0" path="res://Resources/PHONE THE COPAAAA.png" id="10_h7htg"]
 [ext_resource type="Texture2D" uid="uid://cqv04mxm2wlw1" path="res://Resources/CircleNotes/CircleDownHQ.png" id="14_fsbv2"]
 
@@ -99,6 +98,9 @@ _data = {
 &"save": SubResource("Animation_6kysc")
 }
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_84iac"]
+load_path = "res://.godot/imported/DELTARUNE Chapter 1 (Original Game Soundtrack).png-a3bb4c1c848a7b998b75f744c947ac3d.ctex"
+
 [sub_resource type="Theme" id="Theme_qv72t"]
 CheckButton/constants/h_separation = 25
 
@@ -148,7 +150,6 @@ offset_top = -402.0
 offset_right = 960.0
 offset_bottom = 678.0
 grow_horizontal = 2
-mouse_filter = 2
 texture = ExtResource("2_6vr2p")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
@@ -243,7 +244,7 @@ popup/item_3/text = "Ranith"
 popup/item_3/icon = ExtResource("8_d6lvq")
 popup/item_3/id = 3
 popup/item_4/text = "UNDERTALE / DELTARUNE"
-popup/item_4/icon = ExtResource("9_mth80")
+popup/item_4/icon = SubResource("CompressedTexture2D_84iac")
 popup/item_4/id = 4
 popup/item_5/text = "Glorious Grandfather"
 popup/item_5/icon = ExtResource("10_h7htg")

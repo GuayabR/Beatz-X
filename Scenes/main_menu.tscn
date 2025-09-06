@@ -10,7 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="6_16hvj"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="6_opfnp"]
 [ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="7_vr1f0"]
-[ext_resource type="AudioStream" uid="uid://b52abf0gk38e" path="res://Resources/Songs/Aurora.mp3" id="10_pavwk"]
 [ext_resource type="Theme" uid="uid://cc40g6w54ebkq" path="res://Resources/Themes/settings_theme.tres" id="12_m3bi6"]
 [ext_resource type="Texture2D" uid="uid://c8j07g2itxkeh" path="res://Resources/Arrows/dance.png" id="12_t1dhk"]
 [ext_resource type="Texture2D" uid="uid://owb022syma0y" path="res://Resources/Arrows/techno.png" id="13_5egv6"]
@@ -22,10 +21,13 @@
 [ext_resource type="Texture2D" uid="uid://c5xoinmryyr1n" path="res://Resources/Arrows/para.png" id="15_wyh8j"]
 [ext_resource type="Texture2D" uid="uid://djdiurv65qcub" path="res://Resources/Ranith.png" id="16_84iac"]
 [ext_resource type="PackedScene" uid="uid://b5t0lioff7gvs" path="res://Scenes/fps.tscn" id="16_m3bi6"]
-[ext_resource type="Texture2D" uid="uid://d1riimbry7wh0" path="res://Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png" id="17_5n0dv"]
 [ext_resource type="Texture2D" uid="uid://81tjbqfe28x0" path="res://Resources/PHONE THE COPAAAA.png" id="18_ne6ao"]
 [ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="23_6m47u"]
+[ext_resource type="AudioStream" uid="uid://dm7n7jmoi7hpb" path="res://Resources/Songs/Reflections.mp3" id="23_84iac"]
 [ext_resource type="Texture2D" uid="uid://cqv04mxm2wlw1" path="res://Resources/CircleNotes/CircleDownHQ.png" id="24_5n0dv"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_84iac"]
+load_path = "res://.godot/imported/DELTARUNE Chapter 1 (Original Game Soundtrack).png-a3bb4c1c848a7b998b75f744c947ac3d.ctex"
 
 [sub_resource type="Theme" id="Theme_5egv6"]
 CheckButton/constants/h_separation = 25
@@ -2616,7 +2618,7 @@ popup/item_3/text = "Ranith"
 popup/item_3/icon = ExtResource("16_84iac")
 popup/item_3/id = 3
 popup/item_4/text = "UNDERTALE / DELTARUNE"
-popup/item_4/icon = ExtResource("17_5n0dv")
+popup/item_4/icon = SubResource("CompressedTexture2D_84iac")
 popup/item_4/id = 4
 popup/item_5/text = "Glorious Grandfather"
 popup/item_5/icon = ExtResource("18_ne6ao")
@@ -3540,7 +3542,7 @@ mouse_filter = 2
 texture = ExtResource("6_opfnp")
 
 [node name="bg_song" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("10_pavwk")
+stream = ExtResource("23_84iac")
 bus = &"Menu Song"
 
 [node name="song_playing_popup" type="AnimationPlayer" parent="."]

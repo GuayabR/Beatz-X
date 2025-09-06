@@ -36,7 +36,7 @@
   },
   {
 	"song_name": "A CYBER'S WORLD?",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "A CYBER'S WORLD-.mp3"
@@ -85,21 +85,21 @@
   },
   {
 	"song_name": "Amalgam",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Amalgam.mp3"
   },
   {
 	"song_name": "ANOTHER HIM",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "ANOTHER HIM.mp3"
   },
   {
 	"song_name": "Another Medium",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Another Medium.mp3"
@@ -134,7 +134,7 @@
   },
   {
 	"song_name": "ASGORE",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "ASGORE.mp3"
@@ -165,7 +165,7 @@
 	"artist": "Creo",
 	"album": "Aura",
 	"year": 2019,
-	"file_name": "Aura.flac"
+	"file_name": "Aura.mp3"
   },
   {
 	"song_name": "AURA",
@@ -179,7 +179,7 @@
 	"artist": "Unknown artist",
 	"album": "Aura",
 	"year": 1980,
-	"file_name": "Aura.wav"
+	"file_name": "Aura.mp3"
   },
   {
 	"song_name": "Aurora",
@@ -246,14 +246,14 @@
   },
   {
 	"song_name": "Battle Against a True Hero",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Battle Against a True Hero.mp3"
   },
   {
 	"song_name": "Bergentrückung",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Bergentruckung.mp3"
@@ -274,7 +274,7 @@
   },
   {
 	"song_name": "BIG SHOT",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "BIG SHOT.mp3"
@@ -302,7 +302,7 @@
   },
   {
 	"song_name": "Black Knife",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 3+4 (Original Game Soundtrack)",
 	"year": 2025,
 	"file_name": "Black Knife.mp3"
@@ -330,7 +330,7 @@
   },
   {
 	"song_name": "Bonetrousle",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Bonetrousle.mp3"
@@ -470,7 +470,7 @@
   },
   {
 	"song_name": "Chaos King",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "Chaos King.mp3"
@@ -533,7 +533,7 @@
   },
   {
 	"song_name": "CORE",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "CORE.mp3"
@@ -555,13 +555,6 @@
   {
 	"song_name": "Crazy",
 	"artist": "Creo",
-	"album": "Octane EP",
-	"year": 2020,
-	"file_name": "Crazy.flac"
-  },
-  {
-	"song_name": "Crazy",
-	"artist": "Creo",
 	"album": "Octane",
 	"year": 2020,
 	"file_name": "Crazy.mp3"
@@ -571,14 +564,7 @@
 	"artist": "Unknown artist",
 	"album": "Unknown album",
 	"year": 1980,
-	"file_name": "Crazy.wav"
-  },
-  {
-	"song_name": "Aura",
-	"artist": "Creo",
-	"album": "Aura",
-	"year": 2019,
-	"file_name": "Creo - Aura.mp3"
+	"file_name": "Crazy.mp3"
   },
   {
 	"song_name": "CUTE DEPRESSED",
@@ -599,7 +585,7 @@
 	"artist": "Creo",
 	"album": "Dark Tides",
 	"year": 2020,
-	"file_name": "Dark Tides.flac"
+	"file_name": "Dark Tides.mp3"
   },
   {
 	"song_name": "Dark Tides",
@@ -613,11 +599,11 @@
 	"artist": "Unknown artist",
 	"album": "Dark Tides",
 	"year": 1980,
-	"file_name": "Dark Tides.wav"
+	"file_name": "Dark Tides.mp3"
   },
   {
 	"song_name": "Death by Glamour",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Death by Glamour.mp3"
@@ -746,7 +732,7 @@
 	"artist": "Creo",
 	"album": "Epilogue",
 	"year": 2017,
-	"file_name": "Epilogue.flac"
+	"file_name": "Epilogue.mp3"
   },
   {
 	"song_name": "Epilogue",
@@ -760,7 +746,7 @@
 	"artist": "Unknown artist",
 	"album": "Epilogue",
 	"year": 1980,
-	"file_name": "Epilogue.wav"
+	"file_name": "Epilogue.mp3"
   },
   {
 	"song_name": "Eternal",
@@ -809,7 +795,7 @@
 	"artist": "Creo & Creo",
 	"album": "Exosphere",
 	"year": 2020,
-	"file_name": "Exosphere.flac"
+	"file_name": "Exosphere.mp3"
   },
   {
 	"song_name": "Exosphere",
@@ -823,7 +809,7 @@
 	"artist": "Unknown artist",
 	"album": "Exosphere",
 	"year": 1980,
-	"file_name": "Exosphere.wav"
+	"file_name": "Exosphere.mp3"
   },
   {
 	"song_name": "Explorers",
@@ -841,7 +827,7 @@
   },
   {
 	"song_name": "Fallen Down (Reprise)",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Fallen Down (Reprise).mp3"
@@ -876,14 +862,14 @@
   },
   {
 	"song_name": "Ferris Wheel",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "Ferris Wheel.mp3"
   },
   {
 	"song_name": "Field of Hopes and Dreams",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "Field of Hopes and Dreams.mp3"
@@ -911,7 +897,7 @@
   },
   {
 	"song_name": "Finale",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Finale.mp3"
@@ -956,7 +942,7 @@
 	"artist": "Creo",
 	"album": "Flow",
 	"year": 2022,
-	"file_name": "Flow.flac"
+	"file_name": "Flow.mp3"
   },
   {
 	"song_name": "Flow",
@@ -970,7 +956,7 @@
 	"artist": "Unknown artist",
 	"album": "Flow",
 	"year": 1980,
-	"file_name": "Flow.wav"
+	"file_name": "Flow.mp3"
   },
   {
 	"song_name": "For Me (Extended Start)",
@@ -1107,7 +1093,7 @@
   },
   {
 	"song_name": "Good Night",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Good Night.mp3"
@@ -1191,7 +1177,7 @@
   },
   {
 	"song_name": "Heartache",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Heartache.mp3"
@@ -1212,7 +1198,7 @@
   },
   {
 	"song_name": "Here We Are",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Here We Are.mp3"
@@ -1226,21 +1212,21 @@
   },
   {
 	"song_name": "Hip Shop",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "Hip Shop.mp3"
   },
   {
 	"song_name": "His Theme",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "His Theme.mp3"
   },
   {
 	"song_name": "Hopes and Dreams",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Hopes and Dreams.mp3"
@@ -1331,7 +1317,7 @@
   },
   {
 	"song_name": "It’s TV Time!",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 3+4 (Original Game Soundtrack)",
 	"year": 2025,
 	"file_name": "It's TV Time!.mp3"
@@ -1446,7 +1432,7 @@
 	"artist": "Creo",
 	"album": "Lightmare",
 	"year": 2020,
-	"file_name": "Lightmare.flac"
+	"file_name": "Lightmare.mp3"
   },
   {
 	"song_name": "Lightmare",
@@ -1460,7 +1446,7 @@
 	"artist": "Unknown artist",
 	"album": "Lightmare",
 	"year": 1980,
-	"file_name": "Lightmare.wav"
+	"file_name": "Lightmare.mp3"
   },
   {
 	"song_name": "Like That",
@@ -1551,7 +1537,7 @@
 	"artist": "Creo",
 	"album": "Mantarave",
 	"year": 2024,
-	"file_name": "Mantarave.flac"
+	"file_name": "Mantarave.mp3"
   },
   {
 	"song_name": "Mantarave",
@@ -1565,7 +1551,7 @@
 	"artist": "Unknown artist",
 	"album": "Mantarave",
 	"year": 1980,
-	"file_name": "Mantarave.wav"
+	"file_name": "Mantarave.mp3"
   },
   {
 	"song_name": "Marine Tube [Pokémon: Black 2 & White 2]",
@@ -1604,14 +1590,14 @@
   },
   {
 	"song_name": "MEGALOVANIA",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "MEGALOVANIA.mp3"
   },
   {
 	"song_name": "Metal Crusher",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Metal Crusher.mp3"
@@ -1681,7 +1667,7 @@
   },
   {
 	"song_name": "My Castle Town",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "My Castle Town.mp3"
@@ -1719,7 +1705,7 @@
 	"artist": "Creo",
 	"album": "Nautilus",
 	"year": 2018,
-	"file_name": "Nautilus.flac"
+	"file_name": "Nautilus.mp3"
   },
   {
 	"song_name": "Nautilus",
@@ -1733,7 +1719,7 @@
 	"artist": "Unknown artist",
 	"album": "Nautilus",
 	"year": 1980,
-	"file_name": "Nautilus.wav"
+	"file_name": "Nautilus.mp3"
   },
   {
 	"song_name": "NEON BLADE (Guitar Remix)",
@@ -1821,7 +1807,7 @@
   },
   {
 	"song_name": "NOW'S YOUR CHANCE TO BE A",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "NOW'S YOUR CHANCE TO BE A.mp3"
@@ -1866,7 +1852,7 @@
 	"artist": "Metric, Grafix",
 	"album": "Overdrive / Parallel (VIP)",
 	"year": 2021,
-	"file_name": "Overdrive.flac"
+	"file_name": "Overdrive.mp3"
   },
   {
 	"song_name": "Overdrive",
@@ -1880,7 +1866,7 @@
 	"artist": "Unknown artist",
 	"album": "Unknown album",
 	"year": 1980,
-	"file_name": "Overdrive.wav"
+	"file_name": "Overdrive.mp3"
   },
   {
 	"song_name": "Papercut",
@@ -1901,7 +1887,7 @@
 	"artist": "Unknown artist",
 	"album": "Unknown album",
 	"year": 1980,
-	"file_name": "phonethecopatypebeat.WAV"
+	"file_name": "phonethecopatypebeat.mp3"
   },
   {
 	"song_name": "Pixel Pig",
@@ -1940,14 +1926,14 @@
   },
   {
 	"song_name": "Power of \"NEO\"",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Power of -NEO-.mp3"
   },
   {
 	"song_name": "Powers Combined",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "Powers Combined.mp3"
@@ -1989,7 +1975,7 @@
   },
   {
 	"song_name": "Raise Up Your Bat",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 3+4 (Original Game Soundtrack)",
 	"year": 2025,
 	"file_name": "Raise Up Your Bat.mp3"
@@ -2045,7 +2031,7 @@
   },
   {
 	"song_name": "Respite",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Respite.mp3"
@@ -2080,7 +2066,7 @@
   },
   {
 	"song_name": "Ruder Buster",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 3+4 (Original Game Soundtrack)",
 	"year": 2025,
 	"file_name": "Ruder Buster.mp3"
@@ -2101,7 +2087,7 @@
   },
   {
 	"song_name": "SAVE the World",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "SAVE the World.mp3"
@@ -2146,7 +2132,7 @@
 	"artist": "Creo & Creo",
 	"album": "Sky and Soul",
 	"year": 2023,
-	"file_name": "Sky and Soul.flac"
+	"file_name": "Sky and Soul.mp3"
   },
   {
 	"song_name": "Sky and Soul",
@@ -2160,7 +2146,7 @@
 	"artist": "Unknown artist",
 	"album": "Sky and Soul",
 	"year": 1980,
-	"file_name": "Sky and Soul.wav"
+	"file_name": "Sky and Soul.mp3"
   },
   {
 	"song_name": "SLAY!",
@@ -2276,21 +2262,21 @@
   },
   {
 	"song_name": "Spamton",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "Spamton.mp3"
   },
   {
 	"song_name": "Spear of Justice",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Spear of Justice.mp3"
   },
   {
 	"song_name": "Spider Dance",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Spider Dance.mp3"
@@ -2444,7 +2430,7 @@
   },
   {
 	"song_name": "The Legend",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "The Legend.mp3"
@@ -2486,14 +2472,14 @@
   },
   {
 	"song_name": "The Third Sanctuary",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 3+4 (Original Game Soundtrack)",
 	"year": 2025,
 	"file_name": "The Third Sanctuary.mp3"
   },
   {
 	"song_name": "THE WORLD REVOLVING",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 1 (Original Game Soundtrack)",
 	"year": 2018,
 	"file_name": "THE WORLD REVOLVING.mp3"
@@ -2633,14 +2619,14 @@
   },
   {
 	"song_name": "Undertale",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "UNDERTALE Soundtrack",
 	"year": 2015,
 	"file_name": "Undertale.mp3"
   },
   {
 	"song_name": "Until Next Time",
-	"artist": "toby fox",
+	"artist": "Toby Fox",
 	"album": "DELTARUNE Chapter 2 (Original Game Soundtrack)",
 	"year": 2021,
 	"file_name": "Until Next Time.mp3"
@@ -2713,7 +2699,7 @@
 	"artist": "Creo",
 	"album": "We Can Dream",
 	"year": 2021,
-	"file_name": "We Can Dream.flac"
+	"file_name": "We Can Dream.mp3"
   },
   {
 	"song_name": "We Can Dream",
@@ -2727,7 +2713,7 @@
 	"artist": "Unknown artist",
 	"album": "We Can Dream",
 	"year": 1980,
-	"file_name": "We Can Dream.wav"
+	"file_name": "We Can Dream.mp3"
   },
   {
 	"song_name": "We Won't Cooperate",

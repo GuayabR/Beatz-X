@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dtsiwjklbl1kv"
+path="res://.godot/imported/Lunar Abyss.mp3-37ec0e6f3d3433d23a861b7cd8d953f0.mp3str"
+
+[deps]
+
+source_file="res://Resources/Songs/Lunar Abyss.mp3"
+dest_files=["res://.godot/imported/Lunar Abyss.mp3-37ec0e6f3d3433d23a861b7cd8d953f0.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

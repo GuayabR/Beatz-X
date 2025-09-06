@@ -36,6 +36,18 @@ func load_song_info():
 	song_info = result
 
 func _ready() -> void:
+	var dir = DirAccess.open("res://Resources/Songs")
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if file_name.ends_with(".mp3"):
+				# Force Godot to include it in export
+				var dummy = load("res://Resources/Songs/%s" % file_name) as AudioStreamMP3
+			file_name = dir.get_next()
+		dir.list_dir_end()
+
+
 	load_song_info()
 	_load_songs()
 
