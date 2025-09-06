@@ -1,6 +1,7 @@
 extends Control
 
 var selected_stream: AudioStream
+var selected_stream_path: String
 
 var selected_title: String
 var selected_artist: String
@@ -19,6 +20,7 @@ var fade_in: bool = false
 var fade_out: bool = false
 
 var selected_difficulty: String
+var selected_diff_texture: String
 
 var selected_chart_name: String
 var selected_charter: String
@@ -87,6 +89,7 @@ func _ready() -> void:
 		$AnimationPlayer.play("load_song", -1, 250.0)
 	else:
 		$AnimationPlayer.play("load_song")
+	
 	print($Title.pivot_offset, $Title.size)
 	$Title.text = str(selected_title)
 	$Artist.text = str(selected_artist)
@@ -108,11 +111,34 @@ func _ready() -> void:
 	var extracted_colors = extract_dominant_colors(selected_cover)
 	$vis_anim/Visualizer.colors = extracted_colors
 	
-	var diff_texture := "res://Resources/Misc/" + selected_difficulty + "_label.png"
+	var diff_texture := "" 
+	if not selected_diff_texture: 
+		diff_texture = "res://Resources/Misc/" + selected_difficulty + "_label.png"
+		$cover_anim/circlemask/difficulty_label.texture = load(diff_texture)
+	else: 
+		print("diff tex ", selected_diff_texture)
+		diff_texture = selected_diff_texture
+		if FileAccess.file_exists(diff_texture):
+			var img := Image.new()
+			var err := img.load(diff_texture)
+			if err == OK:
+				var tex := ImageTexture.create_from_image(img)
+				$cover_anim/circlemask/difficulty_label.texture = tex
+			else:
+				print("Failed to load diff texture at: ", diff_texture)
+		else:
+			print("Diff texture file not found: ", diff_texture)
+
 	
-	$cover_anim/circlemask/difficulty_label.texture = load(diff_texture)
+	var audio_ext = selected_stream_path.get_extension().to_lower()
 	
-	$song.stream = selected_stream
+	if audio_ext == "mp3":
+		$song.stream = AudioStreamMP3.load_from_file(selected_stream_path)
+	elif audio_ext == "ogg":
+		$song.stream = AudioStreamOggVorbis.load_from_file(selected_stream_path)
+	elif audio_ext == "wav":
+		$song.stream = AudioStreamWAV.load_from_file(selected_stream_path)
+	
 	$song.volume_db = -80.0 if fade_in else 0.0
 	$song.play(preview_start)
 	if fade_in:
@@ -120,8 +146,8 @@ func _ready() -> void:
 		tween.parallel().tween_property($song, "volume_db", 0.0, 0.75).set_trans(Tween.TRANS_CUBIC)
 		tween.parallel().tween_property($vis_anim/Visualizer/Song_left, "volume_db", 0.0, 0.75).set_trans(Tween.TRANS_CUBIC)
 		tween.parallel().tween_property($vis_anim/Visualizer/Song_right, "volume_db", 0.0, 0.75).set_trans(Tween.TRANS_CUBIC)
-	$vis_anim/Visualizer/Song_left.stream = selected_stream
-	$vis_anim/Visualizer/Song_right.stream = selected_stream
+	$vis_anim/Visualizer/Song_left.stream = $song.stream
+	$vis_anim/Visualizer/Song_right.stream = $song.stream
 	$vis_anim/Visualizer/Song_left.play(preview_start)
 	$vis_anim/Visualizer/Song_right.play(preview_start)
 	
@@ -270,7 +296,7 @@ func _on_play_button_up() -> void:
 	
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
-	game.set("song", selected_stream)
+	game.set("song", $song.stream)
 	game.set("song_title", selected_title)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
@@ -324,7 +350,8 @@ func _on_go_to_stgs_pressed() -> void:
 func _on_edit_pressed() -> void:
 	var edit = Globals.EDITOR.instantiate()
 	
-	edit.set("selected_stream", selected_stream)
+	edit.set("selected_stream", $song.stream)
+	edit.set("selected_stream_path", selected_stream_path)
 	
 	edit.new_beatzmap = false
 	
@@ -341,6 +368,7 @@ func _on_edit_pressed() -> void:
 	edit.set("start_wait", start_wait)
 	
 	edit.set("selected_difficulty", selected_difficulty)
+	edit.set("selected_diff_texture", $cover_anim/circlemask/difficulty_label.texture)
 	edit.set("notes", notes)
 	edit.set("selected_chart_name", selected_chart_name)
 	

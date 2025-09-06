@@ -12,6 +12,7 @@ var cover
 var chart_name: String
 
 var chart_path
+var song_path
 
 var screen: String = "game" # game / paused / end_screen / settings
 
@@ -154,12 +155,12 @@ func _ready():
 	
 	print(Globals.settings.game.note_speed)
 	match Globals.settings.game.note_speed: # Match the speed to a specific Y spawn point so all speeds are synced to the song
-		20.0: noteSpawnY = -2100
-		15.0: noteSpawnY = -1180
+		20.0: noteSpawnY = -700
+		15.0: noteSpawnY = -1320
 		13.0: noteSpawnY = -1000
 		10.0: noteSpawnY = -420
 		8.0: noteSpawnY = -170
-		5.0: noteSpawnY = 370
+		5.0: noteSpawnY = 310
 		_: noteSpawnY = 0
 	
 	print(noteSpawnY)
@@ -225,6 +226,18 @@ func _ready():
 			$song_cover.visible = false
 	await get_tree().create_timer(1.2).timeout
 	
+	var earliest_negative = null
+
+	for n in customNotes:
+		if n.timestamp < 0:
+			print(n)
+			if earliest_negative == null or n.timestamp < earliest_negative:
+				earliest_negative = n.timestamp
+
+	if earliest_negative != null:
+		start_wait = abs(earliest_negative)
+		print(start_wait)
+	
 	if customNotes.size() > 0 and _has_valid_notes(customNotes):
 		print("Using notes in chart")
 		_process_custom_notes(customNotes)
@@ -275,19 +288,6 @@ func _ready():
 	
 	$Visualizer/Song_left.pitch_scale = Engine.time_scale
 	$Visualizer/Song_right.pitch_scale = Engine.time_scale
-	
-	var start_wait := 0
-	var earliest_negative = null
-
-	for n in customNotes:
-		if n.timestamp < 0:
-			if earliest_negative == null or n.timestamp < earliest_negative:
-				earliest_negative = n.timestamp
-
-	if earliest_negative != null:
-		start_wait = abs(earliest_negative)
-		print(start_wait)
-
 	
 	if start_wait > 0:
 		print("Waiting ", (start_wait + 500) / 1000.0)
@@ -418,27 +418,25 @@ func _process(delta):
 		var bass_energy: float = spectrum.get_magnitude_for_frequency_range(20.0, 250.0).length()
 		var bass_loudness: float = clampf((111 + linear_to_db(bass_energy)) / 111.0, 0.0, 1.0)
 
-		var treble_energy: float = spectrum.get_magnitude_for_frequency_range(5000.0, 11050.0).length()
-		var treble_loudness: float = clampf((111 + linear_to_db(treble_energy)) / 111.0, 0.0, 1.0)
+		#var treble_energy: float = spectrum.get_magnitude_for_frequency_range(5000.0, 11050.0).length()
+		#var treble_loudness: float = clampf((111 + linear_to_db(treble_energy)) / 111.0, 0.0, 1.0)
 
 		# Exponentiate for punch
-		var exp_treble := pow(treble_loudness, 1.5)
+		#var exp_treble := pow(treble_loudness, 1.5)
 		var exp_overall := pow(overall_loudness, 3.0)
 		var exp_bass := pow(bass_loudness, 2.5)
 		var exp_bg := clampf(exp_bass * 0.8 + exp_overall * 0.1, 0.0, 1.0)
 		
 		# Base and max scale ranges
 		var base_scale : float = 1.0
-		var max_title : float = 1.5
-		var max_cover : float = 1.4
+		#var max_title : float = 1.5
+		#var max_cover : float = 1.4
 		var max_bg : float = 1.3
-		var max_cam : float = 1.03
+		#var max_cam : float = 1.03
 		
 		# Interpolated targets
-		var title_target = lerp(base_scale, max_title, exp_treble)
-		var cover_target = lerp(base_scale, max_cover, exp_overall)
 		var bg_target = lerp(base_scale, max_bg, exp_bg)
-		var cam_target = lerp(base_scale, max_cam, exp_overall)
+		#var cam_target = lerp(base_scale, max_cam, exp_overall)
 		
 		# Smooth transitions
 		#$Title.scale = lerp($Title.scale, Vector2.ONE * title_target, 13.0 * delta)
@@ -770,14 +768,11 @@ func _on_going_back() -> void:
 		print("pause back")
 		$pause.play("back")
 		# Clear existing notes
-		var delay := 0.001
+		#var delay := 0.001
 		var ns := %notes.get_children()
 		
-		for i in range(ns.size() - 1, -1, -1):
-			var n = ns[i]
-			n.faded = true
-			call_deferred("stagger", n, delay)
-			delay += 0.01
+		for n in ns:
+			n.reset_game()
 	elif screen == "end":
 		print("end back")
 		print("")
@@ -810,12 +805,10 @@ func _on_reset_song_btn_up(fast: bool = false) -> void:
 	
 	if Globals.settings.misc_settings.note_anims == true:
 		# Clear existing notes
-		var delay := 0.00001
+		#var delay := 0.00001
 		
 		for n in %notes.get_children():
-			n.faded = true
-			call_deferred("stagger", n, delay) # await stops the code from running, so call deferred so it doesnt stop it
-			delay += 0.02
+			n.reset_game()
 	else:
 		for n in %notes.get_children():
 			n.faded = true
@@ -944,6 +937,7 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("selected_chart_name", chart_name)
 	
 	edit.set("selected_beatz_path", chart_path)
+	edit.set("song_path", song_path)
 	
 	edit.set("selected_bpm", BPM)
 	edit.set("selected_charter", charter)

@@ -10,15 +10,17 @@ config_version=5
 
 [application]
 
-config/name="Beatz X!"
+config/name="Beatz! X."
+config/name_localized={
+"ja_JP": "ビーツ！ X。"
+}
 config/description="Beatz! X.
-SENSE. YOUR RHYTHM.
+FEEL. YOUR RHYTHM.
 By GuayabR."
-config/version="1.3.6"
+config/version="1.4.2"
 config/tags=PackedStringArray("beatz", "demo", "game", "rhythm")
 run/main_scene="uid://4puupvbpclaw"
-config/features=PackedStringArray("4.4", "C#", "Forward Plus")
-boot_splash/fullsize=false
+config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/image="uid://byed1ljwunwsj"
 config/icon="uid://bjucqx1y5qt2x"
 
@@ -30,11 +32,22 @@ Globals="*res://Scenes/globals.gd"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
+mouse_cursor/stretch/aspect="keep"
+mouse_cursor/stretch/mode="canvas_items"
+mouse_cursor/fullsize=true
+mouse_cursor/name_localized={
+"ja_JP": "ビーツ！ X"
+}
+mouse_cursor/version="Internal 1.4.2 Public 1.0.3"
 
 [dotnet]
 
 project/assembly_name="Beatz X!"
+
+[gui]
+
+theme/custom_font="uid://6jhh1vyac4f4"
 
 [input]
 
@@ -155,8 +168,8 @@ debug_reload_scene={
 
 [rendering]
 
-renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_2d=1
 
 [shader_globals]
 

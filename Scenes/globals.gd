@@ -3,7 +3,7 @@ extends Node
 # This mostly stores settings, the settings json file is used for saving the settings, 
 # When the game loads, it instantly refers back to the json file to update the settings dictionary below if any changes were made 
 
-const VERSION: String = "1.4.2"
+const VERSION: String = "1.5.2"
 const NAME: String = "Beatz! X"
 const SLOGAN: String = "FEEL. YOUR RHYTHM."
 var port: String = "Desktop Port" if OS.get_name() == "Windows" else "%s Port" % OS.get_name()
@@ -12,9 +12,9 @@ var SONG_ID_ARR_PATH : String = "user://Custom/.songids" if OS.get_name() == "Wi
 
 const SETTINGS_PATH := "user://settings.json"
 
-const MENU := preload("res://Scenes/main_menu.tscn")
-const MAIN := preload("res://Scenes/main.tscn")
-const EDITOR := preload("res://Scenes/editor.tscn")
+const MENU = preload("res://Scenes/main_menu.tscn")
+const MAIN = preload("res://Scenes/main.tscn")
+const EDITOR = preload("res://Scenes/editor.tscn")
 
 var settings: Dictionary = {
 	"game": {
@@ -30,6 +30,7 @@ var settings: Dictionary = {
 		"note_style": "dance", # dance / techno / para 
 		"note_anims": true,
 		"show_fps": true,
+		"accurate_fps": false,
 		"note_offset": 0.0,
 		"fps": -1,
 		"resolution": [1920, 1080],
@@ -257,7 +258,6 @@ func import_beatz_file(content: String) -> Dictionary:
 			decoded_difficulty = section.replace("Difficulty:", "").strip_edges()
 		elif section.begins_with("StartWait:"):
 			decoded_start_wait = float(section.replace("StartWait:", "").strip_edges())
-			push_warning("decoded start wait ", decoded_start_wait)
 		elif section.begins_with("PrevStart:"):
 			decoded_prev_start = float(section.replace("PrevStart:", "").strip_edges())
 		elif section.begins_with("PrevEnd:"):

@@ -1,6 +1,6 @@
 extends Node2D
 
-var timestamp: float
+@export var timestamp: float
 
 var type: String
 var style: String = Globals.settings.misc_settings.note_style
@@ -11,6 +11,9 @@ var rec := false
 
 var edit := false
 var editor_deleted := false
+
+signal hovered(note)
+signal exited(note)
 
 func _ready() -> void:
 	if rec:
@@ -25,6 +28,8 @@ func _ready() -> void:
 		$init.stop()
 		$noteImg.scale = Vector2.ONE
 		$noteImg.position = Vector2.ZERO
+		$noteImg.self_modulate = Color.WHITE
+		return
 	
 	if Globals.settings.misc_settings.note_anims == false:
 		$init.stop()
@@ -67,10 +72,14 @@ func hit():
 	var col: Color
 	if Globals.settings.misc_settings.note_style == "dance":
 		match type:
-			"Up": col = Color.GREEN
-			"Down": col = Color.YELLOW
+			"Upleft": col = Color.MAGENTA
+			"Downleft": col = Color.BLUE
 			"Left": col = Color.RED
+			"Down": col = Color.YELLOW
+			"Up": col = Color.GREEN
 			"Right": col = Color.CYAN
+			"Downright": col = Color.PURPLE
+			"Upright": col = Color.RED
 	elif Globals.settings.misc_settings.note_style == "techno":
 		match type:
 			"Up": col = Color(0.0, 0.9, 1.0) # Cobalt blue to sky blue kinda color

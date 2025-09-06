@@ -39,38 +39,41 @@ func _ready() -> void:
 	load_song_info()
 	_load_songs()
 
-func _process(delta):
+func _process(_delta):
 	if add_queue.is_empty():
 		return
 	
 	var item = add_queue[processing_index]
 	processing_index += 1
 	
-	if item["type"] == "separator":
-		var sep_idx = $song_list.add_item("------------ %s ------------" % item["difficulty"].capitalize())
-		$song_list.set_item_disabled(sep_idx, true)
-		$song_list.set_item_selectable(sep_idx, false)
-		$song_list.set_item_custom_fg_color(sep_idx, Color.WHITE)
-	
-	elif item["type"] == "entry":
+	if item["type"] == "entry":
 		var entry = item["entry"]
-		var idx = $song_list.add_item(entry["text"], entry["cover"])
-		$song_list.set_item_metadata(idx, entry["metadata"])
+		var idx = $center/song_list.add_item(entry["text"], entry["cover"])
+		$center/song_list.set_item_metadata(idx, entry["metadata"])
 		#print("Added item ", idx)
 	
 	if processing_index >= add_queue.size():
-		for i in range($song_list.get_item_count()):
+		for i in range($center/song_list.get_item_count()):
 			all_items.append({
-				"text": $song_list.get_item_text(i),
-				"icon": $song_list.get_item_icon(i),
-				"metadata": $song_list.get_item_metadata(i),
-				"disabled": $song_list.is_item_disabled(i),
+				"text": $center/song_list.get_item_text(i),
+				"icon": $center/song_list.get_item_icon(i),
+				"metadata": $center/song_list.get_item_metadata(i),
+				"disabled": $center/song_list.is_item_disabled(i),
 			})
 		print("Done")
 		# Once done, stop processing
 		set_process(false)
 
-func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
+func _input(_event: InputEvent) -> void:
+	if Input.is_action_just_pressed("fast_restart"):
+		_on_reload_pressed()
+	
+	if Input.is_action_just_pressed("ui_up"):
+		_on_scrl_up_pressed()
+	elif Input.is_action_just_pressed("ui_down"):
+		_on_scrl_down_pressed()
+
+func _parse_beatz_file(beatz_path: String, grouped: Dictionary):
 	var beatz_file = FileAccess.open(beatz_path, FileAccess.READ)
 	if not beatz_file:
 		return
@@ -95,7 +98,7 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 
 	var song_index = -1
 	for i in range(song_info.size()):
-		if song_info[i]["file_name"].get_basename() == _song_name:
+		if song_info[i]["file_name"] == _song_name:
 			song_index = i
 			break
 
@@ -110,7 +113,7 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 		var cover_texture: CompressedTexture2D
 
 		if FileAccess.file_exists(mp3_path):
-			var new_stream = load(mp3_path) as AudioStreamMP3
+			#var new_stream = load(mp3_path) as AudioStreamMP3
 
 			var sanitized_album_name = album_name.replace("/", "_").replace("\\", "_").replace(":", "_")
 			var cover_path = "res://Resources/Covers/" + sanitized_album_name + ".png"
@@ -124,39 +127,15 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 			var show_chart_name = _file_chart_name.to_lower() != song_title.to_lower()
 			var show_album_name = album_name.to_lower() != song_title.to_lower()
 
-			if "deltarune chapter 1" in album_name.to_lower():
-				text = "  %s%s%s, by %s | %d  " % [
-					_file_difficulty.to_pascal_case(),
-					" | Chapter 1" if show_chart_name else "",
-					" | %s" % song_title,
-					artist_name,
-					year
-				]
-			elif "deltarune chapter 2" in album_name.to_lower():
-				text = "  %s%s%s, by %s | %d  " % [
-					_file_difficulty.to_pascal_case(),
-					" | Chapter 2" if show_chart_name else "",
-					" | %s" % song_title,
-					artist_name,
-					year
-				]
-			elif "deltarune chapter 3+4" in album_name.to_lower():
-				text = "  %s%s%s, by %s | %d  " % [
-					_file_difficulty.to_pascal_case(),
-					" | Chapters 3+4" if show_chart_name else "",
-					" | %s" % song_title,
-					artist_name,
-					year
-				]
-			elif not show_album_name and not show_chart_name:
-				text = "  %s | %s, by %s | %d  " % [
+			if not show_album_name and not show_chart_name:
+				text = "%s | %s, by %s | %d  " % [
 					_file_difficulty.to_pascal_case(),
 					song_title,
 					artist_name,
 					year
 				]
 			elif not show_album_name and show_chart_name:
-				text = "  %s | '%s' | %s, by %s | %d  " % [
+				text = "%s | '%s' | %s, by %s | %d  " % [
 					_file_difficulty.to_pascal_case(),
 					_file_chart_name,
 					song_title,
@@ -164,7 +143,7 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 					year
 				]
 			elif show_album_name and not show_chart_name:
-				text = "  %s | %s | %s, by %s | %d  " % [
+				text = "%s | %s | %s, by %s | %d  " % [
 					_file_difficulty.to_pascal_case(),
 					album_name,
 					song_title,
@@ -172,7 +151,7 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 					year
 				]
 			else:
-				text = "  %s | '%s' | %s | %s, by %s | %d  " % [
+				text = "%s | '%s' | %s | %s, by %s | %d  " % [
 					_file_difficulty.to_pascal_case(),
 					_file_chart_name,
 					album_name,
@@ -195,13 +174,14 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 					"speed": _file_note_speed,
 					"start_wait": _file_start_wait,
 					"cover_texture": cover_texture,
-					"stream": new_stream,
+					"diff_texture_path": "res://Resources/misc/" + _file_difficulty + "_label.png",
+					"stream": mp3_path,
 					"notes": _decoded_notes,
 					"note_count": _decoded_notes.size()
 				}
 			}
 
-			if not grouped_songs.has(_file_difficulty):
+			if not grouped.has(_file_difficulty):
 				grouped_songs[_file_difficulty] = []
 			grouped_songs[_file_difficulty].append(entry)
 		else:
@@ -217,14 +197,14 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 		var cover_texture: CompressedTexture2D
 		var new_stream
 		if FileAccess.file_exists(mp3_path):
-			new_stream = load(mp3_path) as AudioStreamMP3
+			new_stream = mp3_path #load(mp3_path) as AudioStreamMP3
 		else:
-			new_stream = null
+			#new_stream = null
 			print("MP3 file not found for: %s" % _song_name)
 
 		cover_texture = load("res://Resources/Covers/noCover.png")
 
-		var text = "  %s | (Not in song_info.json) %s, by %s | %d  " % [
+		var text = "%s | (Not in song_info.json) %s, by %s | %d  " % [
 			_file_difficulty.to_pascal_case(), _song_name, artist_name, year
 		]
 
@@ -248,17 +228,16 @@ func _parse_beatz_file(beatz_path: String, grouped_songs: Dictionary):
 			}
 		}
 
-		if not grouped_songs.has(_file_difficulty):
+		if not grouped.has(_file_difficulty):
 			grouped_songs[_file_difficulty] = []
 		grouped_songs[_file_difficulty].append(entry)
-
 
 var scan_threads := []
 var scan_results := []
 var scan_mutex := Mutex.new()
 
 func _load_songs():
-	$song_list.clear()
+	$center/song_list.clear()
 	add_queue.clear()
 	processing_index = 0
 	grouped_songs = {}  # We'll still fill this but ignore difficulty in the end
@@ -313,7 +292,7 @@ func _load_songs():
 			entry_name = base_custom_dir.get_next()
 		base_custom_dir.list_dir_end()
 	else:
-		printerr("Failed to open custom songs directory.")
+		print_debug("Failed to open custom songs directory.")
 
 	# Wait for threads
 	for thread in scan_threads:
@@ -353,7 +332,7 @@ func _thread_scan_folder(folder_path: String) -> void:
 
 # THREAD-SAFE: Reads files and returns a data dictionary with pure data (no textures or streams)
 func _scan_custom_folder_data(folder: String) -> Dictionary:
-	var data = {}
+	var _data = {}
 
 	var info_path := folder + "/info.json"
 	if not FileAccess.file_exists(info_path):
@@ -405,41 +384,51 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	var dir := DirAccess.open(folder)
 	if dir == null:
 		return {}
-
+	
 	var audio_path := ""
 	var image_path := ""
 	var beatz_path := ""
-
+	
+	var diff_texture_path := ""
+	
+	var difficulty
+	var nspeed
+	var bpm
+	var charter
+	var chart_name
+	
 	dir.list_dir_begin()
 	var file := dir.get_next()
 	while file != "":
 		if file.ends_with(".beatz"):
 			beatz_path = folder + "/" + file
+			
+			var beatz_file = FileAccess.open(beatz_path, FileAccess.READ)
+			if not beatz_file:
+				print("Couldn't read beatz file in: %s" % folder)
+				return {}
+
+			var beatz_content := beatz_file.get_as_text()
+			beatz_file.close()
+			
+			var beatz = Globals.import_beatz_file(beatz_content)
+			
+			difficulty = beatz["difficulty"]
+			nspeed = beatz["note_speed"]
+			bpm = beatz["bpm"]
+			charter = beatz["charter"]
+			chart_name = beatz["chart_name"]
 		elif file.ends_with(".mp3") or file.ends_with(".ogg") or file.ends_with(".wav"):
 			audio_path = folder + "/" + file
 		elif file.ends_with(".png") or file.ends_with(".jpg") or file.ends_with(".jpeg"):
-			image_path = folder + "/" + file
+			if file.get_basename() != difficulty: image_path = folder + "/" + file
+			if file.get_basename() == difficulty: diff_texture_path = folder + "/" + file
 		file = dir.get_next()
 	dir.list_dir_end()
-
+	
 	if beatz_path == "" or audio_path == "":
 		print("Skipping folder: %s (missing required files)" % folder)
 		return {}
-
-	var beatz_file = FileAccess.open(beatz_path, FileAccess.READ)
-	if not beatz_file:
-		print("Couldn't read beatz file in: %s" % folder)
-		return {}
-
-	var beatz_content := beatz_file.get_as_text()
-	beatz_file.close()
-	
-	var beatz = Globals.import_beatz_file(beatz_content)
-	
-	var difficulty = beatz["difficulty"]
-	var nspeed = beatz["note_speed"]
-	var bpm = beatz["bpm"]
-	var charter = beatz["charter"]
 
 	return {
 		"id": id,
@@ -449,19 +438,21 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 		"year": year,
 		"bpm": bpm,
 		"charter": charter,
+		"chart_name": chart_name,
 		"speed": nspeed,
 		"audio_path": audio_path,
 		"image_path": image_path,
 		"beatz_path": beatz_path,
-		"difficulty": difficulty
+		"difficulty": difficulty,
+		"diff_texture_path": diff_texture_path
 	}
 
 # MUST BE CALLED ON MAIN THREAD:
 # Creates textures, loads audio stream, adds entry to grouped_songs
-func _finalize_custom_folder_entry(data: Dictionary, grouped_songs: Dictionary) -> void:
+func _finalize_custom_folder_entry(data: Dictionary, grouped: Dictionary) -> void:
 	if data.is_empty():
 		return
-		
+	
 	print("Doing")
 	print("dsa")
 	
@@ -469,6 +460,7 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped_songs: Dictionary) 
 	var image_path = data["image_path"]
 	var beatz_path = data["beatz_path"]
 	var difficulty = data["difficulty"]
+	var diff_texture = data["diff_texture_path"]
 	var song_title = data["song_title"]
 	var artist_name = data["artist_name"]
 	var album_name = data["album_name"]
@@ -476,22 +468,23 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped_songs: Dictionary) 
 	var id = data["id"]
 	var bpm = data["bpm"]
 	var charter = data["charter"]
+	var chart_name = data["chart_name"]
 	var speed = data["speed"]
 	
 	print("scanning ", beatz_path)
 	
 	var audio_ext = audio_path.get_extension().to_lower()
 	
-	var stream
-	if audio_ext == "mp3":
-		stream = AudioStreamMP3.load_from_file(audio_path)
-	elif audio_ext == "ogg":
-		stream = AudioStreamOggVorbis.load_from_file(audio_path)
-	elif audio_ext == "wav":
-		stream = AudioStreamWAV.load_from_file(audio_path)
-	else:
+	#var stream
+	#if audio_ext == "mp3":
+		#stream = AudioStreamMP3.load_from_file(audio_path)
+	#elif audio_ext == "ogg":
+		#stream = AudioStreamOggVorbis.load_from_file(audio_path)
+	#elif audio_ext == "wav":
+		#stream = AudioStreamWAV.load_from_file(audio_path)
+	
+	if audio_ext not in  ["mp3", "ogg", "wav"]:
 		print("Unsupported audio format in: %s" % audio_path)
-		stream = null
 	
 	var cover_texture
 	
@@ -507,12 +500,14 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped_songs: Dictionary) 
 		print("No image found for %s, using default cover." % album_name)
 		cover_texture = load("res://Resources/Covers/noCover.png")
 
-	var text = "  %s | %s | %s, by %s | %d | Custom" % [
-		difficulty.to_pascal_case(),
+	var text = "%s | %s, by %s | %d\n\nChart: %s | \"%s\" by %s | Custom" % [
 		album_name,
 		song_title,
 		artist_name,
-		year
+		year,
+		difficulty.to_pascal_case(),
+		chart_name,
+		charter
 	]
 
 	var entry := {
@@ -525,41 +520,41 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped_songs: Dictionary) 
 			"album": album_name,
 			"artist": artist_name,
 			"year": year,
+			"diff_texture_path": diff_texture,
 			"bpm": bpm,
 			"charter": charter,
 			"speed": speed,
 			"cover_texture": cover_texture,
-			"stream": stream
+			"stream": audio_path
 		}
 	}
 
-	if not grouped_songs.has(difficulty):
+	if not grouped.has(difficulty):
 		grouped_songs[difficulty] = []
 	grouped_songs[difficulty].append(entry)
 
 func _on_song_selected(index: int) -> void:
-	if !$song_list.is_item_selectable(index) or $song_list.is_item_disabled(index):
+	if !$center/song_list.is_item_selectable(index) or $center/song_list.is_item_disabled(index):
 		return
 	
 	var lose_focus = true
 	
 	if edit_mode:
-		var item_text = $song_list.get_item_text(index)
+		var item_text = $center/song_list.get_item_text(index)
 		pending_delete_index = index
 		lose_focus = false
 		
-		
 		if item_text.ends_with("| Custom"):
-			$del_custom_panel/del_yes.show()
-			$del_custom_panel/title_del_custom_s.text = "Are you sure you want to delete\nthis custom song? (This cannot be undone.)"
+			$center/del_custom_panel/del_yes.show()
+			$center/del_custom_panel/title_del_custom_s.text = "Are you sure you want to delete\nthis custom song? (This cannot be undone.)"
 		else:
-			$del_custom_panel/del_yes.hide()
-			$del_custom_panel/title_del_custom_s.text = "This is not a custom song."
+			$center/del_custom_panel/del_yes.hide()
+			$center/del_custom_panel/title_del_custom_s.text = "This is not a custom song."
 			
 		$del_custom_anim.play("popup_panel")
 		return
 	
-	if lose_focus: $song_list.release_focus()
+	if lose_focus: $center/song_list.release_focus()
 	
 	if Globals.settings.misc_settings.reduce_motion:
 		$AnimationPlayer.play("go_to_selected", -1, 100.0)
@@ -570,29 +565,29 @@ func _on_song_selected(index: int) -> void:
 	
 	$click_sfx.play()
 	
-	var metadata = $song_list.get_item_metadata(index)
+	var metadata = $center/song_list.get_item_metadata(index)
 	
-	print(metadata)
+	#print(metadata)
 	
 	var beatz_path = metadata["beatz_path"]
 	var song_name = metadata["song_name"]
 	var album = metadata["album"]
 	var cover_texture = metadata["cover_texture"]
+	var diff_texture_path = metadata["diff_texture_path"]
 	var artist = metadata["artist"]
 	var year = metadata["year"]
 	var bpm = metadata["bpm"]
 	var charter = metadata["charter"]
 	var selected_stream = metadata["stream"]
-	var speed = metadata["speed"]
-	
+	#var speed = metadata["speed"]
 	# Ignore separators (they have no metadata or missing stream)
 	if metadata == null or !metadata.has("stream"):
 		print("Selected item is a separator or missing data")
 		return
 	
-	$cover_sel.texture = $song_list.get_item_icon(index)
+	$center/cover_sel.texture = $center/song_list.get_item_icon(index)
 	
-	$song_list.mouse_filter = MOUSE_FILTER_IGNORE
+	$center/song_list.mouse_filter = MOUSE_FILTER_IGNORE
 	
 	if metadata:
 		await get_tree().create_timer(1.4).timeout
@@ -604,7 +599,7 @@ func _on_song_selected(index: int) -> void:
 		var beatz_data := Globals.import_beatz_file(content)
 		
 		var main = load("res://Scenes/selected_song.tscn").instantiate() # Load selected song scene and set all of the song variables
-		main.set("selected_stream", selected_stream)
+		main.set("selected_stream_path", selected_stream)
 		main.set("selected_title", song_name)
 		main.set("selected_album", album)
 		
@@ -617,6 +612,7 @@ func _on_song_selected(index: int) -> void:
 		main.set("preview_end", beatz_data["preview_end"])
 		
 		main.set("selected_difficulty", beatz_data["difficulty"])
+		main.set("selected_diff_texture", diff_texture_path)
 		main.set("notes", beatz_data["notes"])
 		main.set("selected_chart_name", beatz_data["chart_name"])
 		
@@ -642,7 +638,7 @@ func _on_song_selected(index: int) -> void:
 		get_tree().current_scene = main
 
 func _on_back_button_up() -> void:
-	$back.release_focus()
+	$top_left/back.release_focus()
 	if Globals.settings.misc_settings.reduce_motion:
 		$AnimationPlayer.play("back", -1, 250.0)
 	else:
@@ -660,147 +656,78 @@ func _on_search_bar_text_changed(new_text: String):
 	filter_items(new_text)
 
 func filter_items(query: String):
-	$song_list.clear()
+	$center/song_list.clear()
 	var first_match_highlighted := false
 
 	for item in all_items:
 		if query == "" or query.to_lower() in item["text"].to_lower():
-			var idx = $song_list.add_item(item["text"], item["icon"])
-			$song_list.set_item_metadata(idx, item["metadata"])
+			var idx = $center/song_list.add_item(item["text"], item["icon"])
+			$center/song_list.set_item_metadata(idx, item["metadata"])
 			if item["disabled"]:
-				$song_list.set_item_disabled(idx, true)
-				$song_list.set_item_selectable(idx, false)
+				$center/song_list.set_item_disabled(idx, true)
+				$center/song_list.set_item_selectable(idx, false)
 			elif not first_match_highlighted:
 				# highlight the first non-disabled match
-				$song_list.select(idx)
-				$song_list.ensure_current_is_visible()
+				$center/song_list.select(idx)
+				$center/song_list.ensure_current_is_visible()
 				first_match_highlighted = true
 
 
 func search_item(query: String):
 	var match_found := false
-	for i in $song_list.get_item_count():
-		var item_text = $song_list.get_item_text(i)
+	for i in $center/song_list.get_item_count():
+		var item_text = $center/song_list.get_item_text(i)
 		if query.to_lower() in item_text.to_lower():
-			$song_list.select(i)
-			$song_list.ensure_current_is_visible()
+			$center/song_list.select(i)
+			$center/song_list.ensure_current_is_visible()
 			print("Found match: ", item_text, i)
 			match_found = true
 			break
 	if not match_found:
-		for j in $song_list.get_item_count():
-			$song_list.deselect(j)
+		for j in $center/song_list.get_item_count():
+			$center/song_list.deselect(j)
 		print("No match found.")
 	
 func _on_search_bar_text_submitted(new_text: String) -> void:
 	var match_found := false
-	for i in $song_list.get_item_count():
-		var item_text = $song_list.get_item_text(i)
+	for i in $center/song_list.get_item_count():
+		var item_text = $center/song_list.get_item_text(i)
 		if new_text.to_lower() in item_text.to_lower():
-			$song_list.select(i)
-			$song_list.ensure_current_is_visible()
+			$center/song_list.select(i)
+			$center/song_list.ensure_current_is_visible()
 			_on_song_selected(i)
 			match_found = true
 			get_parent().can_random = true
 			break
 	if not match_found:
-		for j in $song_list.get_item_count():
-			$song_list.deselect(j)
+		for j in $center/song_list.get_item_count():
+			$center/song_list.deselect(j)
 		print("No match found to play.")
-	$search.release_focus()
+	$top_right/search.release_focus()
 
 func _on_reload_pressed() -> void:
 	set_process(true)
 	
-	$song_list.clear()
+	$center/song_list.clear()
 	all_items.clear()
 	load_song_info()
 	_load_songs()
-	$reload.release_focus()
+	$top_left/reload.release_focus()
 
 func _on_open_beatz_bxzip_pressed() -> void:
 	var err := DisplayServer.file_dialog_show(
-		"Open .beatz, .bx or .zip file.",          # Title
+		"Open .bx or .beatz files.",          # Title
 		"",
 		"",                                            # Initial path (empty means default)
 		true,
 		DisplayServer.FILE_DIALOG_MODE_OPEN_FILES,    # Mode: open multiple files
-		["*.bx", "*.beatz", "*.zip", "*"],   # File filters
+		["*.bx", "*.beatz", "*"],   # File filters
 		Callable(self, "_on_file_dialog_files_selected")
 	)
 	if err != OK:
 		print("Failed to show native file dialog.")
-		
-func _on_file_dialog_file_selected(path: String) -> void:
-	var extension := path.get_extension().to_lower()
-	if extension in ["bx", "zip"]:
-		var file_name := path.get_file().get_basename()
-		var output_path := "user://Custom/%s" % file_name
-		if OS.get_name() == "Android":
-			output_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/%s" % file_name
-
-		var zip := ZIPReader.new()
-		var err := zip.open(path)
-		if err != OK:
-			printerr("Failed to open ZIP file: ", path)
-			return
-
-		DirAccess.make_dir_recursive_absolute(output_path)
-
-		for inner_path in zip.get_files():
-			var full_output_path = output_path.path_join(inner_path)
-
-			if inner_path.ends_with("/"):
-				DirAccess.make_dir_recursive_absolute(full_output_path)
-			else:
-				DirAccess.make_dir_recursive_absolute(full_output_path.get_base_dir())
-				var file = FileAccess.open(full_output_path, FileAccess.WRITE)
-				if file:
-					file.store_buffer(zip.read_file(inner_path))
-					file.close()
-				else:
-					printerr("Failed to write zip file: ", full_output_path)
-					
-		zip.close()
-		print("Unpacked zip to: ", output_path)
-		
-		var song_id := "SONGID " + file_name + " " + str(Time.get_unix_time_from_system(), "_", randi())
-		var id_file := FileAccess.open(output_path.path_join(".songid"), FileAccess.WRITE)
-		id_file.store_line(song_id)
-		id_file.close()
-		
-		save_or_replace_song_id(song_id)
-		
-		print("Made unique ID: ", song_id)
-		
-		_on_reload_pressed()
-		
-	elif extension == "beatz":
-		var charts_path := "user://Custom/Charts"
-		if OS.get_name() == "Android":
-			charts_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/Charts"
-		DirAccess.make_dir_recursive_absolute(charts_path)
-		
-		var file_data := FileAccess.open(path, FileAccess.READ)
-		if file_data:
-			var target_path := charts_path.path_join(path.get_file())
-			var target_file := FileAccess.open(target_path, FileAccess.WRITE)
-			if target_file:
-				target_file.store_buffer(file_data.get_buffer(file_data.get_length()))
-				target_file.close()
-				
-				print("Copied .beatz to: ", target_path)
-				_on_reload_pressed()
-			else:
-				printerr("Failed to open target file for writing: ", target_path)
-			file_data.close()
-		else:
-			printerr("Failed to open source .beatz file: ", path)
-	else:
-		print("Unsupported file type: ", extension)
 
 func _on_file_dialog_files_selected(status, paths: PackedStringArray, _filter_idx: int) -> void:
-	
 	if status != true:
 		print("User cancelled or error occurred.")
 		return
@@ -813,6 +740,10 @@ func _on_file_dialog_files_selected(status, paths: PackedStringArray, _filter_id
 		if extension in ["bx", "zip"]:
 			var file_name := path.get_file().get_basename()
 			var output_path := "user://Custom/%s" % file_name
+			if DirAccess.dir_exists_absolute(output_path):
+				print("Output path for file already exists")
+				var time = Time.get_datetime_dict_from_system()
+				output_path = "user://Custom/%s-%s-%s-%s" % [file_name, str(time.hour), str(time.day), str(time.month)]
 			if OS.get_name() == "Android":
 				output_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/%s" % file_name
 
@@ -886,7 +817,7 @@ func _on_edit_pressed() -> void:
 	print("Editing")
 	edit_mode = !edit_mode
 	
-	var btn := $edit
+	var btn := $top_left/edit
 	if edit_mode:
 		btn.add_theme_color_override("font_color", Color.GREEN)
 		btn.add_theme_constant_override("outline_size", 12)
@@ -898,44 +829,44 @@ func _on_edit_pressed() -> void:
 	btn.release_focus()
 
 func _on_scrl_up_pressed() -> void:
-	var count = $song_list.get_item_count()
+	var count = $center/song_list.get_item_count()
 	if count == 0:
 		return
 
-	var current = $song_list.get_selected_items()
+	var current = $center/song_list.get_selected_items()
 	var start_index = current[0] if current.size() > 0 else 0
 
 	for offset in range(1, count + 1):
 		var i = (start_index - offset + count) % count
-		if $song_list.is_item_selectable(i) and !$song_list.is_item_disabled(i):
-			$song_list.select(i)
-			$song_list.ensure_current_is_visible()
-			$scrl_up.release_focus()
+		if $center/song_list.is_item_selectable(i) and !$center/song_list.is_item_disabled(i):
+			$center/song_list.select(i)
+			$center/song_list.ensure_current_is_visible()
+			$center_right/scrl_up.release_focus()
 			break
 
 func _on_scrl_down_pressed() -> void:
-	var count = $song_list.get_item_count()
+	var count = $center/song_list.get_item_count()
 	if count == 0:
 		return
 
-	var current = $song_list.get_selected_items()
+	var current = $center/song_list.get_selected_items()
 	var start_index = current[0] if current.size() > 0 else -1
 
 	for offset in range(1, count + 1):
 		var i = (start_index + offset) % count
-		if $song_list.is_item_selectable(i) and !$song_list.is_item_disabled(i):
-			$song_list.select(i)
-			$song_list.ensure_current_is_visible()
-			$scrl_down.release_focus()
+		if $center/song_list.is_item_selectable(i) and !$center/song_list.is_item_disabled(i):
+			$center/song_list.select(i)
+			$center/song_list.ensure_current_is_visible()
+			$center_right/scrl_down.release_focus()
 			break
 
 func _on_edit_cancel_pressed() -> void:
 	$del_custom_anim.play("cancel_panel")
 	await $del_custom_anim.animation_finished
-	$del_custom_panel/del_yes.show()
-	$del_custom_panel/title_del_custom_s.text = "Are you sure you want to delete\nthis custom song? (This cannot be undone.)"
-	$del_custom_panel/del_no.disabled = false
-	$del_custom_panel/del_yes.disabled = false
+	$center/del_custom_panel/del_yes.show()
+	$center/del_custom_panel/title_del_custom_s.text = "Are you sure you want to delete\nthis custom song? (This cannot be undone.)"
+	$center/del_custom_panel/del_no.disabled = false
+	$center/del_custom_panel/del_yes.disabled = false
 
 func save_or_replace_song_id(new_id_line: String) -> void:
 	var file_name_part = new_id_line.trim_prefix("SONGID ").split(" ")[0]
@@ -943,9 +874,10 @@ func save_or_replace_song_id(new_id_line: String) -> void:
 	var file = FileAccess.open(Globals.SONG_ID_ARR_PATH, FileAccess.READ)
 	var lines := []
 	if file:
+		var text := ""
 		if file.get_length() > 0:
-			lines = file.get_as_text().split("\n")
-		file.close()
+			text = file.get_as_text()
+		lines = text.split("\n")
 
 	var updated_lines := []
 	var replaced := false
@@ -963,7 +895,7 @@ func save_or_replace_song_id(new_id_line: String) -> void:
 			updated_lines.append(line)
 
 	if not replaced:
-		print("Appending new song ID: ", new_id_line)
+		#print("Appending new song ID: ", new_id_line)
 		updated_lines.append(new_id_line)
 
 	var out_file = FileAccess.open(Globals.SONG_ID_ARR_PATH, FileAccess.WRITE)
@@ -1038,7 +970,7 @@ func _on_edit_confirm_pressed() -> void:
 		print("No pending delete index.")
 		return
 
-	var meta = $song_list.get_item_metadata(pending_delete_index)
+	var meta = $center/song_list.get_item_metadata(pending_delete_index)
 	if not meta.has("id"):
 		print("No song ID in metadata. Metadata contents:", meta)
 		return
@@ -1055,7 +987,7 @@ func _on_edit_confirm_pressed() -> void:
 	if DirAccess.dir_exists_absolute(exact_folder_path):
 		print("Trying exact folder name first: ", exact_folder_path)
 		if try_delete_folder(exact_folder_path, target_id):
-			$del_custom_panel/del_yes.release_focus()
+			$center/del_custom_panel/del_yes.release_focus()
 			$del_custom_anim.play("confirm_panel")
 			await $del_custom_anim.animation_finished
 			_on_reload_pressed()
@@ -1077,7 +1009,7 @@ func _on_edit_confirm_pressed() -> void:
 				print("Trying closest matching folder: ", closest_match_path)
 				if try_delete_folder(closest_match_path, target_id):
 					dir.list_dir_end()
-					$del_custom_panel/del_yes.release_focus()
+					$center/del_custom_panel/del_yes.release_focus()
 					$del_custom_anim.play("confirm_panel")
 					await $del_custom_anim.animation_finished
 					_on_reload_pressed()
@@ -1087,9 +1019,9 @@ func _on_edit_confirm_pressed() -> void:
 
 	# Third Attempt: Full iteration after showing warning and disabling buttons
 	print("Exact and closest folder didn't match, showing warning and iterating all folders...")
-	$del_custom_panel/title_del_custom_s.text = "Folders with name \"" + song_name + "\" did not match song ID. Iterating through all folders..."
-	$del_custom_panel/del_no.disabled = true
-	$del_custom_panel/del_yes.disabled = true
+	$center/del_custom_panel/title_del_custom_s.text = "Folders with name \"" + song_name + "\" did not match song ID. Iterating through all folders..."
+	$center/del_custom_panel/del_no.disabled = true
+	$center/del_custom_panel/del_yes.disabled = true
 	await get_tree().process_frame
 
 	dir = DirAccess.open(base_path)
@@ -1111,18 +1043,27 @@ func _on_edit_confirm_pressed() -> void:
 
 	if not found:
 		print("Error: No Song IDs match ", song_name)
-		$del_custom_panel/title_del_custom_s.text = "ERROR: No folder matched Song ID: " + target_id
-		$del_custom_panel/del_no.disabled = false
-		$del_custom_panel/del_yes.disabled = true
+		$center/del_custom_panel/title_del_custom_s.text = "ERROR: No folder matched Song ID: " + target_id
+		$center/del_custom_panel/del_no.disabled = false
+		$center/del_custom_panel/del_yes.disabled = true
 		return
 
-	$del_custom_panel/del_yes.release_focus()
+	$center/del_custom_panel/del_yes.release_focus()
 	$del_custom_anim.play("confirm_panel")
 	await $del_custom_anim.animation_finished
 	_on_reload_pressed()
 
 func _on_create_pressed() -> void:
 	var edit = Globals.EDITOR.instantiate()
+	
+	get_tree().root.add_child(edit)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = edit
+
+func entered_mp3_on_window(file):
+	var edit = Globals.EDITOR.instantiate()
+	
+	edit.create_from_dropped_file(file)
 	
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()

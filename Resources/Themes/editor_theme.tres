@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=19 format=3 uid="uid://bjp4vqou7f4gl"]
+[gd_resource type="Theme" load_steps=21 format=3 uid="uid://bjp4vqou7f4gl"]
 
 [ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="1_ywqoo"]
 
@@ -158,7 +158,35 @@ expand_margin_top = 3.0
 expand_margin_right = 8.0
 expand_margin_bottom = 3.0
 
-[sub_resource type="Image" id="Image_op3c8"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qug7y"]
+bg_color = Color(0.101961, 0.101961, 0.101961, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 4
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 4
+expand_margin_left = 3.0
+expand_margin_top = 3.0
+expand_margin_right = 3.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dn0km"]
+bg_color = Color(0, 0, 0, 0.639216)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 5
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 5
+
+[sub_resource type="Image" id="Image_ywqoo"]
 data = {
 "data": PackedByteArray(180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 19, 180, 180, 180, 19, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 19, 180, 180, 180, 64, 180, 180, 180, 64, 180, 180, 180, 19, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 19, 180, 180, 180, 64, 180, 180, 180, 64, 180, 180, 180, 19, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 19, 180, 180, 180, 19, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 0),
 "format": "RGBA8",
@@ -168,9 +196,9 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_0l4bc"]
-image = SubResource("Image_op3c8")
+image = SubResource("Image_ywqoo")
 
-[sub_resource type="Image" id="Image_cnbw5"]
+[sub_resource type="Image" id="Image_p17j6"]
 data = {
 "data": PackedByteArray(179, 179, 179, 47, 179, 179, 179, 50, 179, 179, 179, 6, 175, 175, 175, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64, 177, 177, 177, 49, 180, 180, 180, 64, 175, 175, 175, 54, 175, 175, 175, 6, 175, 175, 175, 0, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64, 177, 177, 177, 5, 177, 177, 177, 52, 180, 180, 180, 64, 175, 175, 175, 54, 175, 175, 175, 6, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64, 177, 177, 177, 0, 177, 177, 177, 5, 177, 177, 177, 52, 180, 180, 180, 64, 179, 179, 179, 50, 179, 179, 179, 0, 180, 180, 180, 64, 180, 180, 180, 64, 178, 178, 178, 0, 178, 178, 178, 6, 178, 178, 178, 53, 180, 180, 180, 64, 177, 177, 177, 49, 177, 177, 177, 0, 180, 180, 180, 64, 180, 180, 180, 64, 178, 178, 178, 6, 178, 178, 178, 53, 180, 180, 180, 64, 178, 178, 178, 53, 177, 177, 177, 5, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64, 181, 181, 181, 48, 180, 180, 180, 64, 178, 178, 178, 53, 178, 178, 178, 5, 178, 178, 178, 0, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64, 181, 181, 181, 41, 181, 181, 181, 48, 178, 178, 178, 5, 178, 178, 178, 0, 180, 180, 180, 0, 180, 180, 180, 0, 180, 180, 180, 64, 180, 180, 180, 64),
 "format": "RGBA8",
@@ -180,7 +208,7 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_3lyd6"]
-image = SubResource("Image_cnbw5")
+image = SubResource("Image_p17j6")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_om656"]
 bg_color = Color(0.101961, 0.101961, 0.101961, 0.6)
@@ -253,6 +281,10 @@ CheckBox/styles/hover = SubResource("StyleBoxFlat_q6am8")
 CheckBox/styles/hover_pressed = SubResource("StyleBoxFlat_2b2lv")
 CheckBox/styles/normal = SubResource("StyleBoxFlat_ywqoo")
 CheckBox/styles/pressed = SubResource("StyleBoxFlat_g7sne")
+LineEdit/styles/focus = null
+LineEdit/styles/normal = SubResource("StyleBoxFlat_qug7y")
+LineEdit/styles/read_only = null
+Panel/styles/panel = SubResource("StyleBoxFlat_dn0km")
 TextEdit/colors/background_color = Color(0, 0, 0, 0)
 TextEdit/colors/caret_background_color = Color(0, 0, 0, 1)
 TextEdit/colors/caret_color = Color(0.875, 0.875, 0.875, 1)

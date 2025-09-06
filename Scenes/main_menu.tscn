@@ -10,7 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="6_16hvj"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="6_opfnp"]
 [ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="7_vr1f0"]
-[ext_resource type="Texture2D" uid="uid://w7pcau67j2s2" path="res://Resources/misc/editor_label.png" id="8_84iac"]
 [ext_resource type="AudioStream" uid="uid://b52abf0gk38e" path="res://Resources/Songs/Aurora.mp3" id="10_pavwk"]
 [ext_resource type="Theme" uid="uid://cc40g6w54ebkq" path="res://Resources/Themes/settings_theme.tres" id="12_m3bi6"]
 [ext_resource type="Texture2D" uid="uid://c8j07g2itxkeh" path="res://Resources/Arrows/dance.png" id="12_t1dhk"]
@@ -26,6 +25,10 @@
 [ext_resource type="Texture2D" uid="uid://d1riimbry7wh0" path="res://Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png" id="17_5n0dv"]
 [ext_resource type="Texture2D" uid="uid://81tjbqfe28x0" path="res://Resources/PHONE THE COPAAAA.png" id="18_ne6ao"]
 [ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="23_6m47u"]
+[ext_resource type="Texture2D" uid="uid://cqv04mxm2wlw1" path="res://Resources/CircleNotes/CircleDownHQ.png" id="24_5n0dv"]
+
+[sub_resource type="Theme" id="Theme_5egv6"]
+CheckButton/constants/h_separation = 25
 
 [sub_resource type="Animation" id="Animation_opfnp"]
 length = 0.001
@@ -56,139 +59,139 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("play_button:position:y")
+tracks/2/path = NodePath("play_button:self_modulate")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [600.0]
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("play_button:self_modulate")
+tracks/3/path = NodePath("play_button:z_index")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
+"update": 1,
+"values": [0]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("play_button:z_index")
+tracks/4/path = NodePath("exit_game:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
+"update": 0,
+"values": [Vector2(13, 13)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("exit_game:position")
+tracks/5/path = NodePath("exit_game:scale")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-947, 13)]
+"values": [Vector2(0.7, 0.7)]
 }
 tracks/6/type = "value"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("exit_game:scale")
+tracks/6/path = NodePath("TransitionRect:self_modulate")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0.7, 0.7)]
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("TransitionRect:self_modulate")
+tracks/7/path = NodePath("TransitionRect:modulate")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 1)]
+"values": [Color(1, 1, 1, 0)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("TransitionRect:modulate")
+tracks/8/path = NodePath("exit_text:modulate")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 0)]
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/9/type = "value"
 tracks/9/imported = false
 tracks/9/enabled = true
-tracks/9/path = NodePath("exit_text:modulate")
+tracks/9/path = NodePath("play_sprite:scale")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 1)]
+"values": [Vector2(0.62, 0.62)]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
 tracks/10/enabled = true
-tracks/10/path = NodePath("play_sprite:scale")
+tracks/10/path = NodePath("logo_sprite:scale")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0.62, 0.62)]
+"values": [Vector2(0.8, 0.8)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
 tracks/11/enabled = true
-tracks/11/path = NodePath("logo_sprite:scale")
+tracks/11/path = NodePath("logo_sprite:position")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0.8, 0.8)]
+"values": [Vector2(0, -344)]
 }
 tracks/12/type = "value"
 tracks/12/imported = false
 tracks/12/enabled = true
-tracks/12/path = NodePath("logo_sprite:position")
+tracks/12/path = NodePath("exit_game:mouse_filter")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-960, -344)]
+"update": 1,
+"values": [0]
 }
 tracks/13/type = "value"
 tracks/13/imported = false
 tracks/13/enabled = true
-tracks/13/path = NodePath("exit_game:mouse_filter")
+tracks/13/path = NodePath("play_button:mouse_filter")
 tracks/13/interp = 1
 tracks/13/loop_wrap = true
 tracks/13/keys = {
@@ -200,187 +203,187 @@ tracks/13/keys = {
 tracks/14/type = "value"
 tracks/14/imported = false
 tracks/14/enabled = true
-tracks/14/path = NodePath("play_button:mouse_filter")
+tracks/14/path = NodePath("settings_text:modulate")
 tracks/14/interp = 1
 tracks/14/loop_wrap = true
 tracks/14/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/15/type = "value"
 tracks/15/imported = false
 tracks/15/enabled = true
-tracks/15/path = NodePath("settings_text:modulate")
+tracks/15/path = NodePath("settings_button:scale")
 tracks/15/interp = 1
 tracks/15/loop_wrap = true
 tracks/15/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 1)]
+"values": [Vector2(0.7, 0.7)]
 }
 tracks/16/type = "value"
 tracks/16/imported = false
 tracks/16/enabled = true
-tracks/16/path = NodePath("settings_button:scale")
+tracks/16/path = NodePath("exit_text:text")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
 tracks/16/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0.7, 0.7)]
+"update": 1,
+"values": ["Exit"]
 }
 tracks/17/type = "value"
 tracks/17/imported = false
 tracks/17/enabled = true
-tracks/17/path = NodePath("exit_text:text")
+tracks/17/path = NodePath("exit_game:texture_normal")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": ["Exit"]
+"values": [ExtResource("6_16hvj")]
 }
 tracks/18/type = "value"
 tracks/18/imported = false
 tracks/18/enabled = true
-tracks/18/path = NodePath("exit_game:texture_normal")
+tracks/18/path = NodePath("exit_game:texture_pressed")
 tracks/18/interp = 1
 tracks/18/loop_wrap = true
 tracks/18/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("6_16hvj")]
+"values": [ExtResource("7_vr1f0")]
 }
 tracks/19/type = "value"
 tracks/19/imported = false
 tracks/19/enabled = true
-tracks/19/path = NodePath("exit_game:texture_pressed")
+tracks/19/path = NodePath("play_button:position")
 tracks/19/interp = 1
 tracks/19/loop_wrap = true
 tracks/19/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("7_vr1f0")]
+"update": 0,
+"values": [Vector2(878, 600)]
 }
 tracks/20/type = "value"
 tracks/20/imported = false
 tracks/20/enabled = true
-tracks/20/path = NodePath("play_button:position")
+tracks/20/path = NodePath("play_sprite:position")
 tracks/20/interp = 1
 tracks/20/loop_wrap = true
 tracks/20/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-82, 600)]
+"values": [Vector2(0, 40)]
 }
 tracks/21/type = "value"
 tracks/21/imported = false
 tracks/21/enabled = true
-tracks/21/path = NodePath("play_sprite:position")
+tracks/21/path = NodePath("settings_layer:position")
 tracks/21/interp = 1
 tracks/21/loop_wrap = true
 tracks/21/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-960, 40)]
+"values": [Vector2(1920, 0)]
 }
 tracks/22/type = "value"
 tracks/22/imported = false
 tracks/22/enabled = true
-tracks/22/path = NodePath("settings_layer:position")
+tracks/22/path = NodePath("settings_button:position")
 tracks/22/interp = 1
 tracks/22/loop_wrap = true
 tracks/22/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 0)]
+"values": [Vector2(1740, 16)]
 }
 tracks/23/type = "value"
 tracks/23/imported = false
 tracks/23/enabled = true
-tracks/23/path = NodePath("settings_button:position")
+tracks/23/path = NodePath("settings_text:position")
 tracks/23/interp = 1
 tracks/23/loop_wrap = true
 tracks/23/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(780, 16)]
+"values": [Vector2(1751, 70)]
 }
 tracks/24/type = "value"
 tracks/24/imported = false
 tracks/24/enabled = true
-tracks/24/path = NodePath("settings_text:position")
+tracks/24/path = NodePath("settings_button:mouse_filter")
 tracks/24/interp = 1
 tracks/24/loop_wrap = true
 tracks/24/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(791, 61)]
+"update": 1,
+"values": [0]
 }
 tracks/25/type = "value"
 tracks/25/imported = false
 tracks/25/enabled = true
-tracks/25/path = NodePath("settings_button:mouse_filter")
+tracks/25/path = NodePath("settings_button:disabled")
 tracks/25/interp = 1
 tracks/25/loop_wrap = true
 tracks/25/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [0]
+"values": [true]
 }
 tracks/26/type = "value"
 tracks/26/imported = false
 tracks/26/enabled = true
-tracks/26/path = NodePath("settings_button:disabled")
+tracks/26/path = NodePath("play_button:disabled")
 tracks/26/interp = 1
 tracks/26/loop_wrap = true
 tracks/26/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [true]
+"values": [false]
 }
 tracks/27/type = "value"
 tracks/27/imported = false
 tracks/27/enabled = true
-tracks/27/path = NodePath("play_button:disabled")
+tracks/27/path = NodePath("bg_main_menu:self_modulate")
 tracks/27/interp = 1
 tracks/27/loop_wrap = true
 tracks/27/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/28/type = "value"
 tracks/28/imported = false
 tracks/28/enabled = true
-tracks/28/path = NodePath("bg_main_menu:self_modulate")
+tracks/28/path = NodePath("logo_sprite:visible")
 tracks/28/interp = 1
 tracks/28/loop_wrap = true
 tracks/28/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
+"update": 1,
+"values": [true]
 }
 tracks/29/type = "value"
 tracks/29/imported = false
 tracks/29/enabled = true
-tracks/29/path = NodePath("logo_sprite:visible")
+tracks/29/path = NodePath("exit_game:visible")
 tracks/29/interp = 1
 tracks/29/loop_wrap = true
 tracks/29/keys = {
@@ -392,7 +395,7 @@ tracks/29/keys = {
 tracks/30/type = "value"
 tracks/30/imported = false
 tracks/30/enabled = true
-tracks/30/path = NodePath("exit_game:visible")
+tracks/30/path = NodePath("exit_text:visible")
 tracks/30/interp = 1
 tracks/30/loop_wrap = true
 tracks/30/keys = {
@@ -404,79 +407,79 @@ tracks/30/keys = {
 tracks/31/type = "value"
 tracks/31/imported = false
 tracks/31/enabled = true
-tracks/31/path = NodePath("exit_text:visible")
+tracks/31/path = NodePath("exit_text:position")
 tracks/31/interp = 1
 tracks/31/loop_wrap = true
 tracks/31/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
+"update": 0,
+"values": [Vector2(13, 65)]
 }
 tracks/32/type = "value"
 tracks/32/imported = false
 tracks/32/enabled = true
-tracks/32/path = NodePath("exit_text:position")
+tracks/32/path = NodePath("settings_text:scale")
 tracks/32/interp = 1
 tracks/32/loop_wrap = true
 tracks/32/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-909, 59)]
+"values": [Vector2(1, 1)]
 }
 tracks/33/type = "value"
 tracks/33/imported = false
 tracks/33/enabled = true
-tracks/33/path = NodePath("settings_text:scale")
+tracks/33/path = NodePath("popup_leave:scale")
 tracks/33/interp = 1
 tracks/33/loop_wrap = true
 tracks/33/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(1, 1)]
+"values": [Vector2(1e-05, 1e-05)]
 }
 tracks/34/type = "value"
 tracks/34/imported = false
 tracks/34/enabled = true
-tracks/34/path = NodePath("popup_leave:scale")
+tracks/34/path = NodePath("popup_leave/Panel/Accept:position")
 tracks/34/interp = 1
 tracks/34/loop_wrap = true
 tracks/34/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(1e-05, 1e-05)]
+"values": [Vector2(501, 278)]
 }
 tracks/35/type = "value"
 tracks/35/imported = false
 tracks/35/enabled = true
-tracks/35/path = NodePath("popup_leave/Panel/Accept:position")
+tracks/35/path = NodePath("popup_leave/Panel/Cancel:position")
 tracks/35/interp = 1
 tracks/35/loop_wrap = true
 tracks/35/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(501, 278)]
+"values": [Vector2(665, 278)]
 }
 tracks/36/type = "value"
 tracks/36/imported = false
 tracks/36/enabled = true
-tracks/36/path = NodePath("popup_leave/Panel/Cancel:position")
+tracks/36/path = NodePath("popup_leave/Panel/Accept:self_modulate")
 tracks/36/interp = 1
 tracks/36/loop_wrap = true
 tracks/36/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(665, 278)]
+"values": [Color(1, 1, 1, 1)]
 }
 tracks/37/type = "value"
 tracks/37/imported = false
 tracks/37/enabled = true
-tracks/37/path = NodePath("popup_leave/Panel/Accept:self_modulate")
+tracks/37/path = NodePath("exit_text:self_modulate")
 tracks/37/interp = 1
 tracks/37/loop_wrap = true
 tracks/37/keys = {
@@ -488,7 +491,7 @@ tracks/37/keys = {
 tracks/38/type = "value"
 tracks/38/imported = false
 tracks/38/enabled = true
-tracks/38/path = NodePath("exit_text:self_modulate")
+tracks/38/path = NodePath("popup_leave:modulate")
 tracks/38/interp = 1
 tracks/38/loop_wrap = true
 tracks/38/keys = {
@@ -500,50 +503,38 @@ tracks/38/keys = {
 tracks/39/type = "value"
 tracks/39/imported = false
 tracks/39/enabled = true
-tracks/39/path = NodePath("popup_leave:modulate")
+tracks/39/path = NodePath("bg_song:volume_db")
 tracks/39/interp = 1
 tracks/39/loop_wrap = true
 tracks/39/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Color(1, 1, 1, 1)]
+"values": [0.0]
 }
 tracks/40/type = "value"
 tracks/40/imported = false
 tracks/40/enabled = true
-tracks/40/path = NodePath("bg_song:volume_db")
+tracks/40/path = NodePath("exit_text:size")
 tracks/40/interp = 1
 tracks/40/loop_wrap = true
 tracks/40/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [0.0]
+"values": [Vector2(167, 69)]
 }
 tracks/41/type = "value"
 tracks/41/imported = false
 tracks/41/enabled = true
-tracks/41/path = NodePath("exit_text:size")
+tracks/41/path = NodePath("main_list/center/song_list:position")
 tracks/41/interp = 1
 tracks/41/loop_wrap = true
 tracks/41/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(89, 69)]
-}
-tracks/42/type = "value"
-tracks/42/imported = false
-tracks/42/enabled = true
-tracks/42/path = NodePath("main_list/song_list:position")
-tracks/42/interp = 1
-tracks/42/loop_wrap = true
-tracks/42/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-750, 169)]
+"values": [Vector2(-738.5, -348)]
 }
 
 [sub_resource type="Animation" id="Animation_6dk6o"]
@@ -752,7 +743,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.4, 0.466667, 0.933333),
 "transitions": PackedFloat32Array(0.23, 1, 9.84, 1),
 "update": 0,
-"values": [Vector2(-947, 13), Vector2(-850, 125), Vector2(-850, 125), Vector2(0, 540)]
+"values": [Vector2(13, 13), Vector2(110, 125), Vector2(110, 125), Vector2(960, 540)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -877,7 +868,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.5),
 "transitions": PackedFloat32Array(0.225313, 1),
 "update": 0,
-"values": [Vector2(-82, 480), Vector2(-82, 600)]
+"values": [Vector2(878, 480), Vector2(878, 600)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -966,7 +957,7 @@ tracks/10/keys = {
 "times": PackedFloat32Array(0.5, 1),
 "transitions": PackedFloat32Array(0.258816, 1),
 "update": 0,
-"values": [Vector2(780, -200), Vector2(780, 16)]
+"values": [Vector2(1740, -200), Vector2(1740, 16)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
@@ -1002,7 +993,7 @@ tracks/13/keys = {
 "times": PackedFloat32Array(0.5, 1),
 "transitions": PackedFloat32Array(0.196146, 1),
 "update": 0,
-"values": [Vector2(-1175, 13), Vector2(-947, 13)]
+"values": [Vector2(-215, 13), Vector2(13, 13)]
 }
 tracks/14/type = "method"
 tracks/14/imported = false
@@ -1088,7 +1079,7 @@ tracks/20/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-909, 59)]
+"values": [Vector2(13, 65)]
 }
 tracks/21/type = "value"
 tracks/21/imported = false
@@ -1100,7 +1091,7 @@ tracks/21/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(791, 61)]
+"values": [Vector2(1751, 70)]
 }
 tracks/22/type = "value"
 tracks/22/imported = false
@@ -1140,7 +1131,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-3840, 0), Vector2(-1920, 0)]
+"values": [Vector2(-1920, 0), Vector2(0, 0)]
 }
 tracks/2/type = "method"
 tracks/2/imported = false
@@ -1197,7 +1188,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-1920, 0), Vector2(-3840, 0)]
+"values": [Vector2(0, 0), Vector2(-1920, 0)]
 }
 tracks/2/type = "method"
 tracks/2/imported = false
@@ -1326,7 +1317,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-2880, -344), Vector2(-960, -344)]
+"values": [Vector2(-1920, -344), Vector2(0, -344)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -1338,7 +1329,7 @@ tracks/8/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-1998, 600), Vector2(-82, 600)]
+"values": [Vector2(-1038, 600), Vector2(878, 600)]
 }
 tracks/9/type = "value"
 tracks/9/imported = false
@@ -1350,7 +1341,7 @@ tracks/9/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-2880, 40), Vector2(-960, 40)]
+"values": [Vector2(-1920, 40), Vector2(0, 40)]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
@@ -1362,7 +1353,7 @@ tracks/10/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.225312, 0.225312),
 "update": 0,
-"values": [Vector2(-1920, 0), Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(1920, 0)]
 }
 tracks/11/type = "method"
 tracks/11/imported = false
@@ -1514,7 +1505,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0, 0.633333),
 "transitions": PackedFloat32Array(0.225312, 1),
 "update": 0,
-"values": [Vector2(-960, -344), Vector2(-2880, -344)]
+"values": [Vector2(0, -344), Vector2(-1920, -344)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -1526,7 +1517,7 @@ tracks/8/keys = {
 "times": PackedFloat32Array(0, 0.633333),
 "transitions": PackedFloat32Array(0.225312, 1),
 "update": 0,
-"values": [Vector2(-82, 600), Vector2(-1998, 600)]
+"values": [Vector2(878, 600), Vector2(-1038, 600)]
 }
 tracks/9/type = "value"
 tracks/9/imported = false
@@ -1538,7 +1529,7 @@ tracks/9/keys = {
 "times": PackedFloat32Array(0, 0.633333),
 "transitions": PackedFloat32Array(0.225312, 1),
 "update": 0,
-"values": [Vector2(-960, 40), Vector2(-2880, 40)]
+"values": [Vector2(0, 40), Vector2(-1920, 40)]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
@@ -1550,7 +1541,7 @@ tracks/10/keys = {
 "times": PackedFloat32Array(0, 0.633333),
 "transitions": PackedFloat32Array(0.225312, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(-1920, 0)]
+"values": [Vector2(1920, 0), Vector2(0, 0)]
 }
 tracks/11/type = "method"
 tracks/11/imported = false
@@ -1656,7 +1647,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0.866667, 1.16667, 1.36667),
 "transitions": PackedFloat32Array(0.329877, 2.14355, 1),
 "update": 0,
-"values": [Vector2(-960, -700), Vector2(-960, -320), Vector2(-960, -344)]
+"values": [Vector2(0, -700), Vector2(0, -320), Vector2(0, -344)]
 }
 tracks/4/type = "method"
 tracks/4/imported = false
@@ -1712,7 +1703,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(1.01667, 1.5),
 "transitions": PackedFloat32Array(0.366022, 1),
 "update": 0,
-"values": [Vector2(780, -200), Vector2(780, 16)]
+"values": [Vector2(1740, -200), Vector2(1740, 16)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -1724,7 +1715,7 @@ tracks/8/keys = {
 "times": PackedFloat32Array(1, 1.49),
 "transitions": PackedFloat32Array(0.366022, 1),
 "update": 0,
-"values": [Vector2(791, -200), Vector2(791, 61)]
+"values": [Vector2(1751, -200), Vector2(1751, 70)]
 }
 tracks/9/type = "value"
 tracks/9/imported = false
@@ -1760,7 +1751,7 @@ tracks/11/keys = {
 "times": PackedFloat32Array(1.01667, 1.5),
 "transitions": PackedFloat32Array(0.366022, 1),
 "update": 0,
-"values": [Vector2(-1175, 13), Vector2(-947, 13)]
+"values": [Vector2(-200, 13), Vector2(13, 13)]
 }
 tracks/12/type = "value"
 tracks/12/imported = false
@@ -1772,7 +1763,7 @@ tracks/12/keys = {
 "times": PackedFloat32Array(1, 1.49),
 "transitions": PackedFloat32Array(0.366022, 1),
 "update": 0,
-"values": [Vector2(-909, -200), Vector2(-909, 59)]
+"values": [Vector2(13, -200), Vector2(13, 65)]
 }
 tracks/13/type = "value"
 tracks/13/imported = false
@@ -2065,7 +2056,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-947, 13)]
+"values": [Vector2(13, 13)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -2101,19 +2092,19 @@ tracks/10/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-960, -344)]
+"values": [Vector2(0, -344)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
 tracks/11/enabled = true
-tracks/11/path = NodePath("main_list/song_list:position")
+tracks/11/path = NodePath("main_list/center/song_list:position")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
-"times": PackedFloat32Array(0, 0.666667),
+"times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.267943, 1),
 "update": 0,
-"values": [Vector2(-750, 125), Vector2(-750, 169)]
+"values": [Vector2(-738.5, -400), Vector2(-738.5, -348)]
 }
 
 [sub_resource type="Animation" id="Animation_n45e2"]
@@ -2165,7 +2156,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.3),
 "transitions": PackedFloat32Array(0.189465, 1),
 "update": 0,
-"values": [Vector2(-82, 600), Vector2(-82, 420)]
+"values": [Vector2(878, 600), Vector2(878, 420)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -2215,7 +2206,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0, 0.366667),
 "transitions": PackedFloat32Array(3.86375, 1),
 "update": 0,
-"values": [Vector2(780, 16), Vector2(780, -200)]
+"values": [Vector2(1740, 16), Vector2(1740, -200)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -2251,7 +2242,7 @@ tracks/10/keys = {
 "times": PackedFloat32Array(0, 0.366667),
 "transitions": PackedFloat32Array(3.86375, 1),
 "update": 0,
-"values": [Vector2(-947, 13), Vector2(-1100, 13)]
+"values": [Vector2(13, 13), Vector2(-190, 13)]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
@@ -2284,9 +2275,6 @@ _data = {
 &"scene_load": SubResource("Animation_n45e2")
 }
 
-[sub_resource type="Theme" id="Theme_5egv6"]
-CheckButton/constants/h_separation = 25
-
 [sub_resource type="Animation" id="Animation_ujyyl"]
 length = 0.001
 tracks/0/type = "value"
@@ -2299,7 +2287,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-935, 1080)]
+"values": [Vector2(13, 1080)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -2327,7 +2315,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(1.56667, 2.5),
 "transitions": PackedFloat32Array(7.21, 1),
 "update": 0,
-"values": [Vector2(-935, 992), Vector2(-935, 1080)]
+"values": [Vector2(13, 1004), Vector2(13, 1080)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -2355,7 +2343,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 1, 2.56667, 3.5),
 "transitions": PackedFloat32Array(0.129408, 1, 7.21, 1),
 "update": 0,
-"values": [Vector2(-935, 1080), Vector2(-935, 992), Vector2(-935, 992), Vector2(-935, 1080)]
+"values": [Vector2(13, 1080), Vector2(13, 1004), Vector2(13, 1004), Vector2(13, 1080)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -2406,7 +2394,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-163.5, 1080)]
+"values": [Vector2(796.5, 1080)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -2446,7 +2434,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.41, 0.866667, 0.9),
 "transitions": PackedFloat32Array(0.217638, 1, 1, 1),
 "update": 0,
-"values": [Vector2(-163.5, 1080), Vector2(-163.5, 980), Vector2(-163.5, 980.006), Vector2(-163.5, 1080)]
+"values": [Vector2(796.5, 1080), Vector2(796.5, 980), Vector2(796.5, 980.006), Vector2(796.5, 1080)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -2481,10 +2469,11 @@ _data = {
 
 [node name="main_menu" type="Control"]
 layout_mode = 3
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_n45e2")
 
 [node name="Visualizer" parent="." instance=ExtResource("2_jr6u5")]
@@ -2494,8 +2483,8 @@ layout_mode = 1
 anchors_preset = 7
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = 1080.0
-offset_bottom = 1080.0
+offset_top = 540.0
+offset_bottom = 540.0
 grow_vertical = 0
 reaction = "None"
 custom_colors = true
@@ -2510,264 +2499,43 @@ bar_spacing = 2.0
 individual_bar_width = 5.0
 HEIGHT = 75
 
-[node name="logo_sprite" type="TextureRect" parent="."]
-z_index = 2
+[node name="settings_layer" type="Control" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -960.0
-offset_top = -344.0
-offset_right = 960.0
-offset_bottom = 736.0
+offset_left = 1920.0
+offset_right = 1920.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.8, 0.8)
-pivot_offset = Vector2(960, 540)
-texture = ExtResource("2_16hvj")
 
-[node name="bg_main_menu" type="TextureRect" parent="."]
+[node name="settings_sprite" type="TextureRect" parent="settings_layer"]
+z_index = 1
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -960.0
+offset_top = -403.0
 offset_right = 960.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-pivot_offset = Vector2(960, 540)
-texture = ExtResource("6_opfnp")
-
-[node name="edit_sprite" type="TextureRect" parent="."]
-visible = false
-z_index = 2
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -960.0
-offset_top = 289.8
-offset_right = 960.0
-offset_bottom = 1369.8
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.62, 0.62)
-pivot_offset = Vector2(960, 540)
-texture = ExtResource("8_84iac")
-
-[node name="edit_button" type="TextureButton" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -82.0
-offset_top = 815.0
-offset_right = 82.0
-offset_bottom = 979.0
-grow_horizontal = 2
-grow_vertical = 2
-rotation = 1.5708
-scale = Vector2(0.65, 0.65)
-pivot_offset = Vector2(82, 82)
-mouse_default_cursor_shape = 2
-texture_normal = ExtResource("6_16hvj")
-texture_pressed = ExtResource("3_s4jxt")
-
-[node name="play_sprite" type="TextureRect" parent="."]
-z_index = 2
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -960.0
-offset_top = 40.0
-offset_right = 960.0
-offset_bottom = 1120.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.62, 0.62)
-pivot_offset = Vector2(960, 540)
-texture = ExtResource("4_vr1f0")
-
-[node name="play_button" type="TextureButton" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -82.0
-offset_top = 600.0
-offset_right = 82.0
-offset_bottom = 764.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(82, 82)
-mouse_default_cursor_shape = 2
-texture_normal = ExtResource("2_2tkn1")
-texture_pressed = ExtResource("3_s4jxt")
-
-[node name="exit_game" type="TextureButton" parent="."]
-layout_mode = 1
-offset_left = -947.0
-offset_top = 13.0
-offset_right = -783.0
-offset_bottom = 177.0
-scale = Vector2(0.7, 0.7)
-pivot_offset = Vector2(82, 82)
-mouse_default_cursor_shape = 2
-texture_normal = ExtResource("6_16hvj")
-texture_pressed = ExtResource("7_vr1f0")
-
-[node name="exit_text" type="RichTextLabel" parent="."]
-z_index = 3
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -909.0
-offset_top = 59.0
-offset_right = -820.0
-offset_bottom = 128.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/outline_size = 19
-theme_override_font_sizes/normal_font_size = 50
-text = "Exit"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-horizontal_alignment = 1
-deselect_on_focus_loss_enabled = false
-drag_and_drop_selection_enabled = false
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_cp0ys")
-}
-autoplay = "init"
-
-[node name="main_list" parent="." instance=ExtResource("2_opfnp")]
-visible = false
-z_index = -1
-layout_mode = 1
-
-[node name="song_list" parent="main_list" index="2"]
-offset_left = -750.0
-offset_right = 767.0
-
-[node name="del_no" parent="main_list/del_custom_panel" index="1"]
-mouse_default_cursor_shape = 2
-
-[node name="del_yes" parent="main_list/del_custom_panel" index="2"]
-mouse_default_cursor_shape = 2
-
-[node name="loading_text" type="RichTextLabel" parent="."]
-modulate = Color(1, 1, 1, 0)
-top_level = true
-z_index = 6
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -104.5
-offset_top = 980.0
-offset_right = 104.5
-offset_bottom = 1043.0
+offset_bottom = 677.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_constants/outline_size = 19
-theme_override_font_sizes/normal_font_size = 45
-text = "Loading..."
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-deselect_on_focus_loss_enabled = false
-drag_and_drop_selection_enabled = false
-
-[node name="TransitionRect" type="TextureRect" parent="."]
-modulate = Color(1, 1, 1, 0)
-z_index = 5
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -960.0
-offset_right = 960.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-pivot_offset = Vector2(960, 540)
-mouse_filter = 2
-texture = ExtResource("6_opfnp")
-
-[node name="bg_song" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("10_pavwk")
-bus = &"Menu Song"
-
-[node name="settings_button" type="TextureButton" parent="."]
-z_index = 1
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = 780.0
-offset_top = 16.0
-offset_right = 944.0
-offset_bottom = 180.002
-grow_horizontal = 0
-scale = Vector2(0.7, 0.7)
-pivot_offset = Vector2(82, 82)
-mouse_default_cursor_shape = 2
-disabled = true
-texture_normal = ExtResource("2_2tkn1")
-texture_pressed = ExtResource("3_s4jxt")
-
-[node name="settings_text" type="RichTextLabel" parent="."]
-z_index = 3
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = 791.0
-offset_top = 61.0
-offset_right = 936.0
-offset_bottom = 110.0
-grow_horizontal = 0
-pivot_offset = Vector2(72.5, 24.5)
-mouse_filter = 2
-theme_override_constants/outline_size = 19
-theme_override_font_sizes/normal_font_size = 35
-text = "Settings!"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-deselect_on_focus_loss_enabled = false
-drag_and_drop_selection_enabled = false
-
-[node name="settings_layer" type="Node2D" parent="."]
-z_index = 1
-
-[node name="settings_sprite" type="Sprite2D" parent="settings_layer"]
-z_index = 1
-position = Vector2(1920, 190)
 texture = ExtResource("13_8dnnj")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="settings_layer"]
+clip_contents = false
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 1591.0
-offset_top = 160.0
-offset_right = 2249.0
-offset_bottom = 1080.0
+offset_left = -410.0
+offset_top = -425.0
+offset_right = 411.0
+offset_bottom = 534.0
 grow_horizontal = 2
 grow_vertical = 2
 follow_focus = true
@@ -2781,6 +2549,7 @@ theme = ExtResource("12_m3bi6")
 [node name="space" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/normal_font_size = 50
 fit_content = true
@@ -2791,6 +2560,7 @@ justification_flags = 162
 [node name="space2" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_font_sizes/normal_font_size = 50
 fit_content = true
@@ -2801,6 +2571,7 @@ justification_flags = 162
 [node name="game_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
@@ -2814,6 +2585,7 @@ justification_flags = 162
 visible = false
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2851,8 +2623,9 @@ popup/item_5/icon = ExtResource("18_ne6ao")
 popup/item_5/id = 5
 
 [node name="song_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2860,6 +2633,7 @@ text = "---- Song Volume: 80 ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="song_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
@@ -2869,8 +2643,9 @@ theme = ExtResource("15_5n0dv")
 scrollable = false
 
 [node name="menu_song_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2878,6 +2653,7 @@ text = "---- Menu Song Volume: 75 ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="menu_song_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
@@ -2887,8 +2663,9 @@ theme = ExtResource("15_5n0dv")
 scrollable = false
 
 [node name="sfx_vol_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2896,6 +2673,7 @@ text = "---- SFX Volume: 45 ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="sfx_vol_slider" type="HSlider" parent="settings_layer/ScrollContainer/settings_list"]
@@ -2914,8 +2692,9 @@ text = "Change Keybinds"
 
 [node name="mbl_btn_layout_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
 visible = false
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2943,8 +2722,9 @@ popup/item_1/icon = ExtResource("13_5egv6")
 popup/item_1/id = 1
 
 [node name="note_style_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -2952,6 +2732,7 @@ text = "---- Note Style ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="note_style_drop" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -2959,9 +2740,12 @@ custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
 tooltip_text = "Change the look of your notes."
 mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
+theme_override_constants/h_separation = 12
+theme_override_constants/icon_max_width = 650
 alignment = 1
 selected = 0
-item_count = 3
+item_count = 4
 popup/item_0/text = "Dance"
 popup/item_0/icon = ExtResource("12_t1dhk")
 popup/item_0/id = 0
@@ -2971,6 +2755,18 @@ popup/item_1/id = 1
 popup/item_2/text = "Para"
 popup/item_2/icon = ExtResource("15_wyh8j")
 popup/item_2/id = 2
+popup/item_3/text = "Circle"
+popup/item_3/icon = ExtResource("24_5n0dv")
+popup/item_3/id = 3
+
+[node name="space4" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
 
 [node name="note_anim_toggle" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
@@ -2978,12 +2774,14 @@ size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 40
 text = "Note Animations"
 
 [node name="HBoxContainer" type="GridContainer" parent="settings_layer/ScrollContainer/settings_list"]
 visible = false
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 columns = 2
 
@@ -3044,8 +2842,9 @@ text = "Note Fades Out On
 Bad Hit"
 
 [node name="note_speed_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3053,6 +2852,7 @@ text = "---- Note Speed ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="note_speed_drop" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3079,8 +2879,9 @@ popup/item_5/text = "20.0"
 popup/item_5/id = 5
 
 [node name="note_offset_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3088,6 +2889,7 @@ text = "---- Note Offset (ms) ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="note_offset_edit" type="LineEdit" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3105,8 +2907,9 @@ virtual_keyboard_type = 3
 caret_blink = true
 
 [node name="speed_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3114,6 +2917,7 @@ text = "---- Game Speed ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="game_speed_edit" type="LineEdit" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3129,8 +2933,9 @@ virtual_keyboard_type = 3
 caret_blink = true
 
 [node name="menu_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 50)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
@@ -3138,6 +2943,7 @@ text = "------- Menu -------"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="reduce_motion_check" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3147,12 +2953,14 @@ tooltip_text = "Disables animations."
 mouse_default_cursor_shape = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 50
 text = "Reduce Motion"
 
 [node name="fps_separator" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 50)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 55
@@ -3160,6 +2968,7 @@ text = "------- Display -------"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="fpsCheck" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3168,12 +2977,36 @@ size_flags_horizontal = 4
 mouse_default_cursor_shape = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 50
 text = "Show FPS"
 
-[node name="fps_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+[node name="space5" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
 layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="raw_fps_check" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The regular way of getting
+FPS averages the FPS and only updates each second.
+This option recalculates the FPS every frame."
+mouse_default_cursor_shape = 2
+theme = ExtResource("15_5n0dv")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Accurate FPS"
+
+[node name="fps_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3181,6 +3014,7 @@ text = "---- Max FPS / V-Sync ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="fps_options" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3227,8 +3061,9 @@ placeholder_text = "Enter Custom FPS"
 alignment = 1
 
 [node name="res_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3236,6 +3071,7 @@ text = "---- Window Resolution ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="display_resolutions" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3255,8 +3091,9 @@ popup/item_3/text = "1280x720"
 popup/item_3/id = 4
 
 [node name="window_modes_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
@@ -3264,6 +3101,7 @@ text = "---- Window Modes ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="display_options" type="OptionButton" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3284,6 +3122,15 @@ popup/item_3/id = 4
 popup/item_4/text = "Windowed"
 popup/item_4/id = 4
 
+[node name="space3" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="borderless_check" type="CheckButton" parent="settings_layer/ScrollContainer/settings_list"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -3294,8 +3141,9 @@ theme_override_font_sizes/font_size = 50
 text = "Borderless"
 
 [node name="extra_label" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 10)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 45
@@ -3303,6 +3151,7 @@ text = "---- Extra ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="credits_btn" type="Button" parent="settings_layer/ScrollContainer/settings_list"]
@@ -3313,8 +3162,9 @@ theme_override_font_sizes/font_size = 50
 text = "Credits"
 
 [node name="slogan" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 30)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/normal_font_size = 22
@@ -3322,10 +3172,11 @@ text = "FEEL. YOUR RHYTHM."
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
 [node name="ver" type="RichTextLabel" parent="settings_layer/ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 30)
+custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
 tooltip_text = "!"
 theme = ExtResource("15_5n0dv")
@@ -3335,27 +3186,46 @@ text = "Beatz! X (Desktop Port) VERSION"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
 justification_flags = 162
 
-[node name="keybinds_layer" type="Node2D" parent="settings_layer"]
+[node name="keybinds_layer" type="Control" parent="settings_layer"]
 z_index = 1
-position = Vector2(1920, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1920.0
+offset_right = 1920.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="settings_sprite" type="Sprite2D" parent="settings_layer/keybinds_layer"]
+[node name="settings_sprite" type="TextureRect" parent="settings_layer/keybinds_layer"]
 z_index = 1
-position = Vector2(1920, 190)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -960.0
+offset_top = -411.0
+offset_right = 960.0
+offset_bottom = 669.0
+grow_horizontal = 2
+mouse_filter = 2
 texture = ExtResource("13_8dnnj")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="settings_layer/keybinds_layer"]
+clip_contents = false
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 1591.0
-offset_top = 160.0
-offset_right = 2249.0
-offset_bottom = 1080.0
+offset_left = -381.5
+offset_top = -414.0
+offset_right = 381.5
+offset_bottom = 506.0
 grow_horizontal = 2
 grow_vertical = 2
 follow_focus = true
@@ -3454,6 +3324,225 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
+[node name="logo_sprite" type="TextureRect" parent="."]
+z_index = 2
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -960.0
+offset_top = -344.0
+offset_right = 960.0
+offset_bottom = 736.0
+grow_horizontal = 2
+scale = Vector2(0.8, 0.8)
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("2_16hvj")
+stretch_mode = 2
+
+[node name="bg_main_menu" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("6_opfnp")
+
+[node name="play_sprite" type="TextureRect" parent="."]
+z_index = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -500.0
+offset_right = 960.0
+offset_bottom = 580.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.62, 0.62)
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("4_vr1f0")
+stretch_mode = 2
+
+[node name="play_button" type="TextureButton" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -82.0
+offset_top = 60.0
+offset_right = 82.0
+offset_bottom = 224.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(82, 82)
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("2_2tkn1")
+texture_pressed = ExtResource("3_s4jxt")
+
+[node name="exit_text" type="RichTextLabel" parent="."]
+z_index = 3
+layout_mode = 1
+offset_left = 13.0
+offset_top = 65.0
+offset_right = 180.0
+offset_bottom = 134.0
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 50
+text = "Exit"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="exit_game" type="TextureButton" parent="."]
+z_index = 2
+layout_mode = 1
+offset_left = 13.0
+offset_top = 13.0
+offset_right = 177.0
+offset_bottom = 177.0
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(82, 82)
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("6_16hvj")
+texture_pressed = ExtResource("7_vr1f0")
+
+[node name="settings_button" type="TextureButton" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 180.002
+grow_horizontal = 0
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(82, 82)
+mouse_default_cursor_shape = 2
+disabled = true
+texture_normal = ExtResource("2_2tkn1")
+texture_pressed = ExtResource("3_s4jxt")
+
+[node name="settings_text" type="RichTextLabel" parent="."]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -169.0
+offset_top = 70.0
+offset_right = -24.0
+offset_bottom = 115.0
+grow_horizontal = 0
+pivot_offset = Vector2(72.5, 24.5)
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 35
+text = "Settings!"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_cp0ys")
+}
+autoplay = "init"
+
+[node name="main_list" parent="." instance=ExtResource("2_opfnp")]
+visible = false
+z_index = -1
+layout_mode = 1
+
+[node name="song_list" parent="main_list/center" index="2"]
+offset_left = -758.5
+offset_right = 758.5
+
+[node name="del_no" parent="main_list/center/del_custom_panel" index="1"]
+offset_left = -210.0
+offset_top = -154.0
+offset_right = -35.0
+offset_bottom = -94.0
+
+[node name="del_yes" parent="main_list/center/del_custom_panel" index="2"]
+offset_left = 70.0
+offset_top = -154.0
+offset_right = 245.0
+offset_bottom = -94.0
+
+[node name="loading_text" type="RichTextLabel" parent="."]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 6
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -104.5
+offset_top = 440.0
+offset_right = 104.5
+offset_bottom = 503.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 45
+text = "Loading..."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="TransitionRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("6_opfnp")
+
+[node name="bg_song" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_pavwk")
+bus = &"Menu Song"
+
 [node name="song_playing_popup" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_mkpwh")
@@ -3462,36 +3551,46 @@ libraries = {
 [node name="currently_playing" type="RichTextLabel" parent="."]
 z_index = 4
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -935.0
-offset_top = 1080.0
-offset_right = -549.0
-offset_bottom = 1143.0
-grow_horizontal = 2
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_right = 399.0
+offset_bottom = 63.0
+grow_vertical = 0
 mouse_filter = 2
 theme_override_constants/outline_size = 10
 theme_override_fonts/normal_font = ExtResource("23_6m47u")
 theme_override_font_sizes/normal_font_size = 45
-text = "Currently playing:"
+text = " Currently playing:"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="hot_corner_current_playing" type="Panel" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -52.0
+offset_right = 430.0
+grow_vertical = 0
 
 [node name="saved_settings_popup" type="RichTextLabel" parent="."]
 z_index = 4
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 7
 anchor_left = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
+anchor_bottom = 1.0
 offset_left = -163.5
-offset_top = 1080.0
 offset_right = 163.5
-offset_bottom = 1143.0
+offset_bottom = 63.0
 grow_horizontal = 2
+grow_vertical = 0
 pivot_offset = Vector2(163.5, 31.5)
 mouse_filter = 2
 theme_override_constants/outline_size = 14
@@ -3501,17 +3600,22 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="popup_leave" type="CenterContainer" parent="."]
 z_index = 2
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
+anchor_top = 0.5
 anchor_right = 0.5
+anchor_bottom = 0.5
 offset_left = -960.0
+offset_top = -540.0
 offset_right = 960.0
-offset_bottom = 1080.0
+offset_bottom = 540.0
 grow_horizontal = 2
+grow_vertical = 2
 scale = Vector2(1e-05, 1e-05)
 
 [node name="Panel" type="Panel" parent="popup_leave"]
@@ -3520,11 +3624,12 @@ layout_mode = 2
 theme = SubResource("Theme_6m47u")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="popup_leave/Panel"]
-layout_mode = 2
+layout_mode = 0
 offset_left = 211.0
 offset_top = 30.0
 offset_right = 1088.0
 offset_bottom = 113.0
+mouse_filter = 2
 theme = ExtResource("15_5n0dv")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 60
@@ -3546,6 +3651,7 @@ theme_override_font_sizes/font_size = 35
 text = "Leave"
 
 [node name="Cancel" type="Button" parent="popup_leave/Panel"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
 offset_left = 665.0
 offset_top = 278.0
@@ -3564,10 +3670,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 919.0
-offset_top = 1038.0
-offset_right = 946.0
-offset_bottom = 1080.0
+offset_left = -44.0
+offset_top = -42.0
+offset_right = -17.0
+offset_bottom = 0.0
 grow_horizontal = 0
 grow_vertical = 0
 horizontal_alignment = 2
@@ -3577,13 +3683,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_84iac")
 }
 
-[connection signal="pressed" from="edit_button" to="." method="_on_edit_button_pressed"]
-[connection signal="button_up" from="play_button" to="." method="_on_play_button_button_up"]
-[connection signal="button_up" from="exit_game" to="." method="_on_exit_game_button_up"]
-[connection signal="song_sel" from="main_list" to="." method="_on_main_list_song_sel"]
-[connection signal="went_back" from="main_list" to="." method="_on_main_list_went_back"]
-[connection signal="finished" from="bg_song" to="." method="_on_bg_song_finished"]
-[connection signal="button_up" from="settings_button" to="." method="_on_settings_button_up"]
 [connection signal="item_selected" from="settings_layer/ScrollContainer/settings_list/game_theme_drop" to="." method="_on_game_theme_selected"]
 [connection signal="value_changed" from="settings_layer/ScrollContainer/settings_list/song_vol_slider" to="." method="_on_song_vol_slider_value_changed"]
 [connection signal="value_changed" from="settings_layer/ScrollContainer/settings_list/menu_song_vol_slider" to="." method="_on_menu_song_vol_slider_value_changed"]
@@ -3597,12 +3696,21 @@ libraries = {
 [connection signal="text_submitted" from="settings_layer/ScrollContainer/settings_list/game_speed_edit" to="." method="_on_game_speed_text_submitted"]
 [connection signal="toggled" from="settings_layer/ScrollContainer/settings_list/reduce_motion_check" to="." method="_on_reduce_motion_toggled"]
 [connection signal="toggled" from="settings_layer/ScrollContainer/settings_list/fpsCheck" to="." method="_on_fps_check_toggled"]
+[connection signal="toggled" from="settings_layer/ScrollContainer/settings_list/raw_fps_check" to="." method="_on_raw_fps_check_toggled"]
 [connection signal="item_selected" from="settings_layer/ScrollContainer/settings_list/fps_options" to="." method="_on_fps_options_item_selected"]
 [connection signal="text_submitted" from="settings_layer/ScrollContainer/settings_list/custom_fps" to="." method="_on_custom_fps_text_submitted"]
 [connection signal="item_selected" from="settings_layer/ScrollContainer/settings_list/display_resolutions" to="." method="_on_display_item_selected"]
 [connection signal="item_selected" from="settings_layer/ScrollContainer/settings_list/display_options" to="." method="_on_display_options_selected"]
 [connection signal="toggled" from="settings_layer/ScrollContainer/settings_list/borderless_check" to="." method="_on_borderless_check_toggled"]
 [connection signal="pressed" from="settings_layer/ScrollContainer/settings_list/credits_btn" to="." method="_on_credits_btn_pressed"]
+[connection signal="button_up" from="play_button" to="." method="_on_play_button_button_up"]
+[connection signal="button_up" from="exit_game" to="." method="_on_exit_game_button_up"]
+[connection signal="button_up" from="settings_button" to="." method="_on_settings_button_up"]
+[connection signal="song_sel" from="main_list" to="." method="_on_main_list_song_sel"]
+[connection signal="went_back" from="main_list" to="." method="_on_main_list_went_back"]
+[connection signal="finished" from="bg_song" to="." method="_on_bg_song_finished"]
+[connection signal="mouse_entered" from="hot_corner_current_playing" to="." method="_on_hot_corner_current_playing_mouse_entered"]
+[connection signal="mouse_exited" from="hot_corner_current_playing" to="." method="_on_hot_corner_current_playing_mouse_exited"]
 [connection signal="pressed" from="popup_leave/Panel/Accept" to="." method="_on_accept_pressed"]
 [connection signal="pressed" from="popup_leave/Panel/Cancel" to="." method="_on_cancel_pressed"]
 

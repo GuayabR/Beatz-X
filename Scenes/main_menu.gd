@@ -8,7 +8,40 @@ var spectrum: AudioEffectSpectrumAnalyzerInstance
 
 var can_random := true
 
+func _on_files_dropped(files: PackedStringArray) -> void:
+	for file in files:
+		_process_file(file)
+	
+func _process_file(path: String) -> void:
+	var lower_ext := path.get_extension().to_lower()
+	match lower_ext:
+		"bx":
+			print("Uploading beatzmap: ", path)
+			$main_list._on_file_dialog_files_selected(true, [path], 0)
+		"beatz":
+			print("Uploading beatz chart: ", path)
+			$main_list._on_file_dialog_files_selected(true, [path], 0)
+		"mp3", "ogg", "wav":
+			print("Song dropped passing to editor: ", path)
+			$main_list.entered_mp3_on_window(path)
+		_:
+			print("Unsupported file dropped: ", path)
+
+func _handle_file_args(args: PackedStringArray) -> void:
+	for arg in args:
+		_process_file(arg)
+
 func _ready() -> void:
+	var args = OS.get_cmdline_args()
+	if args.size() > 0:
+		_handle_file_args(args)
+	
+	get_window().files_dropped.connect(_on_files_dropped)
+	
+	if OS.get_name() in ["Android", "iOS", "Web"]:
+		$exit_text.hide()
+		$exit_game.hide()
+	
 	get_tree().quit_on_go_back = false
 	spectrum = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Menu Song"), 0) as AudioEffectSpectrumAnalyzerInstance
 	
@@ -75,24 +108,6 @@ func _apply_loaded_settings():
 		Globals.settings.misc_settings.window_mode = "exclusive_fullscreen"
 		Globals.settings.misc_settings.resolution = [1920, 1080]
 		Globals._save_settings()
-	
-	if Globals.settings.game.theme == "Chandrika Prasaad":
-		change_theme("Chandrika Prasaad")
-		$settings_layer/ScrollContainer/settings_list/game_theme_drop.select(1)
-	elif Globals.settings.game.theme == "Femboy":
-		change_theme("Femboy")
-		$settings_layer/ScrollContainer/settings_list/game_theme_drop.select(2)
-	elif Globals.settings.game.theme == "Ranith":
-		change_theme("Ranith")
-		$settings_layer/ScrollContainer/settings_list/game_theme_drop.select(3)
-	elif Globals.settings.game.theme == "UNDERTALE / DELTARUNE":
-		change_theme("UNDERTALE / DELTARUNE")
-		$settings_layer/ScrollContainer/settings_list/game_theme_drop.select(4)
-	elif Globals.settings.game.theme == "Glorious Grandfather":
-		change_theme("Glorious Grandfather")
-		$settings_layer/ScrollContainer/settings_list/game_theme_drop.select(5)
-	else:
-		print("default theme")
 	
 	# Apply note anim toggle
 	$settings_layer/ScrollContainer/settings_list/note_anim_toggle.set_pressed_no_signal(Globals.settings.misc_settings.note_anims)
@@ -181,22 +196,22 @@ func _process(delta: float) -> void:
 		var bass_energy: float = spectrum.get_magnitude_for_frequency_range(20.0, 250.0).length()
 		var bass_loudness: float = clampf((111 + linear_to_db(bass_energy)) / 111.0, 0.0, 1.0)
 
-		var treble_energy: float = spectrum.get_magnitude_for_frequency_range(5000.0, 11050.0).length()
-		var treble_loudness: float = clampf((111 + linear_to_db(treble_energy)) / 111.0, 0.0, 1.0)
+		#var treble_energy: float = spectrum.get_magnitude_for_frequency_range(5000.0, 11050.0).length()
+		#var treble_loudness: float = clampf((111 + linear_to_db(treble_energy)) / 111.0, 0.0, 1.0)
 
 		# Exponentiate for punch
-		var exp_treble := pow(treble_loudness, 1.5)
+		#var exp_treble := pow(treble_loudness, 1.5)
 		var exp_overall := pow(overall_loudness, 3.0)
 		var exp_bass := pow(bass_loudness, 2.5)
 		var exp_bg := clampf(exp_bass * 0.8 + exp_overall * 0.1, 0.0, 1.0)
 		
 		# Base and max scale ranges
 		var base_scale := 1.0
-		var max_title := 1.5
+		#var max_title := 1.5
 		var max_bg := 1.3
 
 		# Interpolated targets
-		var title_target = lerp(base_scale, max_title, exp_treble)
+		#var title_target = lerp(base_scale, max_title, exp_treble)
 		var bg_target = lerp(base_scale, max_bg, exp_bg)
 
 		# Smooth transitions
@@ -209,42 +224,81 @@ func _on_bg_song_finished() -> void:
 	play_random_song() # Once bg song finishes play another random song
 
 func play_random_song() -> void:
-	var dir = DirAccess.open("res://Resources/Songs/")
 	var song_files := []
-	
+
+	# Scan res://Resources/Songs/
+	var dir = DirAccess.open("res://Resources/Songs/")
 	if dir:
-		dir.list_dir_begin() # Get a list of all songs
+		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".mp3"): # If the file is an mp3, add it to song_files
-				song_files.append(file_name)
-			file_name = dir.get_next() # Get the next file
+			if not dir.current_is_dir() and file_name.ends_with(".mp3"):
+				song_files.append("res://Resources/Songs/" + file_name)
+			file_name = dir.get_next()
 		dir.list_dir_end()
-		
+
+	# Scan user://Custom/ for any *.mp3 inside subfolders
+	var user_dir = DirAccess.open("user://Custom/")
+	if user_dir:
+		user_dir.list_dir_begin()
+		var folder_name = user_dir.get_next()
+		while folder_name != "":
+			if folder_name != "." and folder_name != "..":
+				var subfolder = "user://Custom/" + folder_name
+				var sub_dir = DirAccess.open(subfolder)
+				if sub_dir:
+					sub_dir.list_dir_begin()
+					var subfile = sub_dir.get_next()
+					while subfile != "":
+						if not sub_dir.current_is_dir() and subfile.ends_with(".mp3"):
+							song_files.append(subfolder + "/" + subfile)
+						subfile = sub_dir.get_next()
+					sub_dir.list_dir_end()
+			folder_name = user_dir.get_next()
+		user_dir.list_dir_end()
+
+	# Pick a random song
 	if song_files.size() > 0:
-		var random_song = song_files[randi() % song_files.size()] # Get a random full number from 0 to however big the song files it found is
-		bgsong = load("res://Resources/Songs/" + random_song)
-		
+		var random_song = song_files[randi() % song_files.size()]
+		var bgsong
+
+		if random_song.begins_with("res://"):
+			# normal resource
+			bgsong = load(random_song)
+		else:
+			# user:// file — create a new AudioStreamMP3
+			var file_ext = random_song.get_extension().to_lower()
+			if file_ext == "mp3":
+				bgsong = AudioStreamMP3.load_from_file(random_song)
+			elif file_ext == "ogg":
+				bgsong = AudioStreamOggVorbis.load_from_file(random_song)
+			else:
+				print("Unsupported audio format: ", random_song)
+				return
+			$bg_song.stream = bgsong  # assign file data
+
+		# Assign to audio players
 		$bg_song.stream = bgsong
 		$Visualizer/Song_left.stream = bgsong
 		$Visualizer/Song_right.stream = bgsong
-		
+
 		$Visualizer/Song_left.play()
 		$Visualizer/Song_right.play()
 		$bg_song.play()
+
+		$currently_playing.text = " Currently playing: " + random_song.get_file().trim_suffix("." + random_song.get_extension())
 		
-		$currently_playing.text = str("Currently playing: ",  random_song.trim_suffix(".mp3"))
-		# These checks check if the currently playing animation is playing or not, if it is, only set the text and make the text only go down instead of popping up, if it isnt playing, pop the text up then down
-		if $song_playing_popup.current_animation == "new_song_playing":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		elif $song_playing_popup.current_animation == "new_song_interrupt":
+
+		if $song_playing_popup.current_animation in ["new_song_playing", "new_song_interrupt"]:
 			$song_playing_popup.stop()
 			$song_playing_popup.play("new_song_interrupt")
 		else:
 			$song_playing_popup.play("new_song_playing")
+		
+		$hot_corner_current_playing.size = $currently_playing.size + Vector2(30,0)
 	else:
-		print("No MP3 files found in Resources/Songs/") # I DONT KNOW WHY THE EXPORTED PROJECT NEVER FINDS MP3 FILES IN THE FOLDER
+		print("No MP3 files found in Resources/Songs/ or user://Custom/")
+
 
 func _on_play_button_button_up() -> void:
 	$play_button.release_focus()
@@ -364,6 +418,10 @@ func _on_cancel_pressed() -> void:
 
 func _on_fps_check_toggled(toggled_on: bool) -> void:
 	Globals.settings.misc_settings.show_fps = toggled_on
+	save_stgs() # Always save settings
+
+func _on_raw_fps_check_toggled(toggled_on: bool) -> void:
+	Globals.settings.misc_settings.accurate_fps = toggled_on
 	save_stgs() # Always save settings
 
 func _on_fps_options_item_selected(index: int) -> void: # Instantly sets the selected setting when the user selects an option
@@ -591,156 +649,12 @@ func _on_note_anim_toggled(toggled_on: bool) -> void:
 	
 	save_stgs()
 
-
-
-
-
-
-
-
-
-
-func _on_game_theme_selected(index: int) -> void:
-	match index:
-		0: 
-			Globals.settings.game.theme = "Default"
-			change_theme("Default")
-		1: 
-			Globals.settings.game.theme = "Chandrika Prasaad"
-			change_theme("Chandrika Prasaad")
-		2: 
-			Globals.settings.game.theme = "Femboy"
-			change_theme("Femboy")
-		3: 
-			Globals.settings.game.theme = "Ranith"
-			change_theme("Ranith")
-		4: 
-			Globals.settings.game.theme = "UNDERTALE / DELTARUNE"
-			change_theme("UNDERTALE / DELTARUNE")
-		5: 
-			Globals.settings.game.theme = "Glorious Grandfather"
-			change_theme("Glorious Grandfather")
-
-func change_theme(new_theme: String):
-	print("Changed to: " + new_theme)
-	if new_theme == "Default":
-		$logo_sprite.texture = load("res://Resources/misc/BeatzTitle.png")
-		$bg_main_menu.texture = load("res://Resources/defaultBG.png")
-		$main_list/background.texture = load("res://Resources/defaultBG.png")
-		$main_list/TransitionRect.texture = load("res://Resources/defaultBG.png")
-		$play_button.texture_normal = load("res://Resources/Arrows/NoteUp.png")
-		$play_button.texture_hover = load("res://Resources/Arrows/NoteUp.png")
-		$play_button.texture_pressed = load("res://Resources/Arrows/NoteUpPress.png")
-		Globals._save_settings()
-	elif new_theme == "Chandrika Prasaad":
-		Globals.settings.game.theme = new_theme
-		$logo_sprite.texture = load("res://Resources/Screenshot 2025-06-22 003928.png")
-		$bg_main_menu.texture = load("res://Resources/whsteacherWHAT.jpg")
-		$main_list/background.texture = load("res://Resources/whsteacherWHAT.jpg")
-		$main_list/TransitionRect.texture = load("res://Resources/whsteacherWHAT.jpg")
-		$play_button.texture_normal = load("res://Resources/Screenshot 2025-06-22 003928.png")
-		Globals._save_settings()
-	elif Globals.settings.game.theme == "Femboy":
-		Globals.settings.game.theme = new_theme
-		$bg_song.stop()
-		$bg_song.stream = load("res://Resources/Songs/Black Knife.mp3")
-		$bg_song.play()
-		
-		$currently_playing.text = str("Currently playing: Black Knife")
-		if $song_playing_popup.current_animation == "new_song_playing":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		elif $song_playing_popup.current_animation == "new_song_interrupt":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		else:
-			$song_playing_popup.play("new_song_playing")
-		
-		$logo_sprite.texture = load("res://Resources/601749.jpg")
-		$bg_main_menu.texture = load("res://Resources/micho.png")
-		$main_list/background.texture = load("res://Resources/micho.png")
-		$main_list/TransitionRect.texture = load("res://Resources/micho.png")
-		$play_button.texture_normal = load("res://Resources/micho.png")
-		$play_button.texture_hover = load("res://Resources/micho.png")
-		$play_button.texture_pressed = load("res://Resources/601749.jpg")
-		Globals._save_settings()
-	elif Globals.settings.game.theme == "Ranith":
-		Globals.settings.game.theme = new_theme
-		$bg_song.stop()
-		$bg_song.stream = load("res://Resources/Songs/Calling All My Lovelies.mp3")
-		$bg_song.play()
-		
-		$currently_playing.text = str("Currently playing: Calling All My Lovelies spotted ❤️‍🩹")
-		if $song_playing_popup.current_animation == "new_song_playing":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		elif $song_playing_popup.current_animation == "new_song_interrupt":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		else:
-			$song_playing_popup.play("new_song_playing")
-		
-		$logo_sprite.texture = load("res://Resources/Covers/Ranith.png")
-		$bg_main_menu.texture = load("res://Resources/ranithfight.png")
-		$main_list/background.texture = load("res://Resources/ranithfight.png")
-		$main_list/TransitionRect.texture = load("res://Resources/ranithfight.png")
-		$play_button.texture_normal = load("res://Resources/Covers/Ranith.png")
-		$play_button.texture_hover = load("res://Resources/Covers/Ranith.png")
-		$play_button.texture_pressed = load("res://Resources/Covers/24K Magic.png")
-		Globals._save_settings()
-	elif Globals.settings.game.theme == "UNDERTALE / DELTARUNE":
-		Globals.settings.game.theme = new_theme
-		$bg_song.stop()
-		$bg_song.stream = load("res://Resources/Songs/The Legend.mp3")
-		$bg_song.play()
-		
-		$currently_playing.text = str("Currently playing: The Legend")
-		if $song_playing_popup.current_animation == "new_song_playing":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		elif $song_playing_popup.current_animation == "new_song_interrupt":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		else:
-			$song_playing_popup.play("new_song_playing")
-		
-		$logo_sprite.texture = load("res://Resources/Covers/UNDERTALE Soundtrack.png")
-		$bg_main_menu.texture = load("res://Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png")
-		$main_list/background.texture = load("res://Resources/Covers/DELTARUNE Chapter 3+4 (Original Game Soundtrack).png")
-		$main_list/TransitionRect.texture = load("res://Resources/Covers/DELTARUNE Chapter 2 (Original Game Soundtrack).png")
-		$play_button.texture_normal = load("res://Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png")
-		$play_button.texture_hover = load("res://Resources/Covers/DELTARUNE Chapter 2 (Original Game Soundtrack).png")
-		$play_button.texture_pressed = load("res://Resources/Covers/DELTARUNE Chapter 3+4 (Original Game Soundtrack).png")
-		Globals._save_settings()
-	elif Globals.settings.game.theme == "Glorious Grandfather":
-		Globals.settings.game.theme = new_theme
-		$bg_song.stop()
-		$bg_song.stream = load("res://Resources/Songs/NOSTYLIST.mp3")
-		$bg_song.play()
-		
-		$currently_playing.text = str("Currently playing: NOSTYLIST AURA GRANDFATHER SONG")
-		if $song_playing_popup.current_animation == "new_song_playing":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		elif $song_playing_popup.current_animation == "new_song_interrupt":
-			$song_playing_popup.stop()
-			$song_playing_popup.play("new_song_interrupt")
-		else:
-			$song_playing_popup.play("new_song_playing")
-		
-		$logo_sprite.texture = load("res://Resources/Covers/Sewer.png")
-		$bg_main_menu.texture = load("res://Resources/Covers/THERE ARE BUGS UNDER YOUR SKIN.png")
-		$main_list/background.texture = load("res://Resources/Covers/THERE ARE BUGS UNDER YOUR SKIN.png")
-		$main_list/TransitionRect.texture = load("res://Resources/Covers/THERE ARE BUGS UNDER YOUR SKIN.png")
-		$play_button.texture_normal = load("res://Resources/Covers/Golden Child.png")
-		$play_button.texture_hover = load("res://Resources/Covers/Sewer.png")
-		$play_button.texture_pressed = load("res://Resources/Covers/THERE ARE BUGS UNDER YOUR SKIN.png")
-		Globals._save_settings()
-	else:
-		print("default theme or not implemented")
-
 func _on_change_binds_btn_pressed() -> void:
 	$AnimationPlayer.play("from_settings_to_binds")
 
-func _on_edit_button_pressed() -> void:
-	pass # Replace with function body.
+func _on_hot_corner_current_playing_mouse_entered() -> void:
+	$song_playing_popup.stop()
+	$song_playing_popup.play("new_song_playing", -1, 1.75)
+
+func _on_hot_corner_current_playing_mouse_exited() -> void:
+	if $song_playing_popup.is_playing(): $song_playing_popup.seek(2.8)

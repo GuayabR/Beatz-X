@@ -342,3 +342,6 @@ func save_stgs(): # Saves settings and plays the pop up
 	Globals._save_settings()
 	$save_anim.stop()
 	$save_anim.play("save")
+
+func _on_change_binds_btn_pressed() -> void:
+	pass # Replace with function body.
