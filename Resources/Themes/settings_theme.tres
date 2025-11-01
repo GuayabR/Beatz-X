@@ -1,11 +1,86 @@
-[gd_resource type="Theme" load_steps=4 format=3 uid="uid://cc40g6w54ebkq"]
-
-[ext_resource type="StyleBox" uid="uid://1tvf3o2gqwvv" path="res://Resources/Themes/scroll_bar_grabber.tres" id="1_biorc"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://cc40g6w54ebkq"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_biorc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0uwpb"]
 bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pwj0y"]
+bg_color = Color(0.39176494, 0.3917649, 0.39176476, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+shadow_color = Color(0, 0, 0, 0.23137255)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xao2w"]
+bg_color = Color(0.46434444, 0.4643445, 0.46434432, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+border_blend = true
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+shadow_color = Color(0, 0, 0, 0.23137255)
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a3umy"]
+bg_color = Color(0.682231, 0.6822311, 0.6822309, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+shadow_color = Color(0, 0, 0, 0.23137255)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_acam2"]
+content_margin_left = 5.0
+content_margin_top = 4.0
+content_margin_right = 5.0
+content_margin_bottom = 4.0
+bg_color = Color(0.6, 0.6, 0.6, 0.37254903)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.39215687)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h7cft"]
+content_margin_left = 5.0
+content_margin_top = 3.0
+content_margin_right = 5.0
+content_margin_bottom = 3.0
 
 [resource]
 CheckBox/constants/icon_max_width = 200
@@ -16,4 +91,8 @@ OptionButton/styles/pressed = SubResource("StyleBoxFlat_biorc")
 OptionButton/styles/pressed_mirrored = SubResource("StyleBoxFlat_0uwpb")
 PopupMenu/constants/icon_max_width = 650
 VBoxContainer/constants/separation = 10
-VScrollBar/styles/grabber = ExtResource("1_biorc")
+VScrollBar/styles/grabber = SubResource("StyleBoxFlat_pwj0y")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxFlat_xao2w")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_a3umy")
+VScrollBar/styles/scroll = SubResource("StyleBoxFlat_acam2")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_h7cft")
