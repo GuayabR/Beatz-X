@@ -47,7 +47,6 @@ All songs are editable, this includes:
 ## Extensive settings
 I want Beatz to be as customizable as possible!
 With Settings you can change:
-- Keybinds
 - Basic Audio settings
 - Your Note Style
 - Toggle Note Animations
