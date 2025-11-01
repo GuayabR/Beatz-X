@@ -1,6 +1,6 @@
-# Beatz! X (1.0.5 9/07/2025)
+# Beatz! X (1.3.1 10/26/2025)
 ### FEEL YOUR RHYTHM.
-#### Made in Godot 4.4 by GuayabR
+#### Made in Godot 4.5 by GuayabR
 
 ## Songs from Creo!
 #### FEEL CREO'S RHYTHM.
@@ -17,6 +17,14 @@ Includes:
 - Sky and Soul (Extreme)
 - Red Haze (Insanity)
 - Reflections (Extreme)
+#### NOT JUST CREO'S RHYTHM.
+Includes:
+- Within The Sadness (Onefin Remix) - Onefin | Extreme
+- Dark Matter Suite (Onefin & LOrbSheddy Remix) - Onefin | Hard
+- Powersound - ELEPS | Insanity
+- Lunar Abyss - Lchavasse | Insanity
+- KOCMOC - SLEEPING HUMMINGBIRD | Insanity
+- CHEGOU 3 - shonci | Hard
 ## FULL LEVEL EDITOR.
 CREATE YOUR OWN BEATZMAPS.
 You can:
@@ -33,12 +41,13 @@ You can:
 ## THE SONG LIST
 YOUR RHYTHMS will be listed here!
 All songs are editable, this includes:
-- included charts (Creo songs listed above)
+- included charts (Rhythms listed above)
 - Uploaded .bx beatzmaps
 - Recorded charts
 ## Extensive settings
 I want Beatz to be as customizable as possible!
 With Settings you can change:
+- Keybinds
 - Basic Audio settings
 - Your Note Style
 - Toggle Note Animations
@@ -46,9 +55,15 @@ With Settings you can change:
 - Change Note Speed
 - Change the Note Offset (Sync up your notes)
 - Change the global Game Speed (Like a Speedhack)
+- Toggle Background Visualizers
+- Toggle Background Pulse
+- Change Background Pulse Strength
+- Change Default Background Image
+- Change your Beatz profile picture / banner
 - Change basic Display Settings
+- Toggle Discord Rich Presence
 ## Game Information
-- Version 1.0.3 (1.0 9/01/2025 // 1.0.2 9/02/2025)
+- Version 1.3.1 (11/1/2025)
 - Beatz! X Developed since march 2025.
 - Beatz! Browser Developed since september 2024 until april 2025. (Ended development at version 1.9) https://github.com/GuayabR/Beatz-Browser
 - Beatz! Developed since march 2024 until september 2024. (Ended development at version LOAD//FETCH 5.3.4.5) https://github.com/GuayabR/Beatz
@@ -58,5 +73,5 @@ I will try to regularly update it as much as possible.
 Please, any feedback is more than welcome.
 
 #### https://beatzx.com
-#### Contact: playbeatzx@gmail.com / https://twitter.com/PlayBeatzX / https://instagram.com/playbeatzx
+#### Contact: info@beatzx.com / https://twitter.com/PlayBeatzX / https://instagram.com/playbeatzx
 If you would like to contribute to this project please dm me through my contact.
