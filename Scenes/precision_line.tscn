@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://c7j6ihfc2m8ce"]
+
+[ext_resource type="Script" uid="uid://q61oqppevkvm" path="res://Scenes/precision_line.gd" id="1_el4vy"]
+[ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="2_wdfhs"]
+
+[sub_resource type="Gradient" id="Gradient_wdfhs"]
+offsets = PackedFloat32Array(0, 0.175, 0.35, 0.5, 0.65, 0.825, 1)
+colors = PackedColorArray(1, 0, 0, 1, 1, 0.67058825, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0.6696667, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rbslk"]
+blend_mode = 1
+
+[node name="precision_line" type="Line2D"]
+points = PackedVector2Array(-200, 0, -75, 0, 0, 0, 75, 0, 200, 0)
+width = 23.0
+begin_cap_mode = 2
+end_cap_mode = 2
+round_precision = 16
+antialiased = true
+script = ExtResource("1_el4vy")
+
+[node name="line" type="Line2D" parent="."]
+points = PackedVector2Array(-200, 0, -75, 0, -35, 0, 0, 0, 35, 0, 75, 0, 200, 0)
+width = 18.0
+gradient = SubResource("Gradient_wdfhs")
+begin_cap_mode = 2
+end_cap_mode = 2
+round_precision = 16
+antialiased = true
+
+[node name="hit_outline" type="Line2D" parent="line"]
+points = PackedVector2Array(0, -18, 0, 18)
+width = 14.0
+default_color = Color(0, 0, 0, 0.393)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="glow" type="Sprite2D" parent="line/hit_outline"]
+modulate = Color(0, 1, 0, 1)
+material = SubResource("CanvasItemMaterial_rbslk")
+scale = Vector2(0.057965804, 0.16169263)
+texture = ExtResource("2_wdfhs")
+
+[node name="hit_line" type="Line2D" parent="line/hit_outline"]
+points = PackedVector2Array(0, -18, 0, 18)
+begin_cap_mode = 2
+end_cap_mode = 2

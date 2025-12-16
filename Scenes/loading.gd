@@ -3,13 +3,13 @@ extends Control
 
 @export var scene_to_load: String = "res://Scenes/main_menu.tscn"
 var loaded_scene: PackedScene
-var custom_data = {}
+var custom_data: Dictionary[Variant, Variant] = {}
 
-var progress = []
+var progress: Array[Variant] = []
 
-var status = 0
+var status: int = 0
 
-var rotation_speed = 5.0
+var rotation_speed: float = 5.0
 
 func _ready():
 	if scene_to_load == "":

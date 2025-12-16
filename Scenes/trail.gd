@@ -2,9 +2,10 @@ extends Line2D
 
 var queue: Array
 @export var MAX_LENGTH: int
+@export var use_mouse: bool = true
 
 func _process(delta: float) -> void:
-	var pos = get_global_mouse_position()
+	var pos = get_global_mouse_position() if use_mouse else position
 	
 	queue.push_front(pos)
 	

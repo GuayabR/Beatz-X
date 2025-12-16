@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://72iwv8sulrfp"]
+[gd_scene load_steps=29 format=3 uid="uid://72iwv8sulrfp"]
 
 [ext_resource type="Script" uid="uid://b8v6i072uumyo" path="res://Scenes/main_list.gd" id="1_53lae"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="1_t4y1h"]
@@ -8,11 +8,18 @@
 [ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="4_yqah5"]
 [ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="6_1wh5s"]
 [ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="7_1wh5s"]
-[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="7_53t5k"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="7_ckusj"]
 [ext_resource type="AudioStream" uid="uid://b11pbqdgeoxrk" path="res://Resources/SFX/hover.wav" id="8_85nfu"]
+[ext_resource type="Texture2D" uid="uid://k8yi31jqksm1" path="res://Resources/Unreleased.png" id="9_3gvlj"]
 [ext_resource type="Theme" uid="uid://bjp4vqou7f4gl" path="res://Resources/Themes/editor_theme.tres" id="9_ckusj"]
 [ext_resource type="AudioStream" uid="uid://dxq0i86kkonyh" path="res://Resources/SFX/hoverBtn.mp3" id="9_eobli"]
 [ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="12_ckusj"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="13_dy18g"]
+[ext_resource type="PackedScene" uid="uid://c710qquuxbtvy" path="res://Scenes/album_view.tscn" id="16_4d6o5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4d6o5"]
+content_margin_top = 172.0
+bg_color = Color(0.60038817, 0.60038817, 0.60038817, 0)
 
 [sub_resource type="Animation" id="Animation_yqah5"]
 length = 0.001
@@ -74,7 +81,7 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, -436)]
+"values": [Vector2(-405, -436)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
@@ -123,6 +130,30 @@ tracks/8/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(-738.5, -348)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("center/song_list:size")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1517, 1006)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("album_view:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1920, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_l6r1o"]
@@ -186,7 +217,7 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0.333333, 0.533333, 0.7),
 "transitions": PackedFloat32Array(0.659754, 5.85634, 1),
 "update": 0,
-"values": [Vector2(0, -436), Vector2(0, -420), Vector2(0, -750)]
+"values": [Vector2(-405, -436), Vector2(-405, -420), Vector2(-405, -750)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
@@ -210,7 +241,59 @@ tracks/6/keys = {
 "times": PackedFloat32Array(0.333333, 0.7),
 "transitions": PackedFloat32Array(4.43828, 1),
 "update": 0,
-"values": [Vector2(-738.5, -348), Vector2(-738.5, -250)]
+"values": [Vector2(-738.5, -520), Vector2(-738.5, -422)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("center/song_list:size")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.33333334, 0.7),
+"transitions": PackedFloat32Array(4.43828, 1),
+"update": 0,
+"values": [Vector2(1517, 1005), Vector2(1517, 908)]
+}
+
+[sub_resource type="Animation" id="Animation_4d6o5"]
+resource_name = "go_to_album"
+length = 0.55
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TransitionRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.3077861, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("center_bottom/loading_text:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.29730183, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("album_view:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.5, 0.53333336),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1920, 0), Vector2(0, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_eobli"]
@@ -265,11 +348,52 @@ tracks/3/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
+[sub_resource type="Animation" id="Animation_j4mli"]
+resource_name = "loaded_album"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("center_bottom/loading_text:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.033333335),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TransitionRect:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.03333333),
+"transitions": PackedFloat32Array(0.36602157, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("album_view:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_1wh5s"]
 _data = {
 &"RESET": SubResource("Animation_yqah5"),
 &"back": SubResource("Animation_l6r1o"),
-&"go_to_selected": SubResource("Animation_eobli")
+&"go_to_album": SubResource("Animation_4d6o5"),
+&"go_to_selected": SubResource("Animation_eobli"),
+&"loaded_album": SubResource("Animation_j4mli")
 }
 
 [sub_resource type="Animation" id="Animation_5r41q"]
@@ -569,26 +693,31 @@ script = ExtResource("1_53lae")
 modulate = Color(0.529067, 0.529067, 0.529067, 1)
 z_index = -1
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 1080.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 pivot_offset = Vector2(960, 540)
+focus_mode = 1
 texture = ExtResource("1_t4y1h")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="song_list_sprite" type="TextureRect" parent="."]
-z_index = -1
+z_index = 4
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -960.0
+offset_left = -1365.0
 offset_top = -436.0
-offset_right = 960.0
+offset_right = 555.0
 offset_bottom = 644.0
 grow_horizontal = 2
 scale = Vector2(0.7, 0.7)
 pivot_offset = Vector2(960, 540)
+focus_mode = 1
 texture = ExtResource("3_yqah5")
 
 [node name="TransitionRect" type="TextureRect" parent="."]
@@ -596,18 +725,19 @@ modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 5
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -960.0
-offset_right = 960.0
-offset_bottom = 1080.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 pivot_offset = Vector2(960, 540)
 mouse_filter = 2
 texture = ExtResource("1_t4y1h")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="center" type="Control" parent="."]
+z_index = -1
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -663,31 +793,39 @@ expand_mode = 1
 
 [node name="song_list" type="ItemList" parent="center"]
 z_index = 2
-custom_minimum_size = Vector2(1517, 200)
+z_as_relative = false
+custom_minimum_size = Vector2(1517, 500)
 layout_direction = 2
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -758.0
-offset_top = -368.0
-offset_right = 759.0
-offset_bottom = 540.0
-grow_horizontal = 2
-grow_vertical = 2
-tooltip_text = "Select a song to play!"
+layout_mode = 0
+offset_left = -738.5
+offset_top = -348.0
+offset_right = 778.5
+offset_bottom = 658.0
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
 theme_override_constants/icon_margin = 30
-theme_override_fonts/font = ExtResource("7_53t5k")
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("7_ckusj")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/panel = SubResource("StyleBoxFlat_4d6o5")
 max_text_lines = 4
-item_count = 1
+item_count = 8
 fixed_icon_size = Vector2i(110, 110)
 item_0/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
 item_0/icon = ExtResource("4_d7qip")
+item_1/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_1/icon = ExtResource("9_3gvlj")
+item_2/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_2/icon = ExtResource("9_3gvlj")
+item_3/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_3/icon = ExtResource("4_d7qip")
+item_4/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_4/icon = ExtResource("4_d7qip")
+item_5/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_5/icon = ExtResource("4_d7qip")
+item_6/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_6/icon = ExtResource("9_3gvlj")
+item_7/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
+item_7/icon = ExtResource("9_3gvlj")
 
 [node name="del_custom_panel" type="Panel" parent="center"]
 z_index = 5
@@ -729,10 +867,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -351.5
-offset_top = -115.0
-offset_right = -176.5
-offset_bottom = -55.0
+offset_left = -210.0
+offset_top = -154.0
+offset_right = -35.0
+offset_bottom = -94.0
 grow_horizontal = 0
 grow_vertical = 0
 pivot_offset = Vector2(87.5, 30)
@@ -746,10 +884,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 163.0
-offset_top = -115.002
-offset_right = 338.0
-offset_bottom = -55.0017
+offset_left = 70.0
+offset_top = -154.0
+offset_right = 245.0
+offset_bottom = -93.999695
 grow_vertical = 0
 pivot_offset = Vector2(87.5, 30)
 mouse_default_cursor_shape = 2
@@ -758,6 +896,7 @@ theme_override_font_sizes/font_size = 30
 text = "Confirm"
 
 [node name="top_right" type="Control" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -767,21 +906,27 @@ offset_bottom = 40.0
 grow_horizontal = 0
 
 [node name="search" type="LineEdit" parent="top_right"]
+z_index = 2
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -579.0
+offset_left = -936.0
 offset_top = 60.0
-offset_right = -36.0
+offset_right = -73.0
 offset_bottom = 118.0
 grow_horizontal = 2
-tooltip_text = "The list will filter out all items that don't match your search."
+tooltip_text = "The list will filter out all items that don't match your search.
+Press 'Enter' to click the first match.
+Start your search with a double quote to search for whole words."
 theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("7_ckusj")
 theme_override_font_sizes/font_size = 36
 placeholder_text = "Search Songs"
+clear_button_enabled = true
 
 [node name="top_left" type="Control" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 0
 offset_right = 40.0
@@ -810,62 +955,95 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -11.0
-offset_top = 210.0
-offset_right = 143.0
-offset_bottom = 273.0
+offset_left = 34.0
+offset_top = 256.0
+offset_right = 109.0
+offset_bottom = 331.0
 grow_horizontal = 0
 tooltip_text = "Reload the song list (to see changes made to custom songs)"
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("13_dy18g")
 theme_override_font_sizes/font_size = 40
-text = "Reload"
+text = ""
 
 [node name="edit" type="Button" parent="top_left"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = 16.0
-offset_top = 293.0
-offset_right = 121.0
-offset_bottom = 362.0
+offset_left = 34.0
+offset_top = 344.0
+offset_right = 109.0
+offset_bottom = 419.0
 grow_horizontal = 0
 tooltip_text = "Delete a custom song."
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("13_dy18g")
 theme_override_font_sizes/font_size = 40
-text = "Edit"
+text = ""
+
+[node name="dlt_all" type="Button" parent="top_left"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 34.0
+offset_top = 432.0
+offset_right = 109.0
+offset_bottom = 507.0
+grow_horizontal = 0
+tooltip_text = "Delete all custom songs."
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 40
+text = ""
 
 [node name="open_beatz_bxzip" type="Button" parent="top_left"]
 layout_mode = 0
-offset_left = 207.0
-offset_top = 61.0
-offset_right = 387.0
-offset_bottom = 131.0
-tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
+offset_left = 74.0
+offset_top = 520.0
+offset_right = 149.0
+offset_bottom = 595.0
+tooltip_text = "Upload your own .beatz file or .bx file.
 Beatz will then decompress it and you will now be able to play your custom chart!"
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
-theme_override_font_sizes/font_size = 24
-text = "Upload
-Custom Song"
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 40
+text = ""
 
 [node name="create" type="Button" parent="top_left"]
 layout_mode = 0
-offset_left = 436.0
-offset_top = 61.0
-offset_right = 616.0
-offset_bottom = 131.0
-tooltip_text = "Upload your own .beatz file, .bxzip file or .zip file
-Beatz will then decompress it and you will now be able to play your custom chart!"
+offset_left = 74.0
+offset_top = 608.0
+offset_right = 149.0
+offset_bottom = 683.0
+tooltip_text = "CREATE From Scratch your own Beatzmap!"
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
-theme_override_font_sizes/font_size = 24
-text = "CREATE
-Custom Song"
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 40
+text = ""
+
+[node name="random" type="Button" parent="top_left"]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 696.0
+offset_right = 149.0
+offset_bottom = 771.0
+tooltip_text = "Selects a random song from
+all the currently displayed songs in the list."
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 40
+text = ""
 
 [node name="center_right" type="Control" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -883,9 +1061,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -152.0
+offset_left = -155.0
 offset_top = -103.0
-offset_right = -43.9998
+offset_right = -46.9998
 offset_bottom = 17.0
 grow_horizontal = 0
 mouse_default_cursor_shape = 2
@@ -898,9 +1076,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -43.9998
+offset_left = -46.9998
 offset_top = 150.0
-offset_right = 64.0002
+offset_right = 61.0002
 offset_bottom = 270.0
 grow_horizontal = 0
 rotation = 3.14159
@@ -910,6 +1088,7 @@ theme_override_font_sizes/font_size = 60
 text = "^"
 
 [node name="center_bottom" type="Control" parent="."]
+z_index = 1
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -925,16 +1104,19 @@ grow_vertical = 0
 [node name="loading_text" type="RichTextLabel" parent="center_bottom"]
 modulate = Color(1, 1, 1, 0)
 top_level = true
-z_index = 6
+z_index = 12
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 7
 anchor_left = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
-offset_left = -104.5
-offset_top = 980.0
-offset_right = 104.5
-offset_bottom = 1043.0
+anchor_bottom = 1.0
+offset_left = -104.75
+offset_top = -101.0
+offset_right = 104.75
+offset_bottom = -43.0
 grow_horizontal = 2
+grow_vertical = 0
 mouse_filter = 2
 theme_override_constants/outline_size = 19
 theme_override_font_sizes/normal_font_size = 45
@@ -942,6 +1124,8 @@ text = "Loading..."
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
 deselect_on_focus_loss_enabled = false
 drag_and_drop_selection_enabled = false
 
@@ -971,20 +1155,32 @@ libraries = {
 &"": SubResource("AnimationLibrary_3gvlj")
 }
 
+[node name="album_view" parent="." instance=ExtResource("16_4d6o5")]
+z_index = 4
+layout_mode = 1
+offset_left = 1920.0
+offset_right = 1920.0034
+
+[connection signal="focus_entered" from="background" to="." method="_on_background_focus_entered"]
+[connection signal="focus_entered" from="song_list_sprite" to="." method="_on_background_focus_entered"]
+[connection signal="gui_input" from="center/song_list" to="." method="_on_song_list_gui_input"]
 [connection signal="item_activated" from="center/song_list" to="." method="_on_song_selected"]
+[connection signal="item_clicked" from="center/song_list" to="." method="_on_song_list_item_clicked"]
 [connection signal="item_selected" from="center/song_list" to="." method="_on_song_selected"]
 [connection signal="pressed" from="center/del_custom_panel/del_no" to="." method="_on_edit_cancel_pressed"]
 [connection signal="pressed" from="center/del_custom_panel/del_yes" to="." method="_on_edit_confirm_pressed"]
 [connection signal="focus_entered" from="top_right/search" to="." method="_on_search_focus_entered"]
 [connection signal="focus_exited" from="top_right/search" to="." method="_on_search_focus_exited"]
 [connection signal="text_changed" from="top_right/search" to="." method="_on_search_bar_text_changed"]
-[connection signal="text_submitted" from="top_right/search" to="." method="_on_search_bar_text_submitted"]
 [connection signal="button_up" from="top_left/back" to="." method="_on_back_button_up"]
 [connection signal="pressed" from="top_left/reload" to="." method="_on_reload_pressed"]
 [connection signal="pressed" from="top_left/edit" to="." method="_on_edit_pressed"]
+[connection signal="pressed" from="top_left/dlt_all" to="." method="_on_dlt_all_pressed"]
 [connection signal="pressed" from="top_left/open_beatz_bxzip" to="." method="_on_open_beatz_bxzip_pressed"]
 [connection signal="pressed" from="top_left/create" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="top_left/random" to="." method="_on_random_pressed"]
 [connection signal="pressed" from="center_right/scrl_up" to="." method="_on_scrl_up_pressed"]
 [connection signal="pressed" from="center_right/scrl_down" to="." method="_on_scrl_down_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="files_selected" from="FileDialog" to="." method="_on_file_dialog_files_selected"]
+[connection signal="loaded_charts" from="album_view" to="." method="_on_album_view_loaded_charts"]

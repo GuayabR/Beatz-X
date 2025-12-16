@@ -1,5 +1,9 @@
 extends Node
 
+var hp: float = 100.0
+var hp_gain := 1.0
+var hp_loss := 10.0
+
 # Song details
 var song: AudioStreamMP3
 var song_title: String
@@ -7,48 +11,73 @@ var album: String
 var artist: String
 var year: int
 
-var cover
+var selected_background: Image
+var selected_background_name: String
+
+var background_vid_path: String
+
+var local_beat_offset
+
+var song_start_time: int
+
+var cover: Image
 
 var chart_name: String
+
+var colors: Array[Color]
 
 var chart_path
 var song_path
 
 var screen: String = "game" # game / paused / end_screen / settings
 
+var songEnded: bool = false
+
 var menu := load("res://Scenes/main_menu.tscn")
 
-var noteSpeed = Globals.settings.game.note_speed # Speed at which notes fall
-var noteSpawnY = 0
-var BPM: float = 150 # Beats per minute
-var beattime: float # Interval between beats
+var noteSpeed: float:
+	get():
+		return Settings.game.note_speed
 
-var total_points := 0
-var points_per_note := 0.0
-var total_valid_notes := 0
+var noteSpawnY: float:
+	get():
+		return Beatz.time_to_y(Beatz.BASE_REC_TIME_MS) * -1
+
+var BPM: float = 150.0 # Beats per minute
+var beattime: float:
+	get:
+		return 60.0 / BPM # Interval between beats in milliseconds
+
+var total_points: float = 0.0
+var points_per_note: float = 0.0
+var total_valid_notes: int = 0
 
 var start_wait: int = 0
 
-var gameStarted = false
+var gameStarted: bool = false
 
-var gamePaused = false
+var gamePaused: bool = false
 
-const noteTypes = ["Upleft", "Downleft", "Left", "Up", "Down", "Right", "Upright", "Downright"];
+const noteTypes: Array[Variant] = ["Upleft", "Downleft", "Left", "Up", "Down", "Right", "Upright", "Downright"];
 
-var points = 0;
-var maxStreak = 0;
-var streak = 0;
-var misses = 0;
-var exactHits = 0;
-var insanes = 0;
-var perfects = 0;
-var earlys = 0;
-var lates = 0;
-var notesHit = 0;
-var customNotes = {}; # Store the custom notes to play
-var notes = {}
+var combo_level: int = 0   # 0 = 1x, 1 = 2x, 2 = 4x, 3 = 8x
 
-var auto_hit = false
+var points: float = 0;
+var maxStreak: int = 0;
+var streak: int = 0;
+var misses: int = 0;
+var exactHits: int = 0;
+var insanes: int = 0;
+var perfects: int = 0;
+var earlys: int = 0;
+var lates: int = 0;
+var notesHit: int = 0;
+var customNotes := []; # Store the custom notes to play
+var notes := []
+
+var active_holds := {}  # { note: {held_ms: float, points_per_ms: float} }
+
+var auto_hit: bool = false
 
 var note: PackedScene = preload("res://Scenes/note.tscn")
 
@@ -71,18 +100,68 @@ func _has_valid_notes(ns: Array) -> bool:
 			return true
 	return false
 
-func _process_custom_notes(ns: Array) -> void:
-	match Globals.settings.game.note_speed:
-		20.0: noteSpawnY = -2100
-		15.0: noteSpawnY = -1180
-		13.0: noteSpawnY = -989
-		10.0: noteSpawnY = -420
-		8.0: noteSpawnY = -120
-		5.0: noteSpawnY = 370
-		_: noteSpawnY = 0
+const exact_window_ms: float = 8.0
+const insane_window_ms: float = 24.0
+const perfect_window_ms: float = 55.0
+const great_window_ms: float = 200.0
+const miss_window_ms: float = 285.0
 
+var baseline_speed: float = 13.0  # ← base speed
+
+func get_center_y() -> float:
+	return $stationary_notes/lines/linemiddle.position.y
+
+func apply_hit_type_windows():
+	var offset = get_center_y()
+	var speed_factor = 1.0 #sqrt(noteSpeed / 13.0) # ← this is the key
+
+	# divide the ms → pixel result by the speed factor
+	# so noteSpeed 13.0 becomes the “neutral” speed
+	$stationary_notes/lines/lineexact1.position.y = offset + Beatz.time_to_y(-exact_window_ms) * speed_factor
+	
+	$stationary_notes/lines/lineexact2.position.y = offset + Beatz.time_to_y(exact_window_ms) * speed_factor
+
+	$stationary_notes/lines/lineinsane1.position.y = offset + Beatz.time_to_y(-insane_window_ms) * speed_factor
+	$stationary_notes/lines/lineinsane2.position.y = offset + Beatz.time_to_y(insane_window_ms) * speed_factor
+
+	$stationary_notes/lines/lineperfect1.position.y = offset + Beatz.time_to_y(-perfect_window_ms) * speed_factor
+	$stationary_notes/lines/lineperfect2.position.y = offset + Beatz.time_to_y(perfect_window_ms) * speed_factor
+
+	$stationary_notes/lines/linegreat1.position.y = offset + Beatz.time_to_y(-great_window_ms) * speed_factor
+	$stationary_notes/lines/linegreat2.position.y = offset + Beatz.time_to_y(great_window_ms) * speed_factor
+
+	$stationary_notes/lines/linemiss.position.y = offset + Beatz.time_to_y(miss_window_ms) * speed_factor
+	
+	print("new pos")
+	#print($stationary_notes/lines/lineexact1.position.y)
+	#print($stationary_notes/lines/linemiss.position.y)
+	print("spawny")
+	print(speed_factor)
+	print(offset + (Beatz.time_to_y(-exact_window_ms) / speed_factor))
+	#$stationary_notes/lines/lineexact1.position.y = 200
+	#print("assign to 200:", $stationary_notes/lines/lineexact1.position.y)
+
+
+func set_note_spawn_y():
+	apply_hit_type_windows()
+	
+	#match Settings.game.note_speed:
+		#20.0: noteSpawnY = -1800
+		#15.0: noteSpawnY = -1200
+		#13.0: noteSpawnY = -989
+		#10.0: noteSpawnY = -680
+		#8.0: noteSpawnY = -475
+		#5.0: noteSpawnY = -120
+		#_: noteSpawnY = 0
+	
+	print_rich("Note spawn Y = [color=green]", noteSpawnY, "[/color] with speed of [b]%.2f[/b]" % Settings.game.note_speed)
+
+func _process_custom_notes(ns: Array) -> void:
+	set_note_spawn_y()
+	
 	var has_end := false
-	var last_timestamp := -INF
+
+	var max_end_time_ms := -INF   # NEW — absolute end time of all notes
 
 	for n in ns:
 		if n.has("end"):
@@ -91,12 +170,17 @@ func _process_custom_notes(ns: Array) -> void:
 		if n.has("type") and n.has("timestamp"):
 			var direction = n["type"]
 			var timestamp: float = n["timestamp"]
-			last_timestamp = max(last_timestamp, timestamp)
+			var hold: float = n.get("hold", 0.0)
 
-			var offset = Globals.settings.misc_settings.note_offset
+			var note_end: float = timestamp + max(hold, 0.0)
+			if note_end > max_end_time_ms:
+				max_end_time_ms = note_end    # NEW
 
+			# offset logic
+			var offset = Settings.misc.note_offset
 			var timer := Timer.new()
 			timer.one_shot = true
+
 			if timestamp == -start_wait:
 				timer.wait_time = 0.5
 			elif start_wait > 0:
@@ -104,32 +188,35 @@ func _process_custom_notes(ns: Array) -> void:
 			else:
 				timer.wait_time = (timestamp + offset) / 1000.0
 
-			timer.connect("timeout", Callable(self, "_on_custom_note_timeout").bind(direction))
+			timer.connect("timeout", Callable(self, "_on_custom_note_timeout").bind(direction, hold, timestamp))
 			$UI/noteTimeouts.add_child(timer)
 			timer.start()
 
-	# Add _on_song_finished timeout only if none of the notes have "end"
-	if not has_end and last_timestamp > -INF:
-		var offset = Globals.settings.misc_settings.note_offset
+	if not has_end and max_end_time_ms > -INF:
+		var offset = Settings.misc.note_offset
 		var wait_time: float
+
 		if start_wait > 0:
-			wait_time = (last_timestamp + offset + start_wait + 500) / 1000.0 + 2.0
+			wait_time = (max_end_time_ms + offset + start_wait + 500) / 1000.0
 		else:
-			wait_time = (last_timestamp + offset) / 1000.0 + 2.0
+			wait_time = (max_end_time_ms + offset) / 1000.0
+
+		# include your existing extra buffer
+		wait_time += 3.0
 
 		var end_timer := Timer.new()
 		end_timer.one_shot = true
 		end_timer.wait_time = wait_time
-		end_timer.connect("timeout", Callable(self, "_on_song_finished").bind("true"))
+		end_timer.connect("timeout", Callable(self, "_on_song_finished").bind(true))
 		$UI/noteTimeouts.add_child(end_timer)
 		end_timer.start()
 
-func _on_custom_note_timeout(direction: String) -> void:
+func _on_custom_note_timeout(direction: String, hold: float, timestamp: float) -> void:
 	#print("Spawning note with direction ", direction)
-	spawn_note(direction)
+	spawn_note(direction, false, hold, timestamp)
 
 # List of directions and their related UI sprite names and textures
-var note_data = {
+var note_data: Dictionary[Variant, Variant] = {
 	"noteUpleft": {"key": "Upleft", "sprite": "noteUpleftSprite", "press": "NoteUpleftPress.png", "idle": "NoteUpleft.png"},
 	"noteDownleft": {"key": "Downleft", "sprite": "noteDownleftSprite", "press": "NoteDownleftpress.png", "idle": "NoteDownleft.png"},
 	"noteLeft": {"key": "Left", "sprite": "noteLeftSprite", "press": "NoteLeftPress.png", "idle": "NoteLeft.png"},
@@ -140,32 +227,124 @@ var note_data = {
 	"noteUpright": {"key": "Upright", "sprite": "noteUprightSprite", "press": "NoteUprightPress.png", "idle": "NoteUpright.png"}
 }
 
-func _ready():
-	if OS.get_name() == "Android": 
-		print("Android")
-		$UI/points.position.y = 122
-		$UI/key_hints.hide()
-		$mbl_pausebtn.show()
-		$pausebtn.hide()
-		match Globals.settings.game.mbl_btn_layout:
-			0: $mbl_buttons.show()
-			1: $mbl_buttons2.show()
+var pos_ms: 
+	get:
+		return $song.get_playback_position() * 1000.0 # convert to ms
+var len_ms:
+	get:
+		return $song.stream.get_length() * 1000.0
+var song_len:
+	get:
+		return $song.stream.get_length()
+
+func set_discord_rpc():
+	if not gamePaused: 
+		General._set_rpc(song_title + " - " + artist, "Playing a Song!", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", song_start_time, int(Time.get_unix_time_from_system() + len_ms))
+	else:
+		General._set_rpc(song_title + " - " + artist, "Song Paused...", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", int(Time.get_unix_time_from_system()), 0)
 	
-	Engine.time_scale = Globals.settings.game.speed
+	if recording:
+		General._set_rpc(song_title + " - " + artist, "Recording Notes for Song!", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", int(Time.get_unix_time_from_system()), int(Time.get_unix_time_from_system() + len_ms))
 	
-	print(Globals.settings.game.note_speed)
-	match Globals.settings.game.note_speed: # Match the speed to a specific Y spawn point so all speeds are synced to the song
-		20.0: noteSpawnY = -700
-		15.0: noteSpawnY = -1320
-		13.0: noteSpawnY = -1000
-		10.0: noteSpawnY = -420
-		8.0: noteSpawnY = -170
-		5.0: noteSpawnY = 310
-		_: noteSpawnY = 0
+	if songEnded:
+		General._set_rpc(song_title + " - " + artist + " with " + str(points) + "!", "Completed a Song!", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", int(Time.get_unix_time_from_system()), 0)
+
+var note_splash_particle: ParticleProcessMaterial = preload("res://Resources/misc/note_splash.tres")
+
+var note_crash_particle: ParticleProcessMaterial = preload("res://Resources/misc/note_crash.tres")
+
+func style():
 	
-	print(noteSpawnY)
+	if Settings.misc.note_style == "circles":
+		for sprite in $stationary_notes.get_children():
+			if sprite is Sprite2D: sprite.scale = Vector2(0.65 * Settings.circles.size, 0.65 * Settings.circles.size)
 	
-	match Globals.settings.misc_settings.note_style:
+	$notes_backdrop/ColorRect.color = Color(0.0, 0.0, 0.0, Settings.misc.notes_backdrop_opacity)
+	
+	if not Settings.misc.bg_videos:
+		$VideoPlayback.process_mode = Node.PROCESS_MODE_DISABLED
+		$VideoPlayback.hide()
+	else:
+		$VideoPlayback.process_mode = Node.PROCESS_MODE_ALWAYS
+		$VideoPlayback.show()
+	
+	if not Settings.misc.vis: $Visualizer.process_mode = Node.PROCESS_MODE_DISABLED
+	
+	if not colors.is_empty() and Settings.misc.colour_bg_with_cover: 
+		$Visualizer.colors = colors
+		var brightest_color: Color = colors[0]
+		var max_value = colors[0].r + colors[0].g + colors[0].b
+
+		for color in colors:
+			var value = color.r + color.g + color.b
+			if value > max_value:
+				max_value = value
+				brightest_color = color
+				print("new bright ", brightest_color)
+
+		$Background.modulate = brightest_color
+		
+		var hp_bar_sb = StyleBoxFlat.new()
+		hp_bar_sb.bg_color = brightest_color # background color
+		hp_bar_sb.corner_radius_top_left = 8
+		hp_bar_sb.corner_radius_top_right = 8
+		hp_bar_sb.corner_radius_bottom_left = 8
+		hp_bar_sb.corner_radius_bottom_right = 8
+		hp_bar_sb.set_border_width_all(2)
+		hp_bar_sb.border_color = Color.WHITE
+		
+		var hp_bar_bg_sb = StyleBoxFlat.new()
+		hp_bar_bg_sb.bg_color = Color(brightest_color, 0.121) # background color
+		hp_bar_bg_sb.corner_radius_top_left = 8
+		hp_bar_bg_sb.corner_radius_top_right = 8
+		hp_bar_bg_sb.corner_radius_bottom_left = 8
+		hp_bar_bg_sb.corner_radius_bottom_right = 8
+		hp_bar_bg_sb.set_border_width_all(2)
+		hp_bar_bg_sb.border_color = Color.WHITE
+
+		$notes_backdrop/hp.add_theme_stylebox_override("fill", hp_bar_sb)
+		$notes_backdrop/hp.add_theme_stylebox_override("background", hp_bar_bg_sb)
+		
+		$UI/song_progress.add_theme_stylebox_override("fill", hp_bar_sb)
+		$UI/song_progress.add_theme_stylebox_override("background", hp_bar_bg_sb)
+	else:
+		$Background.texture = preload("res://Resources/defaultBG.png")
+	
+	if Settings.misc.menu_bg_img_path != "":
+		var img := Image.load_from_file(Settings.misc.menu_bg_img_path)
+		if img: # make sure it loaded
+			var tex := ImageTexture.create_from_image(img)
+			#if not selected_background: 
+				#$Background.texture = tex
+				#$Background.modulate = Color.WHITE
+			$TransitionRect.texture = tex
+			$ActualTransitionRect.texture = tex
+		else:
+			print("Failed to load image at path:", Settings.misc.menu_bg_img_path)
+	
+	if background_vid_path: 
+		background_vid_path = ProjectSettings.globalize_path(background_vid_path)
+		if Settings.misc.bg_videos:
+			print("Setting video as ", background_vid_path)
+			$VideoPlayback.set_video_path(background_vid_path)
+			await $VideoPlayback.video_loaded
+			print("Vid loaded")
+	
+	$Background.self_modulate = Color(Settings.game.bg_brightness, Settings.game.bg_brightness, Settings.game.bg_brightness)
+	
+	if selected_background:
+		var img := selected_background
+		if img: # make sure it loaded
+			var tex := ImageTexture.create_from_image(img)
+			$Background.texture = tex
+			$Background.modulate = Color.WHITE
+		else: 
+			print("No background image for this chart ", chart_path)
+	
+	var hp_t = create_tween()
+	hp_t.tween_property($notes_backdrop/hp, "value", 100.0, 2.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	match Settings.misc.note_style:
 		"techno": 
 			note_data = {
 				"noteUpleft": {"key": "Upleft", "sprite": "noteUpleftSprite", "press": "NoteUpleftPress.png", "idle": "NoteUpleft.png"},
@@ -188,7 +367,90 @@ func _ready():
 				"noteDownright": {"key": "Downright", "sprite": "noteDownrightSprite", "press": "para/paraNoteDownrightPress.png", "idle": "para/paraNoteDownright.png"},
 				"noteUpright": {"key": "Upright", "sprite": "noteUprightSprite", "press": "para/paraNoteUprightPress.png", "idle": "para/paraNoteUpright.png"}
 			}
-			
+		"circles":
+			note_data = {
+				"noteUpleft": {
+					"key": "Upleft",
+					"sprite": "noteUpleftSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteDownleft": {
+					"key": "Downleft",
+					"sprite": "noteDownleftSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteLeft": {
+					"key": "Left",
+					"sprite": "noteLeftSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteDown": {
+					"key": "Down",
+					"sprite": "noteDownSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteUp": {
+					"key": "Up",
+					"sprite": "noteUpSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteRight": {
+					"key": "Right",
+					"sprite": "noteRightSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteDownright": {
+					"key": "Downright",
+					"sprite": "noteDownrightSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				},
+				"noteUpright": {
+					"key": "Upright",
+					"sprite": "noteUprightSprite",
+					"press": "circles/Circle.png",
+					"idle": "circles/Circle.png"
+				}
+			}
+
+
+func _ready():
+	General.apply_fps_limit(name) # main
+	
+	for h_particle: GPUParticles2D in [$stationary_notes/noteLeftSprite/hold_particles, $stationary_notes/noteDownSprite/hold_particles, $stationary_notes/noteUpSprite/hold_particles, $stationary_notes/noteRightSprite/hold_particles]:
+		h_particle.amount = int(12.0 * (noteSpeed / 10.0))
+	print(int(12.0 * (noteSpeed / 10.0)))
+	
+	#$stationary_notes/trail.use_mouse = false
+	
+	if OS.get_name() == "Android": 
+		print("Android")
+		$UI/points.position.y = 122
+		$UI/key_hints.hide()
+		$mbl_pausebtn.show()
+		$pausebtn.hide()
+		match Settings.game.mbl_btn_layout:
+			0: $mbl_buttons.show()
+			1: $mbl_buttons2.show()
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+		$pausebtn.hide()
+	
+	Engine.time_scale = Settings.game.speed
+	
+	$UI/start_song_name.text = "[b]" + song_title + "[/b]"
+	$UI/start_artist.text = "[i]" + artist + "[/i]"
+	$UI/start_chart_name.text = "[b]\"" + chart_name + "\"[/b]"
+	$UI/start_charter.text = charter
+	
+	style()
+	
 	if song:
 		$song.stream = song
 		$Visualizer/Song_left.stream = song
@@ -202,8 +464,8 @@ func _ready():
 		
 		# Handle album cover
 		if cover:
-			$song_cover.texture = cover
-			$song_cover.visible = true
+			$song_cover.texture = ImageTexture.create_from_image(cover)
+			#$song_cover.visible = true
 			$song_cover.set("scale", Vector2(0.28, 0.28))
 		elif album != null and album.strip_edges() != "":
 			var sanitized_album_name = album.replace("/", "_").replace("\\", "_").replace(":", "_") # Replace all invalid characters for underscores to then load as an image
@@ -212,13 +474,13 @@ func _ready():
 			if FileAccess.file_exists(cover_path):
 				var cover_image = load(cover_path)
 				$song_cover.texture = cover_image
-				$song_cover.visible = true
+				#$song_cover.visible = true
 				$song_cover.set("scale", Vector2(0.28, 0.28))
 			else:
 				var fallback_image = load("res://Resources/Covers/noCover.png")
 				var fallback_texture = ImageTexture.create_from_image(fallback_image)
 				$song_cover.texture = fallback_texture
-				$song_cover.visible = false
+				#$song_cover.visible = false
 		else:
 			var fallback_image = load("res://Resources/Covers/noCover.png")
 			var fallback_texture := ImageTexture.create_from_image(fallback_image)
@@ -229,14 +491,13 @@ func _ready():
 	var earliest_negative = null
 
 	for n in customNotes:
-		if n.timestamp < 0:
-			print(n)
+		if n.timestamp < 0.0:
 			if earliest_negative == null or n.timestamp < earliest_negative:
 				earliest_negative = n.timestamp
 
 	if earliest_negative != null:
 		start_wait = abs(earliest_negative)
-		print(start_wait)
+		print("start wait ", start_wait)
 	
 	if customNotes.size() > 0 and _has_valid_notes(customNotes):
 		print("Using notes in chart")
@@ -244,50 +505,79 @@ func _ready():
 		gameStarted = true
 		screen = "game"
 		gamePaused = false
-	else:
-		print("Random notes since chart file doesnt contain valid notes or it doesnt exist")
-		beattime = 60 / BPM
-	
-		gameStarted = true
-		generateNotes()
-	
-	total_valid_notes = customNotes.filter(func(n):
-		return n.has("type") and n.has("timestamp") and n["type"] != "Effect"
-	).size()
+		song_start_time = int(Time.get_unix_time_from_system())
 
-	if total_valid_notes < 250:
-		total_points = 25000
-	elif total_valid_notes < 450:
-		total_points = 50000
-	elif total_valid_notes < 800:
-		total_points = 75000
-	elif total_valid_notes < 1150:
-		total_points = 100000
-	elif total_valid_notes < 1800:
-		total_points = 175000
-	elif total_valid_notes < 2500:
-		total_points = 250000
-	elif total_valid_notes < 3750:
-		total_points = 500000
-	elif total_valid_notes < 5000:
-		total_points = 750000
-	elif total_valid_notes < 6000:
-		total_points = 1000000
-	elif total_valid_notes < 7250:
-		total_points = 2500000
-	elif total_valid_notes < 8500:
-		total_points = 5000000
+		total_valid_notes = customNotes.filter(func(n):
+			return n.has("type") and n.has("timestamp") and n["type"] != "Effect"
+		).size()
+
 	else:
-		total_points = 10000000
+		print("Random notes since chart file doesn't contain valid notes or it doesn't exist")
+		beattime = 60.0 / BPM
+		gameStarted = true
+		gamePaused = false
+		screen = "game"
+		song_start_time = int(Time.get_unix_time_from_system())
+		
+		# Once generated, count them as valid notes
+		print_rich("[color=green]Getting generated random notes: ", total_valid_notes, "[/color]")
+		total_valid_notes = generateNotes()
+		print_rich("[color=green]Generated random notes: ", total_valid_notes, "[/color]")
 	
-	points_per_note = float(total_points) / total_valid_notes
+	$UI/start_chart_info.text = "[i]" + str(total_valid_notes) + " Notes / " + str(BPM) + " BPM[/i]"
+	var chart_t = create_tween()
+	chart_t.tween_property($UI/start_chart_info, "self_modulate", Color.WHITE, 0.336)
 	
-	print(total_points, " points and ", points_per_note)
+	$UI/song_progress_lbl.text = "00:00.00" + " / " + General.format_time($song.stream.get_length())
+
+	set_discord_rpc()
+	
+	
+	if total_valid_notes < 250:
+		total_points = 25000.0
+	elif total_valid_notes < 450:
+		total_points = 50000.0
+	elif total_valid_notes < 800:
+		total_points = 75000.0
+	elif total_valid_notes < 1150:
+		total_points = 100000.0
+	elif total_valid_notes < 1800:
+		total_points = 175000.0
+	elif total_valid_notes < 2500:
+		total_points = 250000.0
+	elif total_valid_notes < 3750:
+		total_points = 500000.0
+	elif total_valid_notes < 5000:
+		total_points = 750000.0
+	elif total_valid_notes < 6000:
+		total_points = 1000000.0
+	elif total_valid_notes < 7250:
+		total_points = 2500000.0
+	elif total_valid_notes < 8500:
+		total_points = 5000000.0
+	else:
+		total_points = 10000000.0
+	
+	tier1_end = int(total_valid_notes * tier1_percentage)
+	tier2_end = int(total_valid_notes * tier2_percentage)
+	tier3_end = int(total_valid_notes * tier3_percentage)
+	
+	var raw_expected_score := 0.0
+	for i in range(total_valid_notes):
+		var streak_index = i + 1
+		raw_expected_score += get_precalc_combo_multiplier_for_streak(streak_index)
+	
+	print("expect ", raw_expected_score)
+	
+	points_per_note = float(total_points) / raw_expected_score if total_valid_notes > 0 else 0.0
+	print("%d total points and %.2f per note" % [total_points, points_per_note])
 	
 	$song.pitch_scale = Engine.time_scale
 	
 	$Visualizer/Song_left.pitch_scale = Engine.time_scale
 	$Visualizer/Song_right.pitch_scale = Engine.time_scale
+	
+	$VideoPlayback.playback_speed = Engine.time_scale
 	
 	if start_wait > 0:
 		print("Waiting ", (start_wait + 500) / 1000.0)
@@ -296,13 +586,25 @@ func _ready():
 		$song.play()
 		$Visualizer/Song_left.play()
 		$Visualizer/Song_right.play()
+		play_vid()
+		beat()
 	else:
 		print("No waiting")
 		$song.play()
 		$Visualizer/Song_left.play()
 		$Visualizer/Song_right.play()
+		play_vid()
+		beat()
 	
 	spectrum = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Song"), 0) as AudioEffectSpectrumAnalyzerInstance
+
+var tier1_end: int
+var tier2_end: int
+var tier3_end: int
+
+var tier1_percentage: float = 0.075
+var tier2_percentage: float = 0.15
+var tier3_percentage: float = 0.30
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
@@ -316,38 +618,94 @@ func handle_back():
 	elif screen == "settings":
 		$pause.play("from_stgs_to_pause")
 
-func _process(delta):
-	if recording:
-		for action in note_data.keys():
-			var key = note_data[action]["key"]
-			if Input.is_action_just_pressed(action):
-				var current_time = Time.get_ticks_msec() - recording_start_time
-				recorded_notes.append({"type": key, "timestamp": current_time - 1080})
-				spawn_note(key, true)
-				print("Recorded: ", key, " at ", current_time, "ms")
+func update_pulse_animation_scale(ani: AnimationPlayer, key: String):
+	if Settings.misc.note_style != "circles":
+		return
+
+	var anim_name = key.to_lower() + "_pulse"
+	var anim: Animation = ani.get_animation(anim_name)
+	if anim == null:
+		return
 	
+	# find the scale track
+	var track := -1
+	for i in anim.get_track_count():
+		var path = anim.track_get_path(i)
+		var type = anim.track_get_type(i)
+		if type == Animation.TYPE_VALUE and str(path).ends_with(":scale"):
+			track = i
+			break
+	
+	if track == -1:
+		return
+
+	# calculate scaled sizes
+	var size: float = Settings.circles.get("size", 1.0)
+	var key0_scale := Vector2(0.75 * size, 0.75 * size)
+	var key1_scale := Vector2(0.65 * size, 0.65 * size)
+
+	# ensure the track has at least 2 keyframes
+	if anim.track_get_key_count(track) >= 2:
+		anim.track_set_key_value(track, 0, key0_scale)
+		anim.track_set_key_value(track, 1, key1_scale)
+
+func _process(delta):
 	for action in note_data.keys():
 		var key = note_data[action]["key"]
 		var sprite_path = note_data[action]["sprite"]
 		var press_texture = note_data[action]["press"]
 		var idle_texture = note_data[action]["idle"]
-
-		if Input.is_action_pressed(action):
-			$stationary_notes.get_node(sprite_path).texture = load("res://Resources/Arrows/" + press_texture) # If the action is pressed, draw the pressed texture
-		else:
-			$stationary_notes.get_node(sprite_path).texture = load("res://Resources/Arrows/" + idle_texture) # Otherwise draw the normal texture
-			
+		
 		if Input.is_action_just_pressed(action): # Register hit only the frame the input was hit
-			if key == "Left" or key == "Down" or key == "Up" or key == "Right":
-				if Globals.settings.misc_settings.note_anims == true:
-					var ani: AnimationPlayer = get_node("stationary_notes/note_" + key.to_lower())
-					
-					ani.play("RESET")
-					ani.play(key.to_lower() + "_pulse")
-			
 			highlightedNotes[key] = true
+			
 			registerHit(key)
 			
+			if key in ["Left", "Down", "Up", "Right"] and Settings.misc.note_anims:
+				var ani: AnimationPlayer = get_node("stationary_notes/note_" + key.to_lower())
+				
+				# update animation scale if using circles
+				update_pulse_animation_scale(ani, key)
+				
+				ani.play("RESET")
+				ani.play(key.to_lower() + "_pulse")
+			
+		if Input.is_action_just_released(action):
+			highlightedNotes[key] = false
+			
+		
+		var sprite_node = $stationary_notes.get_node(sprite_path)
+
+		# Circle note mode (color-only)
+		if Settings.misc.note_style == "circles":
+			var base_col = Settings.parse_any_color(Settings.circles.get(key, "ffffff"))
+			var press_col
+
+			# pressed color logic
+			if Settings.circles.get("pressed_uses_idle_colors", false):
+				press_col = base_col
+			else:
+				press_col = Settings.parse_any_color(Settings.circles.get(key + "Press", base_col))
+
+			# Holding the key → use press color
+			if Input.is_action_pressed(action):
+				sprite_node.texture = load("res://Resources/Arrows/" + press_texture)
+				sprite_node.self_modulate = press_col
+			else:
+				sprite_node.texture = load("res://Resources/Arrows/" + idle_texture)
+				sprite_node.self_modulate = base_col
+		else:
+			# Holding the key → use press color
+			if Input.is_action_pressed(action):
+				sprite_node.texture = load("res://Resources/Arrows/" + press_texture)
+				sprite_node.self_modulate = Color.WHITE
+			else:
+				sprite_node.texture = load("res://Resources/Arrows/" + idle_texture)
+				sprite_node.self_modulate = Color.WHITE
+				
+
+		
+		
 		if Input.is_action_just_pressed("record"):
 			if not recording and screen!= "end" and not gamePaused:
 				print("recording start")
@@ -362,12 +720,37 @@ func _process(delta):
 				_on_reset_song_btn_up(true)
 				recording = false
 	
+	if recording:
+		for action in note_data.keys():
+			var key = note_data[action]["key"]
+			if Input.is_action_just_pressed(action):
+				var current_time = Time.get_ticks_msec() - recording_start_time
+				recorded_notes.append({"type": key, "timestamp": current_time - Beatz.BASE_REC_TIME_MS})
+				spawn_note(key, true)
+				#print("Recorded: ", key, " at ", current_time, "ms")
+	
 	# Keep other control inputs here
 	if Input.is_action_just_pressed("autoHit"):
 		auto_hit = !auto_hit
-		
+		if auto_hit: $UI/auto_hit_lbl.show()
+		else: $UI/auto_hit_lbl.hide()
+	
 	if Input.is_action_just_pressed("ui_cancel"):
 		handle_back()
+	
+	if Input.is_action_just_pressed("controller-pause"):
+		if screen != "settings" or screen != "end" and not gamePaused:
+			_on_pause()
+		elif gamePaused and screen != "settings":
+			_on_unpause()
+		elif screen == "settings":
+			$pause.play("from_pause_to_stgs")
+	
+	if Input.is_action_just_pressed("controller-back"):
+		if screen == "settings":
+			$pause.play("from_stgs_to_pause")
+		elif gamePaused and screen != "settings":
+			_on_going_back()
 	
 	if Input.is_action_just_pressed("fast_restart"):
 		if !gamePaused: _on_reset_song_btn_up(true)
@@ -380,7 +763,6 @@ func _process(delta):
 	
 	# Move all children of the 'notes' node 
 	# Skip movement and auto-hit while paused
-	
 	for n in %notes.get_children():
 		if gamePaused:
 			continue
@@ -389,28 +771,73 @@ func _process(delta):
 			continue
 		
 		# If the note exists but it is great faded, slow the note down to 1/3 of the note speed
-		if check_fade(n, false, true) == "great": n.global_position.y += 100 * (noteSpeed as int) * (delta) / 3
-		else: n.global_position.y += 100 * (noteSpeed as int) * (delta)
+		if check_fade(n, false, true) == "great": n.global_position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta) / 3.0
+		else: n.global_position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta)
 		
 		if n.global_position.y > $stationary_notes/lines/linemiss.global_position.y: miss_note(n)
 		
-		if auto_hit && n.global_position.y > $stationary_notes/lines/linemiddle.global_position.y:
-			
+		if auto_hit && n.global_position.y > $stationary_notes/lines/linemiddle.global_position.y && !n.rec:
 			if check_fade(n): # If the note exists but it is faded or great faded, dont register a hit
 				continue
 			
-			if Globals.settings.misc_settings.note_anims == true:
-				if n.type in ["Left", "Down", "Up", "Right"]:
-					var ani: AnimationPlayer = get_node("stationary_notes/note_" + n.type.to_lower())
-					
-					ani.play("RESET")
-					ani.play(n.type.to_lower() + "_pulse")
 			highlightedNotes[n.type] = true
 			registerHit(n.type)
+			
+			if n.type in ["Left", "Down", "Up", "Right"] and Settings.misc.note_anims and not recording:
+				var ani: AnimationPlayer = get_node("stationary_notes/note_" + n.type.to_lower())
 				
+				# update animation scale if using circles
+				update_pulse_animation_scale(ani, n.type.to_lower())
 				
-				
-	if spectrum:
+				ani.play("RESET")
+				ani.play(n.type.to_lower() + "_pulse")
+	
+	for n in active_holds.keys():
+		
+		if not n: continue
+		var data = active_holds[n]
+
+		# must be holding the key
+		if highlightedNotes[n.type] == false or gamePaused:
+			#print("not holding ", n.type, " ", n)
+			end_hold(n)
+			continue
+
+		# accumulate time
+		data.total_held_ms += delta * 1000.0
+		
+		# update hold tail
+		var tail_pixels = 100.0 * noteSpeed * $song.pitch_scale * delta * 1.5
+		n.update_hold_visual(tail_pixels)
+		
+		var expected_ticks = int(floor(data.total_held_ms / data.tick_interval))
+		
+		while data.ticks_given < expected_ticks and data.ticks_given < data.tick_count:
+			data.ticks_given += 1
+
+			# award tick points
+			points += data.tick_value
+			$UI/points.text = "Points: " + General.format_number_with_commas(roundf(points))
+			$UI/points_awarded.text = str(int(data.tick_value * data.ticks_given))
+
+			# if finished all ticks
+			if data.ticks_given >= data.tick_count:
+				end_hold(n)
+				break
+	
+	for b in %beatlines.get_children():
+		if gamePaused:
+			continue
+		
+		b.global_position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta)
+		
+		if b.global_position.y > $stationary_notes/lines/linemiss.global_position.y: b.queue_free()
+	
+	if not gamePaused and not songEnded and $song.get_playback_position() > 0: 
+		$UI/song_progress_lbl.text = General.format_time($song.get_playback_position()) + " / " + General.format_time($song.stream.get_length())
+		$UI/song_progress.value = (pos_ms / len_ms) * 100.0
+	
+	if spectrum and Settings.misc.menu_bg_pulse:
 		# Get energy levels
 		var overall_energy: float = spectrum.get_magnitude_for_frequency_range(20.0, 11050.0).length()
 		var overall_loudness: float = clampf((111 + linear_to_db(overall_energy)) / 111.0, 0.0, 1.0)
@@ -446,58 +873,217 @@ func _process(delta):
 		
 		#$Camera.zoom = lerp($Camera.zoom, Vector2.ONE * cam_target, 16.0 * delta)
 		
-		$Background.scale = lerp($Background.scale, Vector2.ONE * bg_target, 16.0 * delta)
-		$TransitionRect.scale = lerp($TransitionRect.scale, Vector2.ONE * bg_target, 16.0 * delta)
-		$ActualTransitionRect.scale = lerp($ActualTransitionRect.scale, Vector2.ONE * bg_target, 16.0 * delta)
+		$Background.scale = lerp($Background.scale, Vector2.ONE * bg_target, Settings.misc.menu_bg_pulse_strength * delta)
+		$TransitionRect.scale = lerp($TransitionRect.scale, Vector2.ONE * bg_target, Settings.misc.menu_bg_pulse_strength * delta)
+		$ActualTransitionRect.scale = lerp($ActualTransitionRect.scale, Vector2.ONE * bg_target, Settings.misc.menu_bg_pulse_strength * delta)
+	
+	var alignment_x: float
+	if Settings.other.show_chart_alignment: 
+		alignment_x = get_chart_alignment()
+		$stationary_notes/chart_current_avrg_center.position.x = lerp(
+			$stationary_notes/chart_current_avrg_center.position.x,
+			alignment_x,
+			10.0 * delta
+		)
+	
+	var alignment_x_total: float
+	if Settings.other.show_chart_alignment: 
+		if not $stationary_notes/chart_avrg_center.visible: 
+			$stationary_notes/chart_avrg_center.show()
+			$stationary_notes/chart_current_avrg_center.show()
+			$stationary_notes/chart_avrg_center.modulate = Color.WHITE
+			$stationary_notes/chart_current_avrg_center.modulate = Color.WHITE
+		
+		alignment_x_total = get_chart_alignment(true)
+		$stationary_notes/chart_avrg_center.position.x = lerp(
+			$stationary_notes/chart_avrg_center.position.x,
+			alignment_x_total,
+			10.0 * delta
+		)
+	else:
+		if $stationary_notes/chart_avrg_center.visible: 
+			$stationary_notes/chart_avrg_center.hide()
+			$stationary_notes/chart_current_avrg_center.hide()
 
-func check_fade(n: Node2D, hit: bool = true, great: bool = true): # Add the note, and specify what type of fade it should check for
+func get_chart_alignment(all: bool = false) -> float:
+	if not Settings.other.show_chart_alignment: return 960.0
+	
+	var now := Time.get_ticks_msec()
+
+	var total_x := 0.0
+	var count := 0
+
+	for n in %notes.get_children():
+		if gamePaused:
+			continue
+		
+		# if recently spawned, ignore it until 1.08s have passed
+		if not all and now - n.spawned_at < (Beatz.BASE_REC_TIME_MS * 0.9):
+			continue
+		
+		# skip faded notes
+		if check_fade(n, true, false) == "hit":
+			continue
+
+		var lane_x := 0.0
+		match n.type:
+			"Upleft": lane_x = $stationary_notes/noteUpleftSprite.position.x
+			"Downleft": lane_x = $stationary_notes/noteDownleftSprite.position.x
+			"Left": lane_x = $stationary_notes/noteLeftSprite.position.x
+			"Down": lane_x = $stationary_notes/noteDownSprite.position.x
+			"Up": lane_x = $stationary_notes/noteUpSprite.position.x
+			"Right": lane_x = $stationary_notes/noteRightSprite.position.x
+			"Downright": lane_x = $stationary_notes/noteDownrightSprite.position.x
+			"Upright": lane_x = $stationary_notes/noteUprightSprite.position.x
+
+		total_x += lane_x
+		count += 1
+
+	if count == 0:
+		return 960.0
+
+	return total_x / count
+
+func end_hold(n):
+	if not n: return
+	
+	active_holds.erase(n)
+	
+	var delete_hold = func(holdn):
+		if holdn: holdn.queue_free()
+	
+	inc_dec_hp(hp + 0.625)
+	var holdbar2d: Line2D = n.get_node("HoldBar2D")
+	var holdbar: ColorRect = n.get_node("HoldBar")
+	if Settings.misc.note_anims:
+		if holdbar2d != null:
+			holdbar2d.points[1].y = 15.0
+			holdbar2d.points[2].y = 25.0
+			var t = create_tween()
+			t.tween_property(holdbar2d, "modulate", Color.TRANSPARENT, 0.2)
+			if holdbar != null: t.parallel().tween_property(n.get_node("HoldBar"), "modulate", Color.TRANSPARENT, 0.2)
+			t.parallel().tween_property(holdbar2d, "scale", Vector2.ZERO, 0.2)
+	else:
+		delete_hold.call(n)
+	
+	$UI/hp_gained.text = str(0.625)
+	
+	var hold_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + n.type + "Sprite/hold_particles")
+	if hold_to_anim_with_particle: hold_to_anim_with_particle.emitting = false
+
+func check_fade(n: Node2D, hit: bool = true, great: bool = true) -> String: # Add the note, and specify what type of fade it should check for
 	if !n.has_method("hit"): 
 		print("not a note, or it doesn't exist, ", n)
-		return
+		return ""
 	if n.faded and hit: # If note is faded, it means it was hit in the perfect, insane or exact zone
 		return "hit"
 	if n.faded_great and great: # If the note is great faded, it means the note was not hit in the perfect, insane or exact zone
 		return "great"
 	else:
-		return
+		return ""
 
-func miss_note(n):
+func inc_dec_hp(new_hp: float) -> void:
+	if songEnded: 
+		return
+	var change = clampf(new_hp, 0.0, 100.0)
+	var hp_change := create_tween()
+	hp_change.tween_property($notes_backdrop/hp, "value", change, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	hp = change
+	
+	if hp <= 0.0:
+		die()
+
+func die():
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	print("died")
+	$pause.play("die")
+	screen = "die"
+	var song_die := create_tween()
+	song_die.tween_property($song, "pitch_scale", 0.0, 0.85)
+	song_die.parallel().tween_property($Visualizer/Song_left, "pitch_scale", 0.0, 0.85)
+	song_die.parallel().tween_property($Visualizer/Song_right, "pitch_scale", 0.0, 0.85)
+	song_die.parallel().tween_property($VideoPlayback, "playback_speed", 0.0, 0.85)
+	await get_tree().create_timer(2).timeout
+	$song.stop()
+	$Visualizer/Song_left.stop()
+	$Visualizer/Song_right.stop()
+	$VideoPlayback.pause()
+
+func miss_note(n) -> void:
 	if check_fade(n):
 		return
 	if n.rec:
 		n.queue_free()
 		return
-	$main_anims.stop()
-	$main_anims.play("missed_hit_text")
+	if n.type == "Effect":
+		print(n)
+		n.queue_free()
+		return
+	if n.hold_ms > 0 and n in active_holds:
+		active_holds.erase(n)
+	if streak != 0 or notesHit == 0 and misses == 0:
+		$main_anims.stop()
+		$main_anims.play("missed_hit_text")
 	n.queue_free()
 	streak = 0
+	#mult_streak /= 2
+	reduce_multiplier_one_tier()
 	misses += 1
+	inc_dec_hp(hp - hp_loss / 2)
+	$UI/hp_gained.text = str(-hp_loss / 2)
+	$UI/points.text = "Points: " + General.format_number_with_commas(roundf(points))
 	$UI/stat_missed.text = "Misses: " + str(misses)
 	$UI/streak.text = str(streak)
+	$UI/points_awarded.text = str(-points_per_note).pad_decimals(0)
 
-func generateNotes():
-	if not gameStarted or gamePaused:
-		return
+var generating_notes := false
+var generated_notes: Array = []
+var generate_task = null
+
+func generateNotes() -> int:
+	if not gameStarted or gamePaused or generating_notes:
+		return 0
+	
+	generating_notes = true
+	set_note_spawn_y()
 	
 	var dur = $song.stream.get_length()
-	var numberOfNotes = snappedf(dur / beattime, 1)
+	var number_of_notes = snappedf(dur / beattime, 1)
+	#number_of_notes *= 2
 	print("Song Duration: ", dur, " seconds")
-	print("Number of notes ", numberOfNotes)
+	print("Number of notes: ", number_of_notes)
 	
-	const directions = ["Up", "Down", "Left", "Right"]
+	const directions: Array[Variant] = ["Up", "Down", "Left", "Right"]
+	generated_notes.clear()
 	
-	for n in range(numberOfNotes):
-			
-		while gamePaused:
-			await get_tree().process_frame
-			
+	# --- generate note data instantly ---
+	for n in range(number_of_notes):
 		var dir = directions.pick_random()
-		spawn_note(dir)
-				
-		await get_tree().create_timer(beattime).timeout
+		var timestamp = n * beattime
+		generated_notes.append({ "time": timestamp, "dir": dir })
+	
+	from_generated_start()
+	
+	generating_notes = false
+	print("Generated ", generated_notes.size(), " notes")
+	return generated_notes.size()
 
-func spawn_note(direction: String = "Up", rec: bool = false) -> void:
-	if screen == "end": return
+func from_generated_start():
+	for note_meta in generated_notes:
+		await get_tree().create_timer(beattime).timeout
+		spawn_note(note_meta["dir"])
+
+func clear_generated_notes() -> void:
+	if generating_notes:
+		print("Stopping running note generator...")
+		generating_notes = false
+		await get_tree().process_frame  # Let any active loop yield finish
+
+	generated_notes.clear()
+
+func spawn_note(direction: String = "Up", rec: bool = false, hold: float = -1.0, time = -1.0) -> void:
+	if screen == "end" or screen == "die": return
 	if gamePaused: return
 	if not gameStarted: return
 	var new_note = note.instantiate()
@@ -511,23 +1097,52 @@ func spawn_note(direction: String = "Up", rec: bool = false) -> void:
 		"Right": x = $stationary_notes/noteRightSprite.global_position.x
 		"Downright": x = $stationary_notes/noteDownrightSprite.position.x
 		"Upright": x = $stationary_notes/noteUprightSprite.position.x
-		_: x = $stationary_notes/noteUpSprite.global_position.x
+		"Effect":
+			print("Effect notes not yet suppported")
+			return
+		_: 
+			print("Unknown / Unsupported note type: ", direction)
+			x = $stationary_notes/noteUpSprite.global_position.x
 	new_note.position = Vector2(x, noteSpawnY)
 	new_note.scale = Vector2(0.65, 0.65)
+	
+	if hold > 0.0:
+		new_note.hold_ms = hold
+	
+	new_note.timestamp = time
+	new_note.spawned_at = Time.get_ticks_msec()
+	
 	new_note.set_type(direction)
+	
 	if rec:
-		new_note.set("rec", true)
-		new_note.global_position.y = 285
+		new_note.rec = true
+		new_note.position.y = -600
+		new_note.modulate = Color(1.0, 1.0, 1.0, 0.95)
 	
 	%notes.add_child(new_note)
+
+func spawn_beatline():
+	if screen == "end" or screen == "die": return
+	if gamePaused: return
+	if not gameStarted: return
+	
+	var beatline = preload("res://Scenes/beat_line.tscn").instantiate()
+	
+	beatline.position = Vector2(950, noteSpawnY)
+	
+	%beatlines.add_child(beatline)
 
 var recorded_notes := []  # Array to store recorded notes as dictionaries
 var recording := false
 var recording_start_time := 0.0
 
 func start_recording():
+	await clear_generated_notes()
+	
 	# Stop song if playing
 	$song.stop()
+	$Visualizer/Song_left.stop()
+	$Visualizer/Song_right.stop()
 	
 	# Clear existing notes
 	var delay := 0.001
@@ -573,59 +1188,362 @@ func start_recording():
 	recorded_notes.clear()
 	
 	# Start song
-	$song.play(0.0)
+	$song.play()
+	$Visualizer/Song_left.play()
+	$Visualizer/Song_right.play()
+	beat()
+	
+	play_vid()
 	
 	# Start recording
 	recording = true
 	recording_start_time = Time.get_ticks_msec()
 	print("Recording started")
+	
+	set_discord_rpc()
 
-func registerHit(type):
+func play_vid(time: float = 0.0) -> void:
+	if not $VideoPlayback.is_open():
+		return
+	var fps = $VideoPlayback.get_video_framerate()
+	var target_frame = int(time * fps)
+	var total_frames = $VideoPlayback.get_video_frame_count()
+	target_frame = clampi(target_frame, 0, total_frames - 1)
+	
+	print(target_frame, " out of ", total_frames)
+	$VideoPlayback.seek_frame(target_frame)
+	$VideoPlayback.play()
+
+func pause_vid() -> void:
+	if not $VideoPlayback.is_open():
+		return
+	$VideoPlayback.pause()
+
+var nps := 0
+
+func nps_wait():
+	await get_tree().create_timer(1.0).timeout
+	nps -= 1
+	$UI/infos/nps_lbl.text = "NPS: " + str(nps)
+
+var kps := 0
+
+func kps_wait():
+	await get_tree().create_timer(1.0).timeout
+	kps -= 1
+	$UI/infos/kps_lbl.text = "KPS: " + str(kps)
+
+func update_multiplier_particles(mult_value: float) -> void:
+	if songEnded: return
+	
+	# grab nodes
+	var p4_spark := $notes_backdrop/multiplier/sparkles_4x
+	var p4_lava  := $notes_backdrop/multiplier/lavalookingparticle_4x
+	
+	var p8_spark := $notes_backdrop/multiplier/sparkles_8x
+	var p8_lava  := $notes_backdrop/multiplier/lavalookingparticle_8x
+
+	# Helper: fade out one particle group
+	var fade_out = func(p):
+		#if p.emitting:
+			#var t := create_tween()
+			#t.tween_property(p, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			#await t.finished
+		p.emitting = false
+
+	# Helper: fade in one particle group
+	var fade_in = func(p):
+		if not p.emitting:
+			p.modulate = Color.TRANSPARENT
+			p.emitting = true
+			
+			var t := create_tween()
+			t.tween_property(p, "modulate", Color.WHITE, 0.75).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+	# FIRST fade out all particles that shouldn't be active
+	if mult_value < 4.0:
+		fade_out.call(p4_spark)
+		fade_out.call(p4_lava)
+		fade_out.call(p8_spark)
+		fade_out.call(p8_lava)
+		return
+
+	if mult_value < 8.0:
+		fade_out.call(p8_spark)
+		fade_out.call(p8_lava)
+
+	if mult_value >= 8.0:
+		fade_out.call(p4_spark)
+		fade_out.call(p4_lava)
+
+	# THEN fade in the correct tier
+	if mult_value >= 8.0:
+		fade_in.call(p8_spark)
+		fade_in.call(p8_lava)
+	elif mult_value >= 4.0:
+		fade_in.call(p4_spark)
+		fade_in.call(p4_lava)
+
+func update_multiplier_bar() -> void:
+	var start := 0.0
+	var end := 1.0
+	
+	if mult_streak <= tier1_end:
+		start = 0.0
+		end = tier1_end
+	elif mult_streak <= tier2_end:
+		start = tier1_end
+		end = tier2_end
+	elif mult_streak <= tier3_end:
+		start = tier2_end
+		end = tier3_end
+	else:
+		start = tier3_end
+		end = total_valid_notes  # 8x zone
+	
+	var progress := float(mult_streak - start) / float(end - start) if mult_streak <= tier3_end else float(notesHit - start) / float(end - start)
+	progress = clamp(progress, 0.0, 1.0)
+	
+	var mult_change := create_tween()
+	mult_change.tween_property($notes_backdrop/multiplier, "value", progress, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func get_combo_multiplier_for_streak() -> float:
+	update_multiplier_bar()
+
+	var mult := 1.0
+
+	if mult_streak <= tier1_end:
+		mult = 1.0
+	elif mult_streak <= tier2_end:
+		mult = 2.0
+	elif mult_streak <= tier3_end:
+		mult = 4.0
+	else:
+		mult = 8.0
+
+	$UI/score_mult.text = str(mult as int) + "x"
+
+	update_multiplier_particles(mult)
+
+	return mult
+
+func get_precalc_combo_multiplier_for_streak(expected: int) -> float:
+	if expected <= tier1_end:
+		return 1.0
+	elif expected <= tier2_end:
+		return 2.0
+	elif expected <= tier3_end:
+		return 4.0
+	else:
+		return 8.0
+
+var mult_streak: int = 0
+
+func reduce_multiplier_one_tier():
+	var current_mult := get_combo_multiplier_for_streak()
+	
+	if current_mult == 8.0:
+		mult_streak = int((tier3_end + tier2_end) / 1.75)
+	elif current_mult == 4.0:
+		mult_streak = int((tier2_end + tier1_end) / 1.75)
+	elif current_mult == 2.0:
+		mult_streak = int(tier1_end / 1.25)
+	else:
+		mult_streak = int(mult_streak / 2.0)
+
+	update_multiplier_bar()
+	get_combo_multiplier_for_streak()    # << updates particles + UI
+
+func registerHit(type) -> void:
 	if gamePaused:
 		print("Game is paused why are you trying to hit a note")
 		return
 	
+	if screen == "die":
+		print("Bro is dead")
+		return
+	
+	var hit_note := false
+	var hold_note_hit: bool = false
+	
+	kps += 1
+	$UI/infos/kps_lbl.text = "KPS: " + str(kps)
+	call_deferred("kps_wait")
+	
 	if notesHit == total_valid_notes and misses == 0 and earlys == 0 and lates == 0:
 		points = total_points
+	
+	var gained: float = -1.0
+	
+	var note_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + type + "Sprite/hit_particles")
+	if note_to_anim_with_particle: 
+		note_to_anim_with_particle.z_index = -1
+		note_to_anim_with_particle.modulate.a = 0.1
+	
+	var add_points := 0.0
 	
 	for n in %notes.get_children():
 		if n.type != type or check_fade(n) or n.rec:
 			continue
 		
+		#$hit.stop()
+		if Settings.game.sfx_vol != 0: $hit.play()
+		
+		var old_hold_y = n.get_node("note_hold_end").global_position.y
+		var old_hold_bar_y = n.get_node("HoldBar2D").global_position.y
 		var y = n.global_position.y
 		var hit_window_top = $stationary_notes/lines/linegreat1.global_position.y
 		var hit_window_bottom = $stationary_notes/lines/linegreat2.global_position.y
 		
+		var HIT_AT = Time.get_ticks_msec() - n.spawned_at - 1.0
+		var OFFSET_FROM_SPAWN = (HIT_AT - Beatz.BASE_REC_TIME_MS) * -1.0
+		if OFFSET_FROM_SPAWN < great_window_ms:
+			$UI/hit_at_lbl.text = "+" + str(OFFSET_FROM_SPAWN) + "ms" if OFFSET_FROM_SPAWN > 0.0 else "" + str(OFFSET_FROM_SPAWN) + "ms"
+			$UI/precision_line.hit(HIT_AT - Beatz.BASE_REC_TIME_MS, great_window_ms)
+		
+		var hold_mult: float = 1.0
+		
+		#if n.hold_ms < 500: hold_mult = 0.935
+		#elif n.hold_ms < 1000: hold_mult = 0.95
+		#elif n.hold_ms < 1500: hold_mult = 0.96
+		#elif n.hold_ms < 2000: hold_mult = 0.975
+		#elif n.hold_ms < 2500: hold_mult = 0.995
+		#elif n.hold_ms < 3000: hold_mult = 0.998
+		#elif n.hold_ms < 4000: hold_mult = 0.999
+		#elif n.hold_ms > 4000: hold_mult = 1.0
+		
 		if y >= hit_window_top and y <= hit_window_bottom:
-			if highlightedNotes.get(n.type, false):
-				$main_anims.stop()
+			if highlightedNotes[n.type] == true:
+				$main_anims.stop(true)
 				streak += 1
+				mult_streak += 1
+
 				if streak > maxStreak:
 					maxStreak = streak
 				
-				var add_points := 0.0
-
 				if y >= $stationary_notes/lines/lineexact1.global_position.y and y <= $stationary_notes/lines/lineexact2.global_position.y:
+					hit_note = true
 					n.hit()
-					n.global_position.y = $stationary_notes/lines/linemiddle.global_position.y
-					$main_anims.play("exact_hit_text")
+					
 					add_points = points_per_note
 					exactHits += 1
-				elif y >= $stationary_notes/lines/lineinsane1.global_position.y and y <= $stationary_notes/lines/lineinsane2.global_position.y:
-					n.hit()
+					
+					gained = 1.25
+					
 					n.global_position.y = $stationary_notes/lines/linemiddle.global_position.y
-					$main_anims.play("insane_hit_text")
+					n.get_node("note_hold_end").global_position.y = old_hold_y
+					n.get_node("HoldBar2D").global_position.y = old_hold_bar_y
+					n.get_node("HoldBar").global_position.y = old_hold_bar_y
+					
+					$main_anims.play("exact_hit_text")
+					
+					if n.hold_ms > 0:
+						var hold = n.hold_ms * hold_mult
+						hold_note_hit = true
+						var tick_count = int(ceil(hold / 500.0) * 8)
+						var tick_interval = hold / tick_count
+						var tick_value = (add_points * get_combo_multiplier_for_streak()) / tick_count
+
+						active_holds[n] = {
+							"tick_count": tick_count,
+							"tick_value": tick_value,
+							"tick_interval": tick_interval,
+							"total_held_ms": 0.0,
+							"ticks_given": 0
+						}
+
+
+						# do NOT queue_free(), hold notes stay until tail finishes
+						if Settings.misc.note_particle_fx > 0:
+							var hold_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + type + "Sprite/hold_particles")
+							if hold_to_anim_with_particle: 
+								hold_to_anim_with_particle.emitting = true
+								hold_to_anim_with_particle.modulate.a = 0.9
+					break
+				
+				elif y >= $stationary_notes/lines/lineinsane1.global_position.y and y <= $stationary_notes/lines/lineinsane2.global_position.y:
+					hit_note = true
+					n.hit()
+					
 					add_points = points_per_note
 					insanes += 1
-				elif y >= $stationary_notes/lines/lineperfect1.global_position.y and y <= $stationary_notes/lines/lineperfect2.global_position.y:
-					n.hit()
+					
+					gained = 0.75
+					
 					n.global_position.y = $stationary_notes/lines/linemiddle.global_position.y
-					$main_anims.play("perfect_hit_text")
+					n.get_node("note_hold_end").global_position.y = old_hold_y
+					n.get_node("HoldBar2D").global_position.y = old_hold_bar_y
+					n.get_node("HoldBar").global_position.y = old_hold_bar_y
+					
+					$main_anims.play("insane_hit_text")
+					
+					if n.hold_ms > 0:
+						var hold = n.hold_ms * hold_mult
+						hold_note_hit = true
+						var tick_count = int(ceil(hold / 500.0) * 8)
+						var tick_interval = hold / tick_count
+						var tick_value = (add_points * get_combo_multiplier_for_streak()) / tick_count
+
+						active_holds[n] = {
+							"tick_count": tick_count,
+							"tick_value": tick_value,
+							"tick_interval": tick_interval,
+							"total_held_ms": 0.0,
+							"ticks_given": 0
+						}
+						
+						# do NOT queue_free(), hold notes stay until tail finishes
+						if Settings.misc.note_particle_fx > 0:
+							var hold_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + type + "Sprite/hold_particles")
+							if hold_to_anim_with_particle: 
+								hold_to_anim_with_particle.emitting = true
+								hold_to_anim_with_particle.modulate.a = 0.9
+					break
+					
+				elif y >= $stationary_notes/lines/lineperfect1.global_position.y and y <= $stationary_notes/lines/lineperfect2.global_position.y:
+					hit_note = true
+					n.hit()
+					
 					add_points = points_per_note
 					perfects += 1
+					
+					gained = 0.5
+					
+					n.global_position.y = $stationary_notes/lines/linemiddle.global_position.y
+					n.get_node("note_hold_end").global_position.y = old_hold_y
+					n.get_node("HoldBar2D").global_position.y = old_hold_bar_y
+					n.get_node("HoldBar").global_position.y = old_hold_bar_y
+					
+					$main_anims.play("perfect_hit_text")
+					
+					if n.hold_ms > 0:
+						var hold = n.hold_ms * hold_mult
+						hold_note_hit = true
+						var tick_count = int(ceil(hold / 500.0) * 8)
+						var tick_interval = hold / tick_count
+						var tick_value = (add_points * get_combo_multiplier_for_streak()) / tick_count
+
+						active_holds[n] = {
+							"tick_count": tick_count,
+							"tick_value": tick_value,
+							"tick_interval": tick_interval,
+							"total_held_ms": 0.0,
+							"ticks_given": 0
+						}
+						# do NOT queue_free(), hold notes stay until tail finishes
+						if Settings.misc.note_particle_fx > 0:
+							var hold_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + type + "Sprite/hold_particles")
+							if hold_to_anim_with_particle: 
+								hold_to_anim_with_particle.emitting = true
+								hold_to_anim_with_particle.modulate.a = 0.9
+					break
 				else:
+					hit_note = true
 					n.great_hit()
+					
 					$main_anims.play("great_hit_text")
+					
+					gained = -1.25
 
 					var great_top: float = $stationary_notes/lines/linegreat1.global_position.y
 					var great_bottom :float= $stationary_notes/lines/linegreat2.global_position.y
@@ -639,28 +1557,115 @@ func registerHit(type):
 					add_points = points_per_note * accuracy
 					earlys += int(y < perfect_top)
 					lates += int(y > perfect_bottom)
-				
-				points += add_points
-				
-				$UI/points_awarded.text = "%.0f" % add_points
-				
-				highlightedNotes[n.type] = false
-				
-				$UI/points.text = "Points: " + str(points).pad_decimals(0)
-				$UI/stat_exacts.text = "EXACTS: " + str(exactHits)
-				$UI/stat_insanes.text = "INSANES: " + str(insanes)
-				$UI/stat_perfects.text = "Perfects: " + str(perfects)
-				$UI/stat_earlys.text = "Earlys: " + str(earlys)
-				$UI/stat_lates.text = "Lates: " + str(lates)
-				$UI/streak.text = str(streak)
-				$UI/max_streak.text = str(maxStreak)
-				
-				align_control($UI/points)
-				return  # Stop checking once you hit one note
+					
+					if n.hold_ms > 0:
+						var hold = n.hold_ms * hold_mult
+						hold_note_hit = true
+						var tick_count = int(roundf(hold / 500.0) * 8)
+						var tick_interval = hold / tick_count
+						var tick_value = (add_points * get_combo_multiplier_for_streak()) / tick_count
+
+						active_holds[n] = {
+							"tick_count": tick_count,
+							"tick_value": tick_value,
+							"tick_interval": tick_interval,
+							"total_held_ms": 0.0,
+							"ticks_given": 0
+						}
+						
+						# do NOT queue_free(), hold notes stay until tail finishes
+						if Settings.misc.note_particle_fx > 0:
+							var hold_to_anim_with_particle: GPUParticles2D = get_node("stationary_notes/note" + type + "Sprite/hold_particles")
+							if hold_to_anim_with_particle: 
+								hold_to_anim_with_particle.emitting = true
+								hold_to_anim_with_particle.modulate.a = 0.9
+					break
+	
+	if note_to_anim_with_particle: 
+		note_to_anim_with_particle.z_index = 2
+		note_to_anim_with_particle.modulate.a = 0.25 if gained < 0.0 else 0.7
+	
+	if hit_note:
+		$UI/hp_gained.text = str(gained)
+		
+		inc_dec_hp(hp + gained)
+		
+		$UI/points_awarded.text = str(add_points * get_combo_multiplier_for_streak()).pad_decimals(0)
+		
+		notesHit += 1
+		
+		nps += 1
+		$UI/infos/nps_lbl.text = "NPS: " + str(nps)
+		call_deferred("nps_wait")
+		if not hold_note_hit:
+			var mult = get_combo_multiplier_for_streak()
+			points += (add_points * mult)
+		
+		$UI/points.text = "Points: " + General.format_number_with_commas(roundf(points))
+		$UI/stat_exacts.text = "EXACTS: " + str(exactHits)
+		$UI/stat_insanes.text = "INSANES: " + str(insanes)
+		$UI/stat_perfects.text = "Perfects: " + str(perfects)
+		$UI/stat_earlys.text = "Earlys: " + str(earlys)
+		$UI/stat_lates.text = "Lates: " + str(lates)
+		$UI/streak.text = str(streak)
+		$UI/max_streak.text = str(maxStreak)
+		$UI/infos/notes_hit_lbl.text = "Notes Hit: " + str(notesHit)
+	
+	play_particle_fx(type)
+
+func play_particle_fx(type: String):
+	if Settings.misc.note_particle_fx == 0: return
+	match Settings.misc.note_particle_fx:
+		1: 
+			$stationary_notes/noteLeftSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash_and_bounce.tres")
+			$stationary_notes/noteDownSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash_and_bounce.tres")
+			$stationary_notes/noteUpSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash_and_bounce.tres")
+			$stationary_notes/noteRightSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash_and_bounce.tres")
+		2:
+			$stationary_notes/noteLeftSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash.tres")
+			$stationary_notes/noteDownSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash.tres")
+			$stationary_notes/noteUpSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash.tres")
+			$stationary_notes/noteRightSprite/hit_particles.process_material = preload("res://Resources/misc/note_crash.tres")
+		3:
+			$stationary_notes/noteLeftSprite/hit_particles.process_material = preload("res://Resources/misc/note_splash.tres")
+			$stationary_notes/noteDownSprite/hit_particles.process_material = preload("res://Resources/misc/note_splash.tres")
+			$stationary_notes/noteUpSprite/hit_particles.process_material = preload("res://Resources/misc/note_splash.tres")
+			$stationary_notes/noteRightSprite/hit_particles.process_material = preload("res://Resources/misc/note_splash.tres")
+		4:
+			$stationary_notes/noteLeftSprite/hit_particles.process_material = preload("res://Resources/misc/note_orbit.tres")
+			$stationary_notes/noteDownSprite/hit_particles.process_material = preload("res://Resources/misc/note_orbit.tres")
+			$stationary_notes/noteUpSprite/hit_particles.process_material = preload("res://Resources/misc/note_orbit.tres")
+			$stationary_notes/noteRightSprite/hit_particles.process_material = preload("res://Resources/misc/note_orbit.tres")
+	match type:
+		"Left":
+			$stationary_notes/noteLeftSprite/hit_particles.restart()
+		"Down":
+			$stationary_notes/noteDownSprite/hit_particles.restart()
+		"Up":
+			$stationary_notes/noteUpSprite/hit_particles.restart()
+		"Right":
+			$stationary_notes/noteRightSprite/hit_particles.restart()
 
 func _on_song_finished(debug: bool = false) -> void:
-	if not recording:
+	if songEnded:
+		if not debug:
+			await get_tree().create_timer(1.2).timeout
+			$song.play(0.0)
+			play_vid(0.0)
+		return
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if not recording and screen != "die":
+		screen = "end"
+		songEnded = true
+		set_discord_rpc()
 		$end_screen_anims.play("song_end")
+		
+		var prog_t := create_tween()
+		prog_t.tween_property($UI/song_progress, "value", 100.0, 0.44).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+		
+		for p in [$notes_backdrop/multiplier/sparkles_8x, $notes_backdrop/multiplier/lavalookingparticle_8x, $notes_backdrop/multiplier/sparkles_4x, $notes_backdrop/multiplier/lavalookingparticle_4x]:
+			p.emitting = false
 		
 		# Get current date in MM/DD/YYYY format
 		var now := Time.get_datetime_dict_from_system()
@@ -669,7 +1674,7 @@ func _on_song_finished(debug: bool = false) -> void:
 		# Prepare new score data
 		var new_score := {
 			"file": chart_path,
-			"score": int(points),
+			"score": points,
 			"notes_hit": notesHit,
 			"max_streak": maxStreak,
 			"exacts": exactHits,
@@ -681,12 +1686,13 @@ func _on_song_finished(debug: bool = false) -> void:
 			"date": date_string
 		}
 
-		var file_path := "user://.scores_data"
-		var readable_path := "user://scores.json"
-		var file_data: Array = []
-		var pw = "8YouAreNOTsupposedToBeHereThisKeyIsVerySecureDoNOTeditYourScoresItsBetterWhenYouAchieveAFullPerfectOnYourOwnÑ"
+		var pw: String = "8YouAreNOTsupposedToBeHereThisKeyIsVerySecureDoNOTeditYourScoresItsBetterWhenYouAchieveAFullPerfectOnYourOwnÑ"
 
-		# Read existing encrypted data
+		var file_path := ProjectSettings.globalize_path("user://.scores_data")
+		var readable_path := ProjectSettings.globalize_path("user://scores.json")
+		var points_path := ProjectSettings.globalize_path("user://.points")
+
+		var file_data: Array = []
 		if FileAccess.file_exists(file_path):
 			var file := FileAccess.open_encrypted_with_pass(file_path, FileAccess.READ, pw)
 			if file:
@@ -696,39 +1702,61 @@ func _on_song_finished(debug: bool = false) -> void:
 					file_data = result
 				file.close()
 
-		# Check for existing score and update if the new one is higher
 		var replaced := false
 		for i in file_data.size():
 			if file_data[i].has("file") and file_data[i]["file"] == chart_path:
 				if new_score["score"] > file_data[i]["score"]:
 					file_data[i] = new_score
+					print("New high score! ",  new_score)
 				replaced = true
 				break
 
 		if not replaced:
 			file_data.append(new_score)
-
-		# Write encrypted .scores_data
-		var enc_file := FileAccess.open_encrypted_with_pass(file_path, FileAccess.WRITE, pw)
-		enc_file.store_string(JSON.stringify(file_data))
-		enc_file.close()
-
-		# Write readable JSON for debugging
+		
 		var readable_file := FileAccess.open(readable_path, FileAccess.WRITE)
 		readable_file.store_string(JSON.stringify(file_data, "\t"))
 		readable_file.close()
+		
+		var enc_file := FileAccess.open_encrypted_with_pass(file_path, FileAccess.WRITE, pw)
+		enc_file.store_string(JSON.stringify(file_data))
+		enc_file.close()
+		
+		if FileAccess.file_exists(points_path):
+			var pfile := FileAccess.open_encrypted_with_pass(points_path, FileAccess.READ, pw)
+			if pfile:
+				var text := pfile.get_as_text()
+				Beatz.lifetime_points = text.to_float()
+				pfile.close()
 
-		# Replay song if not debug
+		Beatz.lifetime_points += points
+
+		var enc_points := FileAccess.open_encrypted_with_pass(points_path, FileAccess.WRITE, pw)
+		enc_points.store_string(str(Beatz.lifetime_points))
+		enc_points.close()
+
+		print("Updated lifetime points: ", Beatz.lifetime_points)
+		
+
 		if not debug:
 			await get_tree().create_timer(1.2).timeout
 			$song.play(0.0)
+			play_vid(0.0)
+		
+		await $end_screen_anims.animation_finished
+		for n in $notes.get_children():
+			n.queue_free()
 	else:
 		pass
-
 
 var pausedpos: float
 
 func _on_pause() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if $end_screen_anims.is_playing():
+		$end_screen_anims.pause()
+		
+	
 	$pausebtn.release_focus()
 	$mbl_pausebtn.release_focus()
 	gamePaused = true
@@ -740,10 +1768,15 @@ func _on_pause() -> void:
 	$Visualizer/Song_left.stop()
 	$Visualizer/Song_right.stop()
 	
+	pause_vid()
+	
 	for timer: Timer in $UI/noteTimeouts.get_children():
 		timer.paused = true # Pause all timers
+	
+	set_discord_rpc()
 
 func _on_unpause() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	$unpause_btn.release_focus()
 	$pause.play("unpause")
 	await get_tree().create_timer(0.6).timeout
@@ -754,8 +1787,19 @@ func _on_unpause() -> void:
 	$Visualizer/Song_left.play(pausedpos)
 	$Visualizer/Song_right.play(pausedpos)
 	
+	beat()
+	
+	play_vid(pausedpos)
+	
 	for timer: Timer in $UI/noteTimeouts.get_children():
 		timer.paused = false # Unpause all timers
+	
+	set_discord_rpc()
+	
+	await $pause.animation_finished
+	print("fdnsjai")
+	print($end_screen_anims.current_animation_position)
+	if $end_screen_anims.current_animation_position > 0.0 and $end_screen_anims.current_animation_position < 4.0: $end_screen_anims.play()
 
 func stagger(n: Node, delay: float) -> void:
 	await get_tree().create_timer(delay).timeout # Await but since this is called deferred, it wont stop code
@@ -778,6 +1822,10 @@ func _on_going_back() -> void:
 		print("")
 		print("")
 		print("main:")
+		
+		var tween := create_tween()
+		tween.tween_property($song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_IN)
+		
 		$end_screen_anims.play("end_screen_to_main")
 	elif screen == "settings":
 		screen = "pause"
@@ -786,6 +1834,8 @@ func _on_going_back() -> void:
 	elif screen == "game":
 		print("How")
 		return
+	elif screen == "die":
+		$pause.play("back_from_die")
 	await get_tree().create_timer(1.5).timeout
 	var switch_menu = menu.instantiate()
 	
@@ -794,43 +1844,22 @@ func _on_going_back() -> void:
 	get_tree().current_scene = switch_menu
 
 func _on_reset_song_btn_up(fast: bool = false) -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	$reset_song_btn.release_focus()
+	
+	await clear_generated_notes()
+	
 	# Stop all audio and restart song
 	$song.stop()
 	$Visualizer/Song_left.stop()
 	$Visualizer/Song_right.stop()
+	pause_vid()
 	
-	if !fast:
-		$pause.play("song_reset")
+	$song.pitch_scale = 1.0
+	$Visualizer/Song_left.pitch_scale = 1.0
+	$Visualizer/Song_right.pitch_scale = 1.0
 	
-	if Globals.settings.misc_settings.note_anims == true:
-		# Clear existing notes
-		#var delay := 0.00001
-		
-		for n in %notes.get_children():
-			n.reset_game()
-	else:
-		for n in %notes.get_children():
-			n.faded = true
-			if !n: return # If the note doesn't exist, return
-			if !n.is_queued_for_deletion() and !check_fade(n, false, true): n.reset_game() # If the note was called queue_free() or if it isn't great_faded (it was hit), dont call reset_game on it
-	
-	gameStarted = true
-	
-	gamePaused = false
-	screen = "game"
-	
-	# Reset counters and game state
-	points = 0
-	streak = 0
-	maxStreak = 0
-	misses = 0
-	exactHits = 0
-	insanes = 0
-	perfects = 0
-	earlys = 0
-	lates = 0
-	notesHit = 0
+	$VideoPlayback.playback_speed = 1.0
 	
 	$UI/points.text = "Points: 0"
 	$UI/stat_exacts.text = "EXACTS: 0"
@@ -841,12 +1870,68 @@ func _on_reset_song_btn_up(fast: bool = false) -> void:
 	$UI/stat_missed.text = "Misses: 0"
 	$UI/streak.text = "0"
 	$UI/max_streak.text = "0"
+	$UI/score_mult.text = "1x"
+	
+	var prog_t := create_tween()
+	prog_t.tween_property($UI/song_progress, "value", 0.0, 0.3).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	
+	#$UI/song_progress.value = 0.0
+	
+	if Settings.misc.note_anims == true:
+		for n in %notes.get_children():
+			n.reset_game()
+	else:
+		for n in %notes.get_children():
+			n.faded = true
+			if !n: return
+			if !n.is_queued_for_deletion() and !check_fade(n, false, true): n.reset_game()
+	
+	for b in %beatlines.get_children():
+		b.queue_free()
 	
 	# Stop and remove custom note timers
 	for child in $UI/noteTimeouts.get_children():
 		if child is Timer:
 			child.stop()
 			child.queue_free()
+	
+	if !fast:
+		if screen != "die" and screen != "end":
+			$pause.play("song_reset")
+			print(screen)
+			print(songEnded)
+		elif screen == "end" or songEnded:
+			$end_screen_anims.play("reset_from_end")
+			await $end_screen_anims.animation_finished
+		elif screen == "die":
+			$pause.play("reset_from_die")
+			await $pause.animation_finished
+	
+	gameStarted = true
+	
+	gamePaused = false
+	songEnded = false
+	
+	inc_dec_hp(100.0)
+	$UI/song_progress_lbl.text = "00:00.00 / " + General.format_time($song.stream.get_length())
+	
+	# Reset counters and game state
+	points = 0
+	streak = 0
+	mult_streak = 0
+	get_combo_multiplier_for_streak()
+	maxStreak = 0
+	misses = 0
+	exactHits = 0
+	insanes = 0
+	perfects = 0
+	earlys = 0
+	lates = 0
+	notesHit = 0
+	
+	await get_tree().create_timer(0.4).timeout
+	
+	screen = "game"
 	
 	# Restart notes
 	if recorded_notes.size() > 0 and _has_valid_notes(recorded_notes):
@@ -862,11 +1947,17 @@ func _on_reset_song_btn_up(fast: bool = false) -> void:
 		$song.play()
 		$Visualizer/Song_left.play()
 		$Visualizer/Song_right.play()
+		play_vid()
+		beat()
 	else:
+		print("playiong")
 		$song.play()
 		$Visualizer/Song_left.play()
 		$Visualizer/Song_right.play()
-	
+		play_vid()
+		beat()
+
+	set_discord_rpc()
 
 func align_control(node: Control): # Used to always center the pivot offset of a control node (right now only used for $UI/points)
 	node.pivot_offset = node.size / 2
@@ -902,28 +1993,47 @@ func _on_go_to_stgs_pressed() -> void:
 
 func _on_record_btn_pressed() -> void:
 	$record_btn.release_focus()
-	$pause.play("start_rec_from_pause")
-	await get_tree().create_timer(0.87).timeout
-	$end_screen_anims.play("start_rec")
-	start_recording()
+	if not recording:
+		$pause.play("start_rec_from_pause")
+		await get_tree().create_timer(0.87).timeout
+		$end_screen_anims.play("start_rec")
+		start_recording()
+		await get_tree().create_timer(1.0).timeout
+		$record_btn.text = "Stop Recording"
+	else:
+		$pause.play("start_rec_from_pause")
+		await get_tree().create_timer(0.87).timeout
+		$end_screen_anims.play("stop_rec")
+		_on_reset_song_btn_up(true)
+		recording = false
+		await get_tree().create_timer(1.0).timeout
+		$record_btn.text = "Start Recording"
 
 var preview_start: float
 var preview_end: float
 
 var difficulty: String = "easy"
+var diff_texture_path: String
 
 var charter: String
 
 func _on_edit_btn_pressed() -> void:
-	var edit = Globals.EDITOR.instantiate()
+	$edit_btn.release_focus()
+	var edit = General.EDITOR.instantiate()
 	
 	edit.new_beatzmap = false
 	
 	edit.set("start_wait", start_wait)
 	
 	edit.set("selected_stream", $song.stream)
+	edit.set("song_path", song_path)
 	edit.set("selected_title", song_title)
 	edit.set("selected_album", album)
+	
+	edit.set("selected_background", selected_background)
+	edit.set("selected_background_name", selected_background_name)
+	
+	edit.set("background_vid_path", background_vid_path)
 	
 	edit.set("selected_cover", cover)
 	edit.set("selected_artist", artist)
@@ -933,7 +2043,12 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("preview_end",preview_end)
 	
 	edit.set("selected_difficulty", difficulty)
-	edit.set("notes", customNotes)
+	edit.set("diff_texture_path", diff_texture_path)
+	if not recorded_notes:
+		edit.set("notes", customNotes)
+	else:
+		edit.set("notes", recorded_notes)
+	
 	edit.set("selected_chart_name", chart_name)
 	
 	edit.set("selected_beatz_path", chart_path)
@@ -942,6 +2057,71 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("selected_bpm", BPM)
 	edit.set("selected_charter", charter)
 	
+	edit.set("local_beat_offset", local_beat_offset)
+	
+	edit.set("colors", colors)
+	
+	var tween := create_tween()
+	tween.tween_property($song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
+	
+	if screen == "pause": 
+		$pause.play("go_to_edit")
+		await $pause.animation_finished
+	elif screen == "end": 
+		$end_screen_anims.play("edit_from_end")
+		await $end_screen_anims.animation_finished
+	
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
+
+func _on_settings_vis_toggled(toggled: bool) -> void:
+	if not toggled: 
+		$Visualizer.force_fade_out(0.75)
+		await get_tree().create_timer(0.75).timeout
+		$Visualizer.process_mode = Node.PROCESS_MODE_DISABLED
+	else: 
+		$Visualizer.process_mode = Node.PROCESS_MODE_ALWAYS
+		$Visualizer.force_fade_in()
+
+func _on_settings_brightness_changed(value: float) -> void:
+	$Background.self_modulate = Color(value, value, value)
+
+func _on_settings_note_backdrop_opacity_changed(opacity: float) -> void:
+	$notes_backdrop/ColorRect.color = Color(0.0, 0.0, 0.0, opacity)
+
+func _on_settings_bg_vids_toggled(toggled_on: bool) -> void:
+	pass
+	if toggled_on:
+		$VideoPlayback.process_mode = Node.PROCESS_MODE_ALWAYS
+		$VideoPlayback.show()
+		print("Setting video as ", background_vid_path)
+		$VideoPlayback.set_video_path(background_vid_path)
+		await $VideoPlayback.video_loaded
+		print("Vid loaded")
+	else:
+		print("Closing video ", background_vid_path)
+		$VideoPlayback.close()
+		$VideoPlayback.process_mode = Node.PROCESS_MODE_DISABLED
+		$VideoPlayback.hide()
+
+var scale_tween: Tween
+
+func beat():
+	pass
+	#if songEnded or gamePaused or not $song.is_playing(): return
+	#if scale_tween: scale_tween.kill()
+	#
+	#$Camera2D.zoom = Vector2(1.005, 1.005)
+	#
+	#var scale_t = create_tween()
+	#scale_t.tween_property($Camera2D, "zoom", Vector2.ONE, beattime / 1.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	#scale_tween = scale_t
+	#
+	#spawn_beatline()
+	#
+	#await get_tree().create_timer(beattime * 2.0).timeout
+	#call_deferred("beat")
+
+func _on_settings_note_speed_changed(_speed: float) -> void:
+	set_note_spawn_y()

@@ -80,7 +80,7 @@ func _evaluate_extra_exponential(value: float) -> float:
 	return value
 
 func _ready() -> void:
-	if Globals.settings.misc_settings.reduce_motion:
+	if Settings.misc.reduce_motion:
 		$AnimationPlayer.play("load_song", -1, 250.0)
 	else:
 		$AnimationPlayer.play("load_song")

@@ -15,7 +15,7 @@ extends Control
 
 @export var mirror_to_bottom: bool = false
 
-@export_range(24, 540, 1) var bar_count = 240
+@export_range(24, 540, 1) var bar_count: int = 240
 
 @export var exponential_bounce := false
 @export_range(1.0, 5.0, 0.1) var exponent_strength := 2.0
@@ -37,30 +37,15 @@ var _extra_exponential_points := [
 	Vector2(1.0, 3.5)
 ]
 
-var _extra_exponential_points1 := [
-	Vector2(0.0, 0.0),
-	Vector2(0.1, 0.0),
-	Vector2(0.2, 0.03),
-	Vector2(0.3, 0.10),
-	Vector2(0.4, 0.13),
-	Vector2(0.5, 0.19),
-	Vector2(0.6, 0.38),
-	Vector2(0.7, 0.55),
-	Vector2(0.8, 0.85),
-	Vector2(0.9, 1.6),
-	Vector2(0.95, 2),
-	Vector2(1.0, 3.5)
-]
-
 @export var use_lerp: bool = false
 @export_range(10, 1000, 1) var decay_speed: float = 120.0
 @export_range(0.1, 50.0, 0.1) var lerp_strength: float = 10.0
 
-const FREQ_MAX = 11050.0
+const FREQ_MAX: float = 11050.0
 
 var bass_energy := 0.0
 var bass_energy_smoothed := 0.0
-const BASS_SMOOTH_SPEED = 0.07  # tweak for smoothing speed (0 = no smoothing, 1 = very slow)
+const BASS_SMOOTH_SPEED: float = 0.07  # tweak for smoothing speed (0 = no smoothing, 1 = very slow)
 
 var loudness_smoothed := 0.0
 
@@ -70,14 +55,14 @@ var shake_offset := Vector2.ZERO
 @export_range(0, 200, 1) var bar_spacing: float = 10.0
 @export_range(1, 200, 1) var individual_bar_width: float = 8.0
 
-const WIDTH = 1920 / 2
+const WIDTH = 1920.0 / 2.0
 @export_range(0, 1080, 1) var HEIGHT: int = 150
-const HEIGHT_SCALE = 10.0
-const MIN_DB = 111
+const HEIGHT_SCALE: float = 10.0
+const MIN_DB: int = 111
 
 var spectrum
-var min_values = []
-var max_values = []
+var min_values: Array[Variant] = []
+var max_values: Array[Variant] = []
 
 var transition_timer := 0.0
 var transition_duration := 0.0
@@ -100,13 +85,6 @@ func apply_extra_exponential(input: float) -> float:
 		return _extra_exponential_points[_extra_exponential_points.size() - 1].y
 	
 	return input  # Fallback
-
-func set_colors_from_cover(new_colors: Array[Color]) -> void:
-	if custom_colors and colored:
-		colors.clear()
-		for color in new_colors:
-			colors.append(color)
-			print("set: ", color)
 
 func get_bar_color(index: int) -> Color:
 	if not colored:
@@ -150,7 +128,7 @@ func _draw():
 			var freq_index = i
 			
 			if bass_bar_position == "Sides":
-				var quarter = bar_count / 4
+				var quarter = bar_count / 4.0
 				
 				if i < quarter:
 					freq_index = i + quarter * 3  # treble
@@ -161,7 +139,7 @@ func _draw():
 				else:
 					freq_index = bar_count - i - 1  # treble mirrored
 			
-			var bar_x = center_x - (i + 1) * (w + (2 if fill_with_bars else bar_spacing - 2))
+			var bar_x = center_x - (i + 1) * (w + (2.0 if fill_with_bars else bar_spacing - 2.0))
 			draw_rect(Rect2(bar_x, y_offset - left_max_values[freq_index], w - 2, left_max_values[freq_index]), get_bar_color(freq_index))
 			
 			if mirror_to_bottom:
@@ -173,7 +151,7 @@ func _draw():
 			var freq_index = i
 			
 			if bass_bar_position == "Sides":
-				var quarter = bar_count / 4
+				var quarter = bar_count / 4.0
 				
 				if i < quarter:
 					freq_index = i + quarter * 3  # treble
@@ -184,7 +162,7 @@ func _draw():
 				else:
 					freq_index = bar_count - i - 1  # treble mirrored
 			
-			var bar_x = center_x + i * (w + (2 if fill_with_bars else bar_spacing - 2))
+			var bar_x = center_x + i * (w + (2.0 if fill_with_bars else bar_spacing - 2.0))
 			draw_rect(Rect2(bar_x, y_offset - right_max_values[freq_index], w - 2, right_max_values[freq_index]), get_bar_color(freq_index))
 			
 			if mirror_to_bottom:
@@ -241,9 +219,28 @@ func _draw():
 				# Right side colors use reversed index so gradient flows toward center
 				draw_line(from_r, to_r, get_bar_color(i), 3)
 
-func _process(delta):
-	var song_playing = $Song_left.is_playing() or $Song_right.is_playing()
-
+func _process(delta) -> void:
+	var song_playing: bool = true #$Song_left.is_playing() or $Song_right.is_playing()
+	
+	if _fading:
+		return  # Skip spectrum updates while fading
+	
+	if _fading or force_fading:
+		# Run the fade manually
+		force_fade_timer += delta
+		var t = clamp(force_fade_timer / force_fade_duration, 0, 1)
+		for i in range(bar_count):
+			left_max_values[i] = lerp(force_target_left[i], 0.0, t)
+			right_max_values[i] = lerp(force_target_right[i], 0.0, t)
+		
+		if t >= 1.0:
+			hide()
+			_fading = false
+			shake_offset = Vector2.ZERO
+		
+		queue_redraw()
+		return
+	
 	if not song_playing and not transitioning_to_zero:
 		# Song paused or ended - start transition to zero
 		transition_timer = 0.0
@@ -273,13 +270,13 @@ func _process(delta):
 		queue_redraw()
 		return
 	
-	var left_data = []
-	var right_data = []
-	var prev_hz = 0
+	var left_data: Array[Variant] = []
+	var right_data: Array[Variant] = []
+	var prev_hz: int = 0
 	
 	# Compute bass magnitude for scaling circle size:
-	var bass_min_hz = 20.0
-	var bass_max_hz = 150.0
+	var bass_min_hz: float = 20.0
+	var bass_max_hz: float = 150.0
 	
 	var mag_left_bass = spectrum_left.get_magnitude_for_frequency_range(bass_min_hz, bass_max_hz).length()
 	var mag_right_bass = spectrum_right.get_magnitude_for_frequency_range(bass_min_hz, bass_max_hz).length()
@@ -331,8 +328,8 @@ func _process(delta):
 
 	
 	# Compute average energy (loudness) for "all" reactions
-	var total_mag_left = spectrum_left.get_magnitude_for_frequency_range(20.0, FREQ_MAX).length()
-	var total_mag_right = spectrum_right.get_magnitude_for_frequency_range(20.0, FREQ_MAX).length()
+	#var total_mag_left = spectrum_left.get_magnitude_for_frequency_range(20.0, FREQ_MAX).length()
+	#var total_mag_right = spectrum_right.get_magnitude_for_frequency_range(20.0, FREQ_MAX).length()
 	#var loudness_raw = clampf((MIN_DB + linear_to_db(total_mag_left + total_mag_right)) / MIN_DB, 0, 1)
 
 	if reaction == "Increase with all":
@@ -340,12 +337,12 @@ func _process(delta):
 
 	if reaction == "Shake with all" or reaction == "Increase and shake with all":
 		if loudness_smoothed * 10 >= shake_start:
-			shake_offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized() * pow(loudness_smoothed, 3.5) * shake_strength
+			shake_offset = Vector2(randf_range(-2.5, 2.5), randf_range(-2.5, 2.5)).normalized() * pow(loudness_smoothed, 3.5) * shake_strength
 		else:
 			shake_offset = Vector2.ZERO
 	elif reaction == "Shake with bass" or reaction == "Increase and shake with bass":
 		if bass_energy * 10 >= shake_start:
-			shake_offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized() * pow(bass_energy, -1) * shake_strength
+			shake_offset = Vector2(randf_range(-2.5, 2.5), randf_range(-2.5, 2.5)).normalized() * pow(bass_energy, -4.0) * shake_strength
 		else:
 			shake_offset = Vector2.ZERO
 	else:
@@ -353,16 +350,42 @@ func _process(delta):
 
 	queue_redraw()
 
+var _fading := false
+var force_fading := false
+var force_fade_timer := 0.0
+var force_fade_duration := 0.75
+var force_target_left := []
+var force_target_right := []
+
+func force_fade_out(duration := 0.75) -> void:
+	if _fading or transitioning_to_zero or force_fading:
+		return
+	
+	print("Force fading out visualizer...")
+	force_fading = true
+	force_fade_timer = 0.0
+	force_fade_duration = duration
+	force_target_left = left_max_values.duplicate()
+	force_target_right = right_max_values.duplicate()
+
+func force_fade_in():
+	print("Force fading in visualizer...")
+	_fading = false
+	force_fading = false
+	force_fade_timer = 0.0
+	force_fade_duration = 0.0
+	show()
+
 var spectrum_left
 var spectrum_right
-var left_min_values = []
-var left_max_values = []
-var right_min_values = []
-var right_max_values = []
+var left_min_values: Array[Variant] = []
+var left_max_values: Array[Variant] = []
+var right_min_values: Array[Variant] = []
+var right_max_values: Array[Variant] = []
 
 func _ready():
-	$Song_left.play()
-	$Song_right.play()
+	#$Song_left.play()
+	#$Song_right.play()
 	
 	spectrum_left = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Song left signal"), 0)
 	spectrum_right = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Song right signal"), 0)

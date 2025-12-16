@@ -101,6 +101,26 @@ fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
 
+[node name="best_earlies" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "Earlies: 2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="best_lates" type="RichTextLabel" parent="scores_cont/best_cont"]
+z_index = 1
+layout_mode = 2
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 30
+text = "Lates: 2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
 [node name="other_sep" type="RichTextLabel" parent="scores_cont/best_cont"]
 visible = false
 z_index = 1

@@ -1,0 +1,790 @@
+[gd_scene load_steps=24 format=3 uid="uid://c710qquuxbtvy"]
+
+[ext_resource type="Script" uid="uid://jq50e7gunadm" path="res://Scenes/album_view.gd" id="1_8vti0"]
+[ext_resource type="Texture2D" uid="uid://bru0xcwdabbp" path="res://Resources/grayDefaultBG.png" id="2_2s4qx"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_pr7vu"]
+[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="3_2s4qx"]
+[ext_resource type="Texture2D" uid="uid://ct36npe78bfsk" path="res://Resources/misc/cover_mask.png" id="4_crr1d"]
+[ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="5_mkua1"]
+[ext_resource type="Texture2D" uid="uid://6cvc1r2mkha7" path="res://Resources/BeatzCoverX.png" id="6_bwfns"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="7_4kgsw"]
+[ext_resource type="Texture2D" uid="uid://k8yi31jqksm1" path="res://Resources/Unreleased.png" id="8_kmjfj"]
+[ext_resource type="PackedScene" uid="uid://da55mf3b65c15" path="res://Scenes/Visualizer.tscn" id="9_pr7vu"]
+[ext_resource type="PackedScene" uid="uid://dsc6fkstdgxrv" path="res://Scenes/playing_bar.tscn" id="9_tv6s8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pr7vu"]
+content_margin_top = 90.0
+bg_color = Color(0.60038817, 0.60038817, 0.60038817, 0)
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 6
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 6
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pr7vu"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_2s4qx"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Animation" id="Animation_2s4qx"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/cover_anim_cont/outline/Visualizer:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_pr7vu"]
+resource_name = "spin"
+length = 90.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/cover_anim_cont/outline/Visualizer:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 90),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.283185307179586]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_crr1d"]
+_data = {
+&"RESET": SubResource("Animation_2s4qx"),
+&"spin": SubResource("Animation_pr7vu")
+}
+
+[sub_resource type="Animation" id="Animation_mkua1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/bg_cover_rotation_cont/bg_cover:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_crr1d"]
+resource_name = "bg_spin"
+length = 150.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/bg_cover_rotation_cont/bg_cover:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 150),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.283185307179586]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bwfns"]
+_data = {
+&"RESET": SubResource("Animation_mkua1"),
+&"bg_spin": SubResource("Animation_crr1d")
+}
+
+[sub_resource type="Animation" id="Animation_4kgsw"]
+resource_name = "RESET"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/bg_cover_rotation_cont:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(180, 520)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("album_side/bg_cover_rotation_cont:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("album_side/cover_anim_cont/outline:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("charts_side/song_list:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(8.28125, 114)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("charts_side/song_list:size")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1503.4375, 891)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("TransitionRect:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("center_bottom/loading_text:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_bwfns"]
+resource_name = "init"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("album_side/bg_cover_rotation_cont:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.6),
+"transitions": PackedFloat32Array(0.17677675, 1),
+"update": 0,
+"values": [Vector2(-700, 520), Vector2(180, 520)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("album_side/bg_cover_rotation_cont:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.6),
+"transitions": PackedFloat32Array(0.17677675, 1),
+"update": 0,
+"values": [-1.5707963267948966, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("album_side/cover_anim_cont/outline:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.13333334, 0.8333333),
+"transitions": PackedFloat32Array(6.7271714, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("charts_side/song_list:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.25000003, 1),
+"update": 0,
+"values": [Vector2(8.281, -50), Vector2(8.281, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("charts_side/song_list:size")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.25000003, 1),
+"update": 0,
+"values": [Vector2(1503, 1055), Vector2(1503, 1005)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("TransitionRect:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(0.24148414, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("center_bottom/loading_text:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.43527535, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_kmjfj"]
+_data = {
+&"RESET": SubResource("Animation_4kgsw"),
+&"init": SubResource("Animation_bwfns")
+}
+
+[node name="album_view" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8vti0")
+
+[node name="charts_side" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1520.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="bg" type="TextureRect" parent="charts_side"]
+visible = false
+modulate = Color(0.5527272, 0.5527273, 0.5527272, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(760, 540)
+expand_mode = 1
+stretch_mode = 6
+
+[node name="song_list" type="ItemList" parent="charts_side"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -751.71875
+offset_top = -426.0
+offset_right = 751.71875
+offset_bottom = 465.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("7_4kgsw")
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 15
+theme_override_constants/outline_size = 8
+theme_override_constants/icon_margin = 18
+theme_override_font_sizes/font_size = 20
+theme_override_styles/panel = SubResource("StyleBoxFlat_pr7vu")
+max_text_lines = 3
+item_count = 22
+fixed_icon_size = Vector2i(100, 100)
+item_0/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_0/icon = ExtResource("6_bwfns")
+item_1/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_1/icon = ExtResource("6_bwfns")
+item_2/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_2/icon = ExtResource("6_bwfns")
+item_3/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_3/icon = ExtResource("6_bwfns")
+item_4/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_4/icon = ExtResource("8_kmjfj")
+item_5/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_5/icon = ExtResource("6_bwfns")
+item_6/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_6/icon = ExtResource("8_kmjfj")
+item_7/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_7/icon = ExtResource("6_bwfns")
+item_8/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_8/icon = ExtResource("8_kmjfj")
+item_9/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_9/icon = ExtResource("6_bwfns")
+item_10/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_10/icon = ExtResource("6_bwfns")
+item_11/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_11/icon = ExtResource("6_bwfns")
+item_12/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_12/icon = ExtResource("6_bwfns")
+item_13/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_13/icon = ExtResource("6_bwfns")
+item_14/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_14/icon = ExtResource("6_bwfns")
+item_15/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_15/icon = ExtResource("6_bwfns")
+item_16/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_16/icon = ExtResource("6_bwfns")
+item_17/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_17/icon = ExtResource("6_bwfns")
+item_18/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_18/icon = ExtResource("6_bwfns")
+item_19/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_19/icon = ExtResource("6_bwfns")
+item_20/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_20/icon = ExtResource("6_bwfns")
+item_21/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
+item_21/icon = ExtResource("8_kmjfj")
+
+[node name="charts_lbl" type="RichTextLabel" parent="charts_side"]
+z_index = 2
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -66.5
+offset_top = 43.0
+offset_right = 66.5
+offset_bottom = 89.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_2s4qx")
+theme_override_font_sizes/normal_font_size = 45
+text = "Charts"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Line2D" type="Line2D" parent="charts_side"]
+z_index = 1
+material = SubResource("CanvasItemMaterial_pr7vu")
+position = Vector2(759.5, 0)
+scale = Vector2(152.55, 1)
+points = PackedVector2Array(0, -230, 0, 122)
+gradient = SubResource("Gradient_2s4qx")
+
+[node name="bg" type="TextureRect" parent="."]
+modulate = Color(0.5527272, 0.5527273, 0.5527272, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("2_2s4qx")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="album_side" type="Control" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 400.0
+grow_vertical = 2
+
+[node name="bg" type="TextureRect" parent="album_side"]
+visible = false
+modulate = Color(0.6241248, 0.6241249, 0.6241248, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_pr7vu")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="bg_cover_rotation_cont" type="Control" parent="album_side"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.000488
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+
+[node name="bg_cover" type="TextureRect" parent="album_side/bg_cover_rotation_cont"]
+modulate = Color(0.54801774, 0.5480173, 0.5480174, 1)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -177.0
+offset_top = -177.0
+offset_right = 177.0
+offset_bottom = 177.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3.6221707, 3.6221707)
+pivot_offset = Vector2(177, 177)
+mouse_filter = 2
+texture = ExtResource("4_crr1d")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TextureRect" type="TextureRect" parent="album_side/bg_cover_rotation_cont/bg_cover"]
+modulate = Color(0, 0, 0, 0.4)
+z_index = -1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -320.0
+offset_right = 320.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8427601, 0.8427601)
+pivot_offset = Vector2(320, 320)
+mouse_filter = 2
+texture = ExtResource("5_mkua1")
+stretch_mode = 6
+
+[node name="mask" type="TextureRect" parent="album_side/bg_cover_rotation_cont/bg_cover"]
+clip_children = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -175.0
+offset_right = 175.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(175, 175)
+mouse_filter = 2
+texture = ExtResource("4_crr1d")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="cover" type="TextureRect" parent="album_side/bg_cover_rotation_cont/bg_cover/mask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -175.0
+offset_right = 175.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(175, 175)
+mouse_filter = 2
+texture = ExtResource("6_bwfns")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="cover_anim_cont" type="Control" parent="album_side"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+
+[node name="outline" type="TextureRect" parent="album_side/cover_anim_cont"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -177.0
+offset_top = -177.0
+offset_right = 177.0
+offset_bottom = 177.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(177, 177)
+texture = ExtResource("4_crr1d")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TextureRect" type="TextureRect" parent="album_side/cover_anim_cont/outline"]
+modulate = Color(0, 0, 0, 0.4)
+z_index = -1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -320.0
+offset_right = 320.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8427601, 0.8427601)
+pivot_offset = Vector2(320, 320)
+texture = ExtResource("5_mkua1")
+stretch_mode = 6
+
+[node name="mask" type="TextureRect" parent="album_side/cover_anim_cont/outline"]
+clip_children = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -175.0
+offset_right = 175.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(175, 175)
+texture = ExtResource("4_crr1d")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="cover" type="TextureRect" parent="album_side/cover_anim_cont/outline/mask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -175.0
+offset_right = 175.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(175, 175)
+texture = ExtResource("6_bwfns")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Visualizer" parent="album_side/cover_anim_cont/outline" instance=ExtResource("9_pr7vu")]
+layout_mode = 1
+pivot_offset = Vector2(177, 177)
+visualizer_fps = 360.0
+type = "Circle"
+circle_size = 45.0
+reaction = "None"
+custom_colors = true
+bar_count = 92
+exponential_bounce = true
+exponent_strength = 5.0
+extra_exponential = true
+use_lerp = true
+lerp_strength = 27.0
+fill_with_bars = false
+HEIGHT = 75
+
+[node name="names" type="VBoxContainer" parent="album_side"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.0
+offset_bottom = 213.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="album_name" type="RichTextLabel" parent="album_side/names"]
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_2s4qx")
+theme_override_font_sizes/normal_font_size = 40
+text = "{ALBUM NAME}"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="album_artist" type="RichTextLabel" parent="album_side/names"]
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 32
+text = "{ALBUM ARTIST}"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="album_year" type="RichTextLabel" parent="album_side/names"]
+layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 32
+text = "{ALBUM YEAR}"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="album_side"]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 197.0
+offset_right = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="playing_bar" parent="." instance=ExtResource("9_tv6s8")]
+process_mode = 4
+visible = false
+layout_mode = 1
+enable_volume = false
+
+[node name="vis_spin" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_crr1d")
+}
+autoplay = "spin"
+
+[node name="bg_cover_spin" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_bwfns")
+}
+autoplay = "bg_spin"
+
+[node name="init" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_kmjfj")
+}
+autoplay = "init"
+
+[node name="TransitionRect" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 2
+texture = ExtResource("2_pr7vu")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="center_bottom" type="Control" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="loading_text" type="RichTextLabel" parent="center_bottom"]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 12
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -104.75
+offset_top = -101.0
+offset_right = 104.75
+offset_bottom = -43.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 45
+text = "Loading..."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[connection signal="gui_input" from="charts_side/song_list" to="." method="_on_song_list_gui_input"]
+[connection signal="item_activated" from="charts_side/song_list" to="." method="_on_song_list_item_activated"]
+[connection signal="item_clicked" from="charts_side/song_list" to="." method="_on_song_list_item_clicked"]
+[connection signal="item_selected" from="charts_side/song_list" to="." method="_on_song_list_item_selected"]

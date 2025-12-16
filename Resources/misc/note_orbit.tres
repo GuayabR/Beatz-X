@@ -1,0 +1,24 @@
+[gd_resource type="ParticleProcessMaterial" load_steps=3 format=3 uid="uid://c6lfsauta5xki"]
+
+[sub_resource type="Curve" id="Curve_hpc6h"]
+_data = [Vector2(0, 1), 0.0, 1.1075716, 0, 0, Vector2(1, 0), -1.440842, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_kltya"]
+curve = SubResource("Curve_hpc6h")
+
+[resource]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 15.0
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 150.0
+initial_velocity_max = 320.0
+angular_velocity_min = -720.0
+angular_velocity_max = 719.99994
+orbit_velocity_min = 0.7500001
+orbit_velocity_max = 2.0000002
+scale_min = 0.75
+scale_max = 0.75
+scale_curve = SubResource("CurveTexture_kltya")

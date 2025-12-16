@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://diftyasf40ssh"]
+[gd_scene load_steps=30 format=3 uid="uid://diftyasf40ssh"]
 
 [ext_resource type="Script" uid="uid://do6awrxpel5i7" path="res://Scenes/settings_scn.gd" id="1_6kysc"]
 [ext_resource type="Texture2D" uid="uid://cok6hw77fkwqk" path="res://Resources/misc/Settings_text.png" id="2_6vr2p"]
@@ -8,11 +8,18 @@
 [ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="5_1c72s"]
 [ext_resource type="Texture2D" uid="uid://owb022syma0y" path="res://Resources/Arrows/techno.png" id="5_rgw85"]
 [ext_resource type="Texture2D" uid="uid://c5xoinmryyr1n" path="res://Resources/Arrows/para.png" id="6_l7vst"]
+[ext_resource type="PackedScene" uid="uid://df322jlo7g3if" path="res://Scenes/Tools/eq.tscn" id="6_mth80"]
 [ext_resource type="Texture2D" uid="uid://bfdk83nri34jl" path="res://Resources/breakingnews.png" id="6_vmqi3"]
 [ext_resource type="Texture2D" uid="uid://btaomc2egvyqx" path="res://Resources/micho.png" id="7_g8dc3"]
 [ext_resource type="Texture2D" uid="uid://djdiurv65qcub" path="res://Resources/Ranith.png" id="8_d6lvq"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="10_d6lvq"]
 [ext_resource type="Texture2D" uid="uid://81tjbqfe28x0" path="res://Resources/PHONE THE COPAAAA.png" id="10_h7htg"]
-[ext_resource type="Texture2D" uid="uid://cqv04mxm2wlw1" path="res://Resources/CircleNotes/CircleDownHQ.png" id="14_fsbv2"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="13_ieo4m"]
+[ext_resource type="Texture2D" uid="uid://maxcx6c823hp" path="res://Resources/misc/keybinds_label.png" id="14_1c72s"]
+[ext_resource type="PackedScene" uid="uid://cb51l1suj4oox" path="res://Scenes/profile_small.tscn" id="14_g8dc3"]
+[ext_resource type="PackedScene" uid="uid://o15qeacsm4vf" path="res://Scenes/slogan.tscn" id="14_vmqi3"]
+[ext_resource type="PackedScene" uid="uid://br1c31yobid10" path="res://Scenes/circle_note_settings.tscn" id="15_fsbv2"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="16_h7htg"]
 
 [sub_resource type="Animation" id="Animation_6vr2p"]
 length = 0.001
@@ -99,10 +106,61 @@ _data = {
 }
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_84iac"]
-load_path = "res://.godot/imported/DELTARUNE Chapter 1 (Original Game Soundtrack).png-a3bb4c1c848a7b998b75f744c947ac3d.ctex"
 
 [sub_resource type="Theme" id="Theme_qv72t"]
 CheckButton/constants/h_separation = 25
+
+[sub_resource type="Animation" id="Animation_vmqi3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_1c72s"]
+resource_name = "to_binds"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.183011, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-1920, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_g8dc3"]
+resource_name = "to_stgs"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.183011, 1),
+"update": 0,
+"values": [Vector2(-1920, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d6lvq"]
+_data = {
+&"RESET": SubResource("Animation_vmqi3"),
+&"to_binds": SubResource("Animation_1c72s"),
+&"to_stgs": SubResource("Animation_g8dc3")
+}
 
 [node name="settings" type="Control"]
 layout_mode = 3
@@ -152,6 +210,17 @@ offset_bottom = 678.0
 grow_horizontal = 2
 texture = ExtResource("2_6vr2p")
 
+[node name="background" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+texture = ExtResource("2_6vr2p")
+
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 clip_contents = false
 layout_mode = 1
@@ -166,9 +235,10 @@ offset_right = 411.0
 offset_bottom = 534.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_f60ng")
 follow_focus = true
 horizontal_scroll_mode = 0
-scroll_deadzone = 1
+vertical_scroll_mode = 2
 
 [node name="settings_list" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
@@ -208,6 +278,166 @@ fit_content = true
 scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
+
+[node name="master_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Master Volume: 100 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="master_vol_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("4_6vr2p")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="master_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.25
+scrollable = false
+
+[node name="song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Song Volume: 80 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="song_vol_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("4_6vr2p")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.25
+scrollable = false
+
+[node name="menu_song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Menu Song Volume: 75 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="menu_song_vol_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("4_6vr2p")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="menu_song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.25
+scrollable = false
+
+[node name="sfx_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- SFX Volume: 45 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="sfx_vol_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("4_6vr2p")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="sfx_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.25
+scrollable = false
+
+[node name="eq" parent="ScrollContainer/settings_list" instance=ExtResource("6_mth80")]
+custom_minimum_size = Vector2(0, 505)
+layout_mode = 2
 
 [node name="game_theme_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 visible = false
@@ -249,66 +479,6 @@ popup/item_4/id = 4
 popup/item_5/text = "Glorious Grandfather"
 popup/item_5/icon = ExtResource("10_h7htg")
 popup/item_5/id = 5
-
-[node name="song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 32)
-layout_mode = 2
-mouse_filter = 2
-theme = ExtResource("4_6vr2p")
-theme_override_constants/outline_size = 12
-theme_override_font_sizes/normal_font_size = 25
-text = "---- Song Volume: 80 ----"
-fit_content = true
-scroll_active = false
-horizontal_alignment = 1
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
-layout_mode = 2
-mouse_default_cursor_shape = 2
-theme = ExtResource("4_6vr2p")
-scrollable = false
-
-[node name="menu_song_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 32)
-layout_mode = 2
-mouse_filter = 2
-theme = ExtResource("4_6vr2p")
-theme_override_constants/outline_size = 12
-theme_override_font_sizes/normal_font_size = 25
-text = "---- Menu Song Volume: 75 ----"
-fit_content = true
-scroll_active = false
-horizontal_alignment = 1
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="menu_song_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
-layout_mode = 2
-mouse_default_cursor_shape = 2
-theme = ExtResource("4_6vr2p")
-scrollable = false
-
-[node name="sfx_vol_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 32)
-layout_mode = 2
-mouse_filter = 2
-theme = ExtResource("4_6vr2p")
-theme_override_constants/outline_size = 12
-theme_override_font_sizes/normal_font_size = 25
-text = "---- SFX Volume: 45 ----"
-fit_content = true
-scroll_active = false
-horizontal_alignment = 1
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="sfx_vol_slider" type="HSlider" parent="ScrollContainer/settings_list"]
-layout_mode = 2
-mouse_default_cursor_shape = 2
-theme = ExtResource("4_6vr2p")
-scrollable = false
 
 [node name="change_binds_btn" type="Button" parent="ScrollContainer/settings_list"]
 visible = false
@@ -384,17 +554,20 @@ popup/item_2/text = "Para"
 popup/item_2/icon = ExtResource("6_l7vst")
 popup/item_2/id = 2
 popup/item_3/text = "Circle"
-popup/item_3/icon = ExtResource("14_fsbv2")
 popup/item_3/id = 3
 
 [node name="space4" type="RichTextLabel" parent="ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 5)
+custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 mouse_filter = 2
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
+
+[node name="circle_note_settings" parent="ScrollContainer/settings_list" instance=ExtResource("15_fsbv2")]
+custom_minimum_size = Vector2(0, 360)
+layout_mode = 2
 
 [node name="note_anim_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
 layout_mode = 2
@@ -405,6 +578,50 @@ theme_override_constants/outline_size = 12
 theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 40
 text = "Note Animations"
+
+[node name="note_particle_fx_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Particle Effect ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_particle_fx" type="OptionButton" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 1
+item_count = 5
+popup/item_0/text = "None"
+popup/item_0/id = 1
+popup/item_1/text = "Splash"
+popup/item_1/id = 5
+popup/item_2/text = "Crash"
+popup/item_2/id = 2
+popup/item_3/text = "Disperse"
+popup/item_3/id = 3
+popup/item_4/text = "Orbit"
+popup/item_4/id = 4
+
+[node name="space10" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
 
 [node name="HBoxContainer" type="GridContainer" parent="ScrollContainer/settings_list"]
 visible = false
@@ -469,7 +686,65 @@ theme_override_font_sizes/font_size = 35
 text = "Note Fades Out On
 Bad Hit"
 
+[node name="visualizer_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Visualizer"
+
+[node name="space17" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_vids_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Videos in Song"
+
+[node name="space18" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_vids_edit_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Videos in Editor"
+
+[node name="space19" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="note_speed_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+visible = false
 custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
 mouse_filter = 2
@@ -484,6 +759,7 @@ vertical_alignment = 1
 justification_flags = 162
 
 [node name="note_speed_drop" type="OptionButton" parent="ScrollContainer/settings_list"]
+visible = false
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 tooltip_text = "How fast notes drop down to the hit zone."
@@ -506,6 +782,49 @@ popup/item_4/id = 4
 popup/item_5/text = "20.0"
 popup/item_5/id = 5
 
+[node name="note_speed_value_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Speed: 10.0 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_speed_value_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("4_6vr2p")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="note_speed_edit" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+min_value = 1.0
+max_value = 50.0
+step = 0.01
+value = 10.0
+
 [node name="note_offset_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
@@ -526,6 +845,7 @@ tooltip_text = "The offset in ms of when the notes will spawn, useful is your bl
 (Negative number: notes spawn earlier. 
 Positive number: notes spawn later.)"
 theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
 theme_override_font_sizes/font_size = 30
 text = "10.0"
 placeholder_text = "Note spawn time offset (in ms)"
@@ -552,6 +872,7 @@ justification_flags = 162
 layout_mode = 2
 tooltip_text = "The speed of the game (like a speedhack, useful if you wanna practice, or give yourself a challenge)"
 theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
 theme_override_font_sizes/font_size = 30
 text = "1.0"
 placeholder_text = "Note spawn time offset (in ms)"
@@ -585,6 +906,459 @@ theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 50
 text = "Reduce Motion"
 
+[node name="space5" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="animated_scrolls_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Smooth Scrolling"
+
+[node name="space13" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_pulse_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the background pulse at all."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Background Pulses to Music"
+
+[node name="bg_pulse_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Pulse Strength: 16.0x ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="bg_pulse_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "How fast or reactive should the background pulse to the song."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+min_value = 1.0
+step = 0.5
+value = 16.0
+scrollable = false
+
+[node name="bg_img_add" type="Button" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Add New Background Image"
+icon_alignment = 2
+expand_icon = true
+
+[node name="space15" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 3)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_drop" type="OptionButton" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(750, 139.02)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/icon_max_width = 250
+theme_override_font_sizes/font_size = 32
+icon_alignment = 2
+expand_icon = true
+selected = 0
+item_count = 2
+popup/item_0/text = "Default"
+popup/item_0/icon = ExtResource("13_ieo4m")
+popup/item_0/id = 0
+popup/item_1/id = 1
+popup/item_1/separator = true
+
+[node name="space16" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 3)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_delete" type="Button" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Delete Current Background Image"
+icon_alignment = 2
+expand_icon = true
+
+[node name="bg_img_dlt_confirmation" type="HBoxContainer" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+alignment = 1
+
+[node name="bg_img_delete_confirm" type="Button" parent="ScrollContainer/settings_list/bg_img_dlt_confirmation"]
+custom_minimum_size = Vector2(672, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Delete bg_name?"
+text_overrun_behavior = 3
+clip_text = true
+icon_alignment = 2
+expand_icon = true
+
+[node name="space17" type="RichTextLabel" parent="ScrollContainer/settings_list/bg_img_dlt_confirmation"]
+custom_minimum_size = Vector2(-8.28, 0)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_delete_cancel" type="Button" parent="ScrollContainer/settings_list/bg_img_dlt_confirmation"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("16_h7htg")
+theme_override_font_sizes/font_size = 40
+text = ""
+icon_alignment = 2
+expand_icon = true
+
+[node name="menu_bg_brightness_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (Main Menu): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="menu_bg_brightness_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="bg_brightness_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (In Game): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="bg_brightness_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="editor_bg_brightness_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (Editor): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="editor_bg_brightness_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="note_backdrop_brightness" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Notes Backdrop Opacity (In Game): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_backdrop_brightness_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Differentiate the notes from the background
+by changing the backdrop opacity."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="editor_note_backdrop_brightness" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Notes Backdrop Opacity (Editor): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="editor_note_backdrop_brightness_slider" type="HSlider" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Differentiate the notes from the background
+by changing the backdrop opacity."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="bg_colour_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the Background and
+BG Visualizer be colored based on
+the album cover.
+Turning this off will colour them purple."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+button_pressed = true
+text = "Colour In Game Background
+based on Album Cover"
+
+[node name="profile_separator" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 55
+text = "------- Profile -------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="usr_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Username ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="username_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your username"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="title_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Title ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="title_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your Title"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="clan_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Clan ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="clan_edit" type="LineEdit" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your Clan"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="space14" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+text = "--------------------------------------------------------------------------------------------------------------------------------------------------------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="pfp_edit" type="Button" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(814, 101.61)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 30
+text = "Add your Profile Picture"
+icon_alignment = 2
+expand_icon = true
+
+[node name="banner_edit" type="Button" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(814, 101.61)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 30
+text = "Add your Banner"
+icon_alignment = 2
+expand_icon = true
+
+[node name="your_profile_view" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Preview ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="profile_small" parent="ScrollContainer/settings_list" instance=ExtResource("14_g8dc3")]
+custom_minimum_size = Vector2(0, 175)
+layout_mode = 2
+
 [node name="fps_separator" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
@@ -609,14 +1383,58 @@ theme_override_constants/h_separation = 15
 theme_override_font_sizes/font_size = 50
 text = "Show FPS"
 
+[node name="space11" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="avrg_fps_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The engine automatically averages the FPS every second.
+This stops that and updates the FPS counter every frame without averaging."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Accurate FPS"
+
+[node name="space20" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="advanced_fps_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The engine automatically averages the FPS every second.
+This stops that and updates the FPS counter every frame without averaging."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+button_pressed = true
+text = "Advanced FPS Options"
+
 [node name="fps_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+visible = false
 custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
 mouse_filter = 2
 theme = ExtResource("4_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/normal_font_size = 25
-text = "---- Max FPS / V-Sync ----"
+text = "---- Max FPS ----"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
@@ -624,6 +1442,7 @@ vertical_alignment = 1
 justification_flags = 162
 
 [node name="fps_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+visible = false
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_6vr2p")
@@ -657,11 +1476,168 @@ popup/item_11/id = 11
 popup/item_12/text = "Custom"
 popup/item_12/id = 12
 
+[node name="fps_main_menu_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Main Menu) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_main_menu_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+alignment = 1
+selected = 4
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="fps_main_lbl" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Song) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_main_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+alignment = 1
+selected = 11
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="fps_unfocused" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Unfocused) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_unfocused_options" type="OptionButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+alignment = 1
+selected = 1
+item_count = 14
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "15"
+popup/item_1/id = 13
+popup/item_2/text = "30"
+popup/item_2/id = 1
+popup/item_3/text = "60"
+popup/item_3/id = 2
+popup/item_4/text = "90"
+popup/item_4/id = 3
+popup/item_5/text = "120"
+popup/item_5/id = 4
+popup/item_6/text = "144"
+popup/item_6/id = 5
+popup/item_7/text = "165"
+popup/item_7/id = 6
+popup/item_8/text = "180"
+popup/item_8/id = 7
+popup/item_9/text = "240"
+popup/item_9/id = 8
+popup/item_10/text = "360"
+popup/item_10/id = 9
+popup/item_11/text = "540"
+popup/item_11/id = 10
+popup/item_12/text = "Unlimited FPS"
+popup/item_12/id = 11
+popup/item_13/text = "Custom"
+popup/item_13/id = 12
+
+[node name="space21" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="custom_fps" type="LineEdit" parent="ScrollContainer/settings_list"]
 visible = false
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme = ExtResource("4_6vr2p")
+theme_override_fonts/font = ExtResource("10_d6lvq")
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Enter Custom FPS"
 alignment = 1
@@ -685,7 +1661,7 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_6vr2p")
 alignment = 1
-selected = 0
+selected = 2
 item_count = 4
 popup/item_0/text = "3840x2160"
 popup/item_0/id = 1
@@ -716,17 +1692,15 @@ mouse_default_cursor_shape = 2
 theme = ExtResource("4_6vr2p")
 alignment = 1
 selected = 0
-item_count = 5
+item_count = 4
 popup/item_0/text = "Exclusive Fullscreen"
-popup/item_0/id = 1
+popup/item_0/id = 0
 popup/item_1/text = "Fullscreen"
-popup/item_1/id = 2
+popup/item_1/id = 1
 popup/item_2/text = "Maximized"
-popup/item_2/id = 3
-popup/item_3/text = "Minimized"
-popup/item_3/id = 4
-popup/item_4/text = "Windowed"
-popup/item_4/id = 4
+popup/item_2/id = 2
+popup/item_3/text = "Windowed"
+popup/item_3/id = 3
 
 [node name="space3" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 5)
@@ -744,7 +1718,7 @@ mouse_default_cursor_shape = 2
 theme = ExtResource("4_6vr2p")
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
-text = "Borderless"
+text = "Borderless "
 
 [node name="extra_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 32)
@@ -760,6 +1734,42 @@ horizontal_alignment = 1
 vertical_alignment = 1
 justification_flags = 162
 
+[node name="drp_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Discord Rich Presence "
+
+[node name="space22" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="show_chart_alignment" type="CheckButton" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Show Chart Alignment "
+
+[node name="space9" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="credits_btn" type="Button" parent="ScrollContainer/settings_list"]
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -767,14 +1777,80 @@ theme = ExtResource("4_6vr2p")
 theme_override_font_sizes/font_size = 50
 text = "Credits"
 
-[node name="slogan" type="RichTextLabel" parent="ScrollContainer/settings_list"]
-custom_minimum_size = Vector2(650, 32)
+[node name="space6" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+visible = false
+custom_minimum_size = Vector2(650, 5)
 layout_mode = 2
 mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="redeem_btn" type="Button" parent="ScrollContainer/settings_list"]
+visible = false
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_font_sizes/font_size = 50
+text = "Redeem Code"
+
+[node name="space7" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="see_tos" type="Button" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_font_sizes/font_size = 50
+text = "Terms of Service"
+
+[node name="space8" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="see_github" type="Button" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+tooltip_text = "Official GitHub for Beatz! X."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_font_sizes/font_size = 50
+text = "GitHub"
+
+[node name="space12" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="check_for_update" type="Button" parent="ScrollContainer/settings_list"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_font_sizes/font_size = 50
+text = "Check for Update"
+
+[node name="lifetime_points" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
 theme = ExtResource("4_6vr2p")
 theme_override_constants/outline_size = 5
-theme_override_font_sizes/normal_font_size = 22
-text = "FEEL. YOUR RHYTHM."
+theme_override_font_sizes/normal_font_size = 15
+text = "Lifetime Points: 0"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
@@ -784,7 +1860,6 @@ justification_flags = 162
 [node name="ver" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 32)
 layout_mode = 2
-tooltip_text = "!"
 theme = ExtResource("4_6vr2p")
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/normal_font_size = 15
@@ -795,7 +1870,33 @@ horizontal_alignment = 1
 vertical_alignment = 1
 justification_flags = 162
 
+[node name="slogan" parent="ScrollContainer/settings_list" instance=ExtResource("14_vmqi3")]
+layout_mode = 2
+
+[node name="copyright" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 15
+text = "© 2025 GuayabR"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="end_space" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 18)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="keybinds_layer" type="Control" parent="."]
+visible = false
 z_index = 1
 layout_mode = 1
 anchors_preset = 15
@@ -813,12 +1914,14 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -960.0
-offset_top = -411.0
+offset_top = -400.0
 offset_right = 960.0
-offset_bottom = 669.0
+offset_bottom = 680.0
 grow_horizontal = 2
+scale = Vector2(0.459, 0.459)
+pivot_offset = Vector2(960, 540)
 mouse_filter = 2
-texture = ExtResource("2_6vr2p")
+texture = ExtResource("14_1c72s")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="keybinds_layer"]
 clip_contents = false
@@ -860,12 +1963,10 @@ scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
 
-[node name="game_separator" type="RichTextLabel" parent="keybinds_layer/ScrollContainer/settings_list"]
+[node name="space3" type="RichTextLabel" parent="keybinds_layer/ScrollContainer/settings_list"]
 custom_minimum_size = Vector2(650, 50)
 layout_mode = 2
-theme_override_constants/outline_size = 12
-theme_override_font_sizes/normal_font_size = 55
-text = "------- Keybinds -------"
+theme_override_font_sizes/normal_font_size = 50
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
@@ -875,74 +1976,234 @@ justification_flags = 162
 layout_mode = 2
 columns = 2
 
-[node name="Label" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="l_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Left: "
 
-[node name="Button" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="l_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
-[node name="Label2" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="d_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Down: "
 
-[node name="Button2" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="d_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
-[node name="Label3" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="u_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Up: "
 
-[node name="Button3" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="u_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
-[node name="Label4" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="r_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Right: "
 
-[node name="Button4" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="r_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
-[node name="Label5" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="back_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-text = "Back: "
+text = "Pause: "
 
-[node name="Button5" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
+[node name="pause_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
 custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "{KEY}"
 
+[node name="input_listen_cont" type="Panel" parent="keybinds_layer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -336.5
+offset_top = -171.5
+offset_right = 336.5
+offset_bottom = 171.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(336, 171)
+theme = ExtResource("4_6vr2p")
+
+[node name="input_lbl" type="RichTextLabel" parent="keybinds_layer/input_listen_cont"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -71.0
+offset_top = 10.5
+offset_right = 71.0
+offset_bottom = 48.5
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 25
+text = "Input Name"
+fit_content = true
+autowrap_mode = 0
+
+[node name="listening_lbl2" type="RichTextLabel" parent="keybinds_layer/input_listen_cont"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -173.0
+offset_top = -44.0
+offset_right = 173.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 38
+text = "Listening for Input..."
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="cancel" type="Button" parent="keybinds_layer/input_listen_cont"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -116.0
+offset_top = -73.5
+offset_right = -20.0
+offset_bottom = -39.5
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 25
+text = "Cancel"
+
+[node name="ok" type="Button" parent="keybinds_layer/input_listen_cont"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 4.5
+offset_top = -73.0
+offset_right = 108.5
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 25
+text = "Confirm"
+
+[node name="switch" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_d6lvq")
+}
+
+[connection signal="focus_entered" from="background" to="." method="_on_background_focus_entered"]
+[connection signal="gui_input" from="ScrollContainer" to="." method="_on_scroll_cont_gui_input"]
+[connection signal="focus_entered" from="ScrollContainer/settings_list/master_vol_label" to="." method="_on_master_vol_label_focus_entered"]
+[connection signal="focus_exited" from="ScrollContainer/settings_list/master_vol_edit" to="." method="_on_master_vol_edit_focus_exited"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/master_vol_edit" to="." method="_on_master_vol_edit_text_submitted"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/master_vol_slider" to="." method="_on_master_vol_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/master_vol_slider" to="." method="_on_master_vol_slider_value_changed"]
+[connection signal="focus_entered" from="ScrollContainer/settings_list/song_vol_label" to="." method="_on_song_vol_label_focus_entered"]
+[connection signal="focus_exited" from="ScrollContainer/settings_list/song_vol_edit" to="." method="_on_song_vol_edit_focus_exited"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/song_vol_edit" to="." method="_on_song_vol_edit_text_submitted"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/song_vol_slider" to="." method="_on_song_vol_slider_drag_ended"]
 [connection signal="value_changed" from="ScrollContainer/settings_list/song_vol_slider" to="." method="_on_song_vol_slider_value_changed"]
+[connection signal="focus_entered" from="ScrollContainer/settings_list/menu_song_vol_label" to="." method="_on_menu_song_vol_label_focus_entered"]
+[connection signal="focus_exited" from="ScrollContainer/settings_list/menu_song_vol_edit" to="." method="_on_menu_song_vol_edit_focus_exited"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/menu_song_vol_edit" to="." method="_on_menu_song_vol_edit_text_submitted"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/menu_song_vol_slider" to="." method="_on_menu_song_vol_slider_drag_ended"]
 [connection signal="value_changed" from="ScrollContainer/settings_list/menu_song_vol_slider" to="." method="_on_menu_song_vol_slider_value_changed"]
+[connection signal="focus_entered" from="ScrollContainer/settings_list/sfx_vol_label" to="." method="_on_sfx_vol_label_focus_entered"]
+[connection signal="focus_exited" from="ScrollContainer/settings_list/sfx_vol_edit" to="." method="_on_sfx_vol_edit_focus_exited"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/sfx_vol_edit" to="." method="_on_sfx_vol_edit_text_submitted"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/sfx_vol_slider" to="." method="_on_sfx_vol_slider_drag_ended"]
 [connection signal="value_changed" from="ScrollContainer/settings_list/sfx_vol_slider" to="." method="_on_sfx_vol_slider_value_changed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/change_binds_btn" to="." method="_on_change_binds_btn_pressed"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/note_style_drop" to="." method="_on_note_style_item_selected"]
 [connection signal="toggled" from="ScrollContainer/settings_list/note_anim_toggle" to="." method="_on_note_anim_toggled"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/note_particle_fx" to="." method="_on_note_particle_fx_item_selected"]
+[connection signal="toggled" from="ScrollContainer/settings_list/visualizer_toggle" to="." method="_on_visualizer_toggle_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/bg_vids_toggle" to="." method="_on_bg_vids_toggle_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/bg_vids_edit_toggle" to="." method="_on_bg_vids_edit_toggle_toggled"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/note_speed_drop" to="." method="_on_note_speed_item_selected"]
+[connection signal="focus_entered" from="ScrollContainer/settings_list/note_speed_value_lbl" to="." method="_on_note_speed_value_lbl_focus_entered"]
+[connection signal="focus_exited" from="ScrollContainer/settings_list/note_speed_value_edit" to="." method="_on_menu_song_vol_edit_2_focus_exited"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/note_speed_value_edit" to="." method="_on_menu_song_vol_edit_2_text_submitted"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/note_speed_edit" to="." method="_on_note_speed_edit_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/note_speed_edit" to="." method="_on_note_speed_edit_value_changed"]
 [connection signal="text_submitted" from="ScrollContainer/settings_list/note_offset_edit" to="." method="_on_note_offset_text_submitted"]
 [connection signal="text_submitted" from="ScrollContainer/settings_list/game_speed_edit" to="." method="_on_game_speed_text_submitted"]
 [connection signal="toggled" from="ScrollContainer/settings_list/reduce_motion_check" to="." method="_on_reduce_motion_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/animated_scrolls_check" to="." method="_on_animated_scrolls_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/bg_pulse_toggle" to="." method="_on_bg_pulse_toggle_toggled"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/bg_pulse_slider" to="." method="_on_bg_pulse_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/bg_pulse_slider" to="." method="_on_bg_pulse_slider_value_changed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/bg_img_add" to="." method="_on_bg_img_select_pressed"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/bg_img_drop" to="." method="_on_bg_img_drop_item_selected"]
+[connection signal="pressed" from="ScrollContainer/settings_list/bg_img_delete" to="." method="_on_bg_img_delete_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/bg_img_dlt_confirmation/bg_img_delete_confirm" to="." method="_on_bg_img_confirm_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/bg_img_dlt_confirmation/bg_img_delete_cancel" to="." method="_on_bg_img_delete_cancel_pressed"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/menu_bg_brightness_slider" to="." method="_on_menu_bg_brightness_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/menu_bg_brightness_slider" to="." method="_on_menu_bg_brightness_slider_value_changed"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/bg_brightness_slider" to="." method="_on_bg_brightness_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/bg_brightness_slider" to="." method="_on_bg_brightness_slider_value_changed"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/editor_bg_brightness_slider" to="." method="_on_editor_bg_brightness_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/editor_bg_brightness_slider" to="." method="_on_editor_bg_brightness_slider_value_changed"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/note_backdrop_brightness_slider" to="." method="_on_note_backdrop_brightness_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/note_backdrop_brightness_slider" to="." method="_on_note_backdrop_brightness_slider_value_changed"]
+[connection signal="drag_ended" from="ScrollContainer/settings_list/editor_note_backdrop_brightness_slider" to="." method="_on_editor_note_backdrop_brightness_slider_drag_ended"]
+[connection signal="value_changed" from="ScrollContainer/settings_list/editor_note_backdrop_brightness_slider" to="." method="_on_editor_note_backdrop_brightness_slider_value_changed"]
+[connection signal="toggled" from="ScrollContainer/settings_list/bg_colour_toggle" to="." method="_on_bg_colour_toggle_toggled"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/username_edit" to="." method="_on_username_edit_text_submitted"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/title_edit" to="." method="_on_title_edit_text_submitted"]
+[connection signal="text_submitted" from="ScrollContainer/settings_list/clan_edit" to="." method="_on_clan_edit_text_submitted"]
+[connection signal="pressed" from="ScrollContainer/settings_list/pfp_edit" to="." method="_on_profile_img_select_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/banner_edit" to="." method="_on_banner_img_select_pressed"]
 [connection signal="toggled" from="ScrollContainer/settings_list/fpsCheck" to="." method="_on_fps_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/avrg_fps_check" to="." method="_on_avrg_fps_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/advanced_fps_check" to="." method="_on_advanced_fps_toggled"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/fps_options" to="." method="_on_fps_options_item_selected"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/fps_main_menu_options" to="." method="_on_fps_main_menu_options_item_selected"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/fps_main_options" to="." method="_on_fps_main_options_item_selected"]
+[connection signal="item_selected" from="ScrollContainer/settings_list/fps_unfocused_options" to="." method="_on_fps_unfocused_options_item_selected"]
 [connection signal="text_submitted" from="ScrollContainer/settings_list/custom_fps" to="." method="_on_custom_fps_text_submitted"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/display_resolutions" to="." method="_on_display_item_selected"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/display_options" to="." method="_on_display_options_selected"]
 [connection signal="toggled" from="ScrollContainer/settings_list/borderless_check" to="." method="_on_borderless_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/drp_toggle" to="." method="_on_drp_toggle_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/show_chart_alignment" to="." method="_on_show_chart_alignment_toggled"]
 [connection signal="pressed" from="ScrollContainer/settings_list/credits_btn" to="." method="_on_credits_btn_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/see_tos" to="." method="_on_see_tos_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/see_github" to="." method="_on_see_github_pressed"]
+[connection signal="pressed" from="ScrollContainer/settings_list/check_for_update" to="." method="_on_check_for_update_pressed"]
+[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/l_btn" to="." method="_on_l_btn_pressed"]
+[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/d_btn" to="." method="_on_d_btn_pressed"]
+[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/u_btn" to="." method="_on_u_btn_pressed"]
+[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/r_btn" to="." method="_on_r_btn_pressed"]
+[connection signal="button_up" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/pause_btn" to="." method="_on_pause_btn_button_up"]
+[connection signal="pressed" from="keybinds_layer/input_listen_cont/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="keybinds_layer/input_listen_cont/ok" to="." method="_on_ok_pressed"]

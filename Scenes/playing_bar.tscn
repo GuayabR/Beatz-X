@@ -1,0 +1,719 @@
+[gd_scene load_steps=23 format=3 uid="uid://dsc6fkstdgxrv"]
+
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_4fh0t"]
+[ext_resource type="Script" uid="uid://bwqqicuy3wel1" path="res://Scenes/playing_bar.gd" id="2_fvuyv"]
+[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="3_qrvwj"]
+[ext_resource type="Texture2D" uid="uid://6cvc1r2mkha7" path="res://Resources/BeatzCoverX.png" id="3_wgpxw"]
+[ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="4_awyuj"]
+[ext_resource type="Texture2D" uid="uid://ct36npe78bfsk" path="res://Resources/misc/cover_mask.png" id="5_07vmw"]
+[ext_resource type="Texture2D" uid="uid://bm0dkdq3wwl4s" path="res://Resources/icon.svg" id="6_fvuyv"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="7_qrvwj"]
+[ext_resource type="Texture2D" uid="uid://cae7qvwquuw5t" path="res://Resources/Arrows/NoteUpPress.png" id="8_fvuyv"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fvuyv"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_fvuyv"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.5952381)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Animation" id="Animation_fvuyv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1920, 75)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("volume:size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(30, 235)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("volume:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-37, -308)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 1005)]
+}
+
+[sub_resource type="Animation" id="Animation_qrvwj"]
+resource_name = "show"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:size")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.07966006, 1),
+"update": 0,
+"values": [Vector2(1920, 75), Vector2(1920, 1080)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.076946564, 1),
+"update": 0,
+"values": [Vector2(0, 1005), Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("volume:size")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(30, 235)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("volume:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.076946564, 1),
+"update": 0,
+"values": [Vector2(-31, -308), Vector2(-31, 800)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pofvn"]
+_data = {
+&"RESET": SubResource("Animation_fvuyv"),
+&"show": SubResource("Animation_qrvwj")
+}
+
+[sub_resource type="Animation" id="Animation_awyuj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../cover_mask:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2.20234, 2.20234)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../cover_mask2:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(3.2222285, 3.2222285)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../length:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(828, -35)]
+}
+
+[sub_resource type="Animation" id="Animation_wgpxw"]
+resource_name = "hide"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../cover_mask:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.17677678, 1),
+"update": 0,
+"values": [Vector2(2.20234, 2.20234), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../cover_mask2:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.17677678, 1),
+"update": 0,
+"values": [Vector2(3.2222285, 3.2222285), Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../length:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.12940823, 1),
+"update": 0,
+"values": [Vector2(828, -35), Vector2(828, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_07vmw"]
+resource_name = "show"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../cover_mask:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.17677678, 0.17677678),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(2.20234, 2.20234)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../cover_mask2:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.17677678, 0.17677678),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(3.2222285, 3.2222285)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../length:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.53333336),
+"transitions": PackedFloat32Array(0.12940823, 0.12940823),
+"update": 0,
+"values": [Vector2(828, 0), Vector2(828, -35)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bhs2t"]
+_data = {
+&"RESET": SubResource("Animation_awyuj"),
+&"hide": SubResource("Animation_wgpxw"),
+&"show": SubResource("Animation_07vmw")
+}
+
+[sub_resource type="Animation" id="Animation_18qwv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("cover_mask/cover:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_bhs2t"]
+resource_name = "rotate"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("cover_mask/cover:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 60),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.283185307179586]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qlndf"]
+_data = {
+&"RESET": SubResource("Animation_18qwv"),
+&"rotate": SubResource("Animation_bhs2t")
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fvuyv"]
+bg_color = Color(0, 0, 0, 0.72900003)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 2
+
+[node name="playing_bar" type="Control"]
+layout_mode = 3
+anchor_top = 0.92
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 11.399963
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_4fh0t")
+script = ExtResource("2_fvuyv")
+
+[node name="bg_col" type="ColorRect" parent="."]
+modulate = Color(1, 1, 1, 0.12900001)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="bg_col_grad" type="Line2D" parent="."]
+z_index = -1
+material = SubResource("CanvasItemMaterial_fvuyv")
+position = Vector2(960, 92)
+scale = Vector2(192.03064, 0.9601532)
+points = PackedVector2Array(0, 302, 0, -84)
+gradient = SubResource("Gradient_fvuyv")
+
+[node name="square_cover" type="TextureRect" parent="."]
+visible = false
+self_modulate = Color(1, 1, 1, 0.36078432)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -67.0
+offset_right = 67.0
+grow_vertical = 0
+texture = ExtResource("3_wgpxw")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="cover_mask2" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.43529412)
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 33.0
+offset_top = -29.00003
+offset_right = 100.0
+offset_bottom = -37.00003
+grow_vertical = 2
+scale = Vector2(3.2222285, 3.2222285)
+pivot_offset = Vector2(33, 33)
+texture = ExtResource("4_awyuj")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="cover_mask" type="TextureRect" parent="."]
+clip_children = 1
+z_index = 2
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 33.0
+offset_top = -29.0
+offset_right = 100.0
+offset_bottom = -37.0
+grow_vertical = 2
+scale = Vector2(2.20234, 2.20234)
+pivot_offset = Vector2(33, 33)
+focus_mode = 1
+texture = ExtResource("5_07vmw")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="cover" type="TextureRect" parent="cover_mask"]
+layout_mode = 0
+offset_right = 67.0
+offset_bottom = 67.0
+scale = Vector2(1.025, 1.025)
+pivot_offset = Vector2(33, 33)
+texture = ExtResource("6_fvuyv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="progress" type="HSlider" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 138.0
+offset_top = -11.0
+offset_bottom = 19.0
+grow_horizontal = 2
+mouse_default_cursor_shape = 2
+step = 0.0
+scrollable = false
+
+[node name="volume" type="VSlider" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = -37.0
+offset_top = -308.0
+offset_right = -7.0
+offset_bottom = -148.0
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+step = 0.25
+tick_count = 25
+ticks_on_borders = true
+
+[node name="volume_corner" type="Control" parent="volume"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -5.0
+offset_right = 98.0
+offset_bottom = 3.0
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="volume"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -15.5
+offset_top = -27.0
+offset_right = 15.5
+offset_bottom = -8.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_qrvwj")
+theme_override_font_sizes/font_size = 18
+text = "100"
+horizontal_alignment = 1
+
+[node name="title_artist_cont" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 172.0
+offset_top = -14.5
+offset_right = 953.0
+offset_bottom = 30.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="title" type="RichTextLabel" parent="title_artist_cont"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 32
+bbcode_enabled = true
+text = "[b]Title[/b]"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="dash" type="RichTextLabel" parent="title_artist_cont"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 20
+text = "-"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="artist" type="RichTextLabel" parent="title_artist_cont"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 20
+text = "Artist"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="album" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -527.5
+offset_top = -24.5
+offset_right = -440.5
+offset_bottom = 12.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+text = "[b]Album[/b]"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="year" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -518.5
+offset_top = 4.5
+offset_right = -449.5
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 24
+text = "1980"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="length" type="RichTextLabel" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -132.0
+offset_top = -72.5
+offset_right = 132.0
+offset_bottom = -41.499985
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 18
+text = "0:00 / 2:53"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="randomize" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -163.0
+offset_top = -18.5
+offset_right = -118.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Randomize (T)"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+expand_icon = true
+
+[node name="previous" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -93.0
+offset_top = -18.5
+offset_right = -48.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+expand_icon = true
+
+[node name="playpause" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.5
+offset_top = -18.5
+offset_right = 22.5
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="next" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -18.5
+offset_right = 93.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="go_to_song" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 118.0
+offset_top = -18.5
+offset_right = 163.0
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+icon = ExtResource("8_fvuyv")
+expand_icon = true
+
+[node name="show" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_pofvn")
+}
+
+[node name="hide" type="AnimationPlayer" parent="."]
+root_node = NodePath("../AnimationPlayer")
+libraries = {
+&"": SubResource("AnimationLibrary_bhs2t")
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_qlndf")
+}
+autoplay = "rotate"
+
+[node name="time_tooltip" type="Panel" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.5
+offset_top = 46.5
+offset_right = 47.5
+offset_bottom = 80.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fvuyv")
+
+[node name="time" type="RichTextLabel" parent="time_tooltip"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 16
+text = "0:00"
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="focus_entered" from="cover_mask" to="." method="_on_cover_mask_focus_entered"]
+[connection signal="drag_ended" from="progress" to="." method="_on_progress_drag_ended"]
+[connection signal="drag_started" from="progress" to="." method="_on_progress_drag_started"]
+[connection signal="gui_input" from="progress" to="." method="_on_progress_gui_input"]
+[connection signal="mouse_entered" from="progress" to="." method="_on_progress_mouse_entered"]
+[connection signal="mouse_exited" from="progress" to="." method="_on_progress_mouse_exited"]
+[connection signal="value_changed" from="progress" to="." method="_on_progress_value_changed"]
+[connection signal="drag_ended" from="volume" to="." method="_on_volume_drag_ended"]
+[connection signal="value_changed" from="volume" to="." method="_on_volume_value_changed"]
+[connection signal="mouse_entered" from="volume/volume_corner" to="." method="_on_volume_corner_mouse_entered"]
+[connection signal="mouse_exited" from="volume/volume_corner" to="." method="_on_volume_corner_mouse_exited"]
+[connection signal="pressed" from="randomize" to="." method="_on_randomize_pressed"]
+[connection signal="pressed" from="previous" to="." method="_on_previous_pressed"]
+[connection signal="pressed" from="playpause" to="." method="_on_playpause_pressed"]
+[connection signal="pressed" from="next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="go_to_song" to="." method="_on_go_to_song_pressed"]

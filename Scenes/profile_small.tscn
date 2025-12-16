@@ -1,0 +1,142 @@
+[gd_scene load_steps=6 format=3 uid="uid://cb51l1suj4oox"]
+
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_kb3qo"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_ptiex"]
+[ext_resource type="Script" uid="uid://beskjde8klecl" path="res://Scenes/profile.gd" id="2_slaaj"]
+[ext_resource type="Texture2D" uid="uid://ct36npe78bfsk" path="res://Resources/misc/cover_mask.png" id="3_slaaj"]
+[ext_resource type="Texture2D" uid="uid://bm0dkdq3wwl4s" path="res://Resources/icon.svg" id="5_ptiex"]
+
+[node name="profile_small" type="Control"]
+layout_mode = 3
+anchor_right = 0.365
+anchor_bottom = 0.162
+offset_right = -0.8000488
+offset_bottom = 0.039993286
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_kb3qo")
+script = ExtResource("2_slaaj")
+
+[node name="out" type="ColorRect" parent="."]
+clip_children = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="banner" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.4509804)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ptiex")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="name_side" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.24700001
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.099990845
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="username" type="RichTextLabel" parent="name_side"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -116.0
+offset_top = -56.5
+offset_right = 116.0
+offset_bottom = 6.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/normal_font_size = 50
+theme_override_font_sizes/bold_font_size = 50
+bbcode_enabled = true
+text = "[CLAN] [b]Username[/b]"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="title" type="RichTextLabel" parent="name_side"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -183.5
+offset_top = 5.5
+offset_right = 183.5
+offset_bottom = 43.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 25
+theme_override_font_sizes/bold_font_size = 50
+theme_override_font_sizes/italics_font_size = 25
+bbcode_enabled = true
+text = "Title"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="outline" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 24.0
+offset_top = -62.5
+offset_right = 149.0
+offset_bottom = 62.5
+grow_vertical = 2
+scale = Vector2(1.03, 1.03)
+pivot_offset = Vector2(62, 62)
+texture = ExtResource("3_slaaj")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="circle_mask" type="TextureRect" parent="."]
+clip_children = 2
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 24.0
+offset_top = -62.5
+offset_right = 149.0
+offset_bottom = 62.5
+grow_vertical = 2
+pivot_offset = Vector2(62, 62)
+texture = ExtResource("3_slaaj")
+expand_mode = 1
+
+[node name="profile" type="TextureRect" parent="circle_mask"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -62.5
+offset_right = 125.0
+offset_bottom = 62.5
+grow_vertical = 2
+pivot_offset = Vector2(62, 62)
+texture = ExtResource("5_ptiex")
+expand_mode = 1
+stretch_mode = 6

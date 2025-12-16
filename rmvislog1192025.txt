@@ -1,0 +1,801 @@
+Godot Engine v4.5.stable.custom_build - https://godotengine.org
+Vulkan 1.4.312 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 3060
+
+Supported video codecs:
+	decode h263
+	decode mpeg4
+	decode h264
+	decode vp8
+	decode vp9
+	decode mp3
+	decode aac
+	decode vorbis
+	  codec: libvorbis
+	decode aac_latm
+	decode opus
+	  codec: libopus
+Settings Global node loaded
+Loading settings
+Merging loaded settings with defaults
+{
+	"game": {
+		"username": "GuayabR",
+		"title": "AS^ AA AM am AR AJ aa AS aE AL AT AF",
+		"clan": "DEV",
+		"profile_path": "user://Profile/pfps/From Zero (Deluxe Edition).png",
+		"banner_path": "user://Profile/banners/FromZeroWall.png",
+		"mbl_btn_layout": 0.0,
+		"master_vol": 100.0,
+		"song_vol": 10.0,
+		"menu_song_vol": 12.5,
+		"sfx_vol": 0.0,
+		"speed": 1.0,
+		"note_speed": 15.0,
+		"theme": "Default",
+		"menu_bg_brightness": 0.75,
+		"bg_brightness": 0.5,
+		"editor_bg_brightness": 0.45,
+		"version": "1.3.1",
+		"show_vpopup": false,
+		"last_editor_path": "C:/Users/PC ELITE/OneDrive/Escritorio/Projects/fnf game/Resources/bgVideos"
+	},
+	"misc_settings": {
+		"note_style": "dance",
+		"note_anims": true,
+		"menu_bg_pulse": true,
+		"menu_bg_pulse_strength": 50.0,
+		"menu_bg_img_path": "",
+		"show_fps": true,
+		"accurate_fps": true,
+		"drc": false,
+		"vis": false,
+		"note_offset": 0.0,
+		"fps": 5000.0,
+		"resolution": [
+			1920.0,
+			1080.0
+		],
+		"window_mode": "exclusive_fullscreen",
+		"borderless": false,
+		"reduce_motion": false,
+		"smooth_scrolls": true,
+		"colour_bg_with_cover": true,
+		"notes_backdrop_opacity": 0.4,
+		"editor_notes_backdrop_opacity": 0.9,
+		"eq_applies_to_menu_song": true,
+		"selected_eq_preset": "Open / Bassier"
+	},
+	"eq": {
+		"31": 7.0,
+		"62": 8.0,
+		"125": 6.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 1.0,
+		"4000": 3.0,
+		"8000": 6.0,
+		"16000": 10.0
+	},
+	"eq_presets": {
+		"Flat": {
+			"31": 0.0,
+			"62": 0.0,
+			"125": 0.0,
+			"250": 0.0,
+			"500": 0.0,
+			"1000": 0.0,
+			"2000": 0.0,
+			"4000": 0.0,
+			"8000": 0.0,
+			"16000": 0.0
+		},
+		"Bass": {
+			"31": 5.0,
+			"62": 6.0,
+			"125": 2.0,
+			"250": 0.0,
+			"500": -4.0,
+			"1000": -4.0,
+			"2000": 0.0,
+			"4000": 0.0,
+			"8000": 1.0,
+			"16000": 2.0
+		},
+		"Bass Compensate": {
+			"31": 4.0,
+			"62": 6.0,
+			"125": 2.0,
+			"250": -2.0,
+			"500": -4.0,
+			"1000": -4.0,
+			"2000": 0.0,
+			"4000": 2.0,
+			"8000": 5.0,
+			"16000": 8.0
+		},
+		"Open": {
+			"31": 2.0,
+			"62": 4.0,
+			"125": 1.0,
+			"250": -2.0,
+			"500": -4.0,
+			"1000": -3.0,
+			"2000": 1.0,
+			"4000": 3.0,
+			"8000": 6.0,
+			"16000": 10.0
+		},
+		"Open / Bass": {
+			"31": 7.0,
+			"62": 8.0,
+			"125": 6.0,
+			"250": -2.0,
+			"500": -4.0,
+			"1000": -3.0,
+			"2000": 1.0,
+			"4000": 3.0,
+			"8000": 6.0,
+			"16000": 10.0
+		},
+		"Open / Bassier": {
+			"31": 8.0,
+			"62": 10.0,
+			"125": 7.0,
+			"250": 0.0,
+			"500": -4.0,
+			"1000": -3.0,
+			"2000": 1.0,
+			"4000": 5.0,
+			"8000": 8.0,
+			"16000": 10.0
+		}
+	},
+	"keybinds": {
+		"noteLeft": [
+			81.0,
+			90.0,
+			4194319.0,
+			51.0
+		],
+		"noteDown": [
+			87.0
+		],
+		"noteUp": [
+			79.0
+		],
+		"noteRight": [
+			80.0
+		],
+		"pause-back": [
+			4194305.0
+		]
+	}
+}
+Beatz Global node loaded
+Getting points
+Lifetime points loaded: 26346858.8574547
+
+General Global node loaded
+Discord.exe Is not running
+Either discord is not running or user toggled off drc
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 6108 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+User has already seen the popup and chose to not show again
+Done
+{ "beatz_path": "user://Custom/In Pieces - Linkin Park/In Pieces-GuayabR.beatz", "id": "SONGID In Pieces - Linkin Park 1761888539.215_3770227818", "song_name": "In Pieces", "album": "Minutes to Midnight", "artist": "Linkin Park", "year": 2007.0, "diff_texture_path": "", "bpm": 160, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223361865147477243>, "stream": "user://Custom/In Pieces - Linkin Park/In Pieces - Linkin Park.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/In Pieces - Linkin Park/" }
+Selected song: In Pieces by Linkin Park (2007) from album Minutes to Midnight
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(124.0, 41.5)(248.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+Song stream set in main scene.<AudioStreamMP3#-9223361422245751620>
+Using notes in chart
+-1200
+175000 total points and 105.36 per note
+No waiting
+Saving settings
+New high score! { "file": "user://Custom/In Pieces - Linkin Park/In Pieces-GuayabR.beatz", "score": 174979, "notes_hit": 1661, "max_streak": 1661, "exacts": 751, "insanes": 711, "perfects": 197, "earlies": 1, "lates": 1, "misses": 0, "date": "11/09/2025" }
+Updated lifetime points: 26521838.3332306
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5039 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+{ "beatz_path": "user://Custom/Idols - Virtual Riot/Idols-GuayabR.beatz", "id": "SONGID Idols - Virtual Riot 1761888535.017_775875062", "song_name": "Idols", "album": "Idols", "artist": "Virtual Riot", "year": 1980.0, "diff_texture_path": "", "bpm": 128, "charter": "GuayabR", "speed": 5.5, "cover_texture": <ImageTexture#-9223315534093737744>, "stream": "user://Custom/Idols - Virtual Riot/Idols - Virtual Riot.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/Idols - Virtual Riot/" }
+Selected song: Idols by Virtual Riot (1980) from album Idols
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(122.0, 41.5)(244.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (0.3, 0.1, 0.8, 1.0)
+new bright (0.4, 0.4, 0.5, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9223314894680484248>
+Using notes in chart
+-1200
+175000 total points and 121.78 per note
+No waiting
+Updated lifetime points: 26686269.4528276
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5815 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+{ "beatz_path": "user://Custom/Fade To Black - Remastered - Metallica/Fade To Black-GuayabR.beatz", "id": "SONGID Fade To Black - Remastered - Metallica 1761888527.238_2481987771", "song_name": "Fade To Black - Remastered", "album": "Ride The Lightning (Remastered)", "artist": "Metallica", "year": 1984.0, "diff_texture_path": "", "bpm": 113, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223263677665243621>, "stream": "user://Custom/Fade To Black - Remastered - Metallica/Fade To Black - Remastered - Metallica.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/Fade To Black - Remastered - Metallica/" }
+Selected song: Fade To Black - Remastered by Metallica (1984) from album Ride The Lightning (Remastered)
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(98.5, 41.5)(197.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (0.1, 0.3, 0.6, 1.0)
+new bright (0.4, 0.4, 0.6, 1.0)
+new bright (0.4, 0.6, 0.7, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9223263387385849997>
+Using notes in chart
+-1200
+250000 total points and 125.00 per note
+No waiting
+(3) Saving settings
+New high score! { "file": "user://Custom/Fade To Black - Remastered - Metallica/Fade To Black-GuayabR.beatz", "score": 249998, "notes_hit": 2000, "max_streak": 2000, "exacts": 950, "insanes": 899, "perfects": 150, "earlies": 1, "lates": 0, "misses": 0, "date": "11/09/2025" }
+Updated lifetime points: 26936268.1145568
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5027 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+User has already seen the popup and chose to not show again
+Done
+(1357) Saving settings
+{ "beatz_path": "user://Custom/Fade To Black - Remastered - Metallica/Fade To Black-GuayabR.beatz", "id": "SONGID Fade To Black - Remastered - Metallica 1761888527.238_2481987771", "song_name": "Fade To Black - Remastered", "album": "Ride The Lightning (Remastered)", "artist": "Metallica", "year": 1984.0, "diff_texture_path": "", "bpm": 113, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223172306111553001>, "stream": "user://Custom/Fade To Black - Remastered - Metallica/Fade To Black - Remastered - Metallica.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/Fade To Black - Remastered - Metallica/" }
+Selected song: Fade To Black - Remastered by Metallica (1984) from album Ride The Lightning (Remastered)
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(98.5, 41.5)(197.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5793 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+User has already seen the popup and chose to not show again
+Done
+{ "beatz_path": "user://Custom/FOX - Shirobon/FOX-GuayabR.beatz", "id": "SONGID FOX - Shirobon 1761888528.463_509710921", "song_name": "FOX", "album": "Dimensions", "artist": "Shirobon", "year": 2016.0, "diff_texture_path": "", "bpm": 130, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223161361209482640>, "stream": "user://Custom/FOX - Shirobon/FOX - Shirobon.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/FOX - Shirobon/" }
+Selected song: FOX by Shirobon (2016) from album Dimensions
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(100.0, 41.5)(200.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (1.0, 0.7, 1.0, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9223161068916828326>
+71
+Using notes in chart
+-1200
+500000 total points and 196.62 per note
+Waiting 0.571
+Waited
+Saving settings
+Applied EQ preset:Open
+(4) Saving settings
+New high score! { "file": "user://Custom/FOX - Shirobon/FOX-GuayabR.beatz", "score": 499868, "notes_hit": 2543, "max_streak": 2543, "exacts": 1144, "insanes": 1056, "perfects": 338, "earlies": 5, "lates": 0, "misses": 0, "date": "11/09/2025" }
+Updated lifetime points: 27436136.6905803
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5528 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+176
+Songs For The Deaf
+Loading album charts
+new bright (0.8, 0.1, 0.2, 1.0)
+new bright (0.8, 0.1, 0.3, 1.0)
+Starting song scan for album: Songs For The Deaf
+Scanning user://Custom/No One Knows - Queens of the Stone Age
+scanning user://Custom/No One Knows - Queens of the Stone Age/No One Knows-GuayabR.beatz
+Queued 1 songs (album: Songs For The Deaf)
+Added item 0
+Done
+{ "beatz_path": "user://Custom/No One Knows - Queens of the Stone Age/No One Knows-GuayabR.beatz", "id": "SONGID No One Knows - Queens of the Stone Age 1761888544.316_4191771545", "song_name": "No One Knows", "album": "Songs For The Deaf", "artist": "Queens of the Stone Age", "year": 2002.0, "diff_texture_path": "", "bpm": 120, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223098757397082680>, "stream": "user://Custom/No One Knows - Queens of the Stone Age/No One Knows - Queens of the Stone Age.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/No One Knows - Queens of the Stone Age/" }
+Selected song: No One Knows by Queens of the Stone Age (2002) from album Songs For The Deaf
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(279.5, 41.5)(559.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 6125 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+User has already seen the popup and chose to not show again
+Done
+{ "beatz_path": "user://Custom/QWERTY/QWERTY-GuayabR.beatz", "id": "SONGID QWERTY 1762473056.613_1922619086", "song_name": "QWERTY", "album": "Papercuts", "artist": "Linkin Park", "year": 2024.0, "diff_texture_path": "", "bpm": 206, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223088432547361156>, "stream": "user://Custom/QWERTY/QWERTY - Linkin Park.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/QWERTY/" }
+Selected song: QWERTY by Linkin Park (2024) from album Papercuts
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(124.0, 41.5)(248.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (0.4, 0.7, 0.3, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9223088178993292846>
+934
+Using notes in chart
+-1200
+25000 total points and 159.24 per note
+Waiting 1.434
+Waited
+Updated lifetime points: 27460933.4673135
+-1200
+Reset waiting: 1.434
+recording start
+Recording started
+Recording stopped
+-1200
+Reset waiting: 1.434
+recording start
+Recording started
+Recording stopped
+-1200
+Reset waiting: 1.434
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+Created diff tex from path 
+user://Custom/QWERTY/QWERTY-GuayabR.beatz
+C:/Users/PC ELITE/AppData/Roaming/Godot/app_userdata/Beatz! X/Custom/QWERTY/QWERTY - Linkin Park.mp3
+
+201.34114074707
+
+201.34114074707
+
+201.34114074707
+
+201.34114074707
+Notes exported to user://Custom/QWERTY/QWERTY-GuayabR.beatz successfully.
+Saved audio to user://Custom/QWERTY/QWERTY - Linkin Park.mp3
+Saved cover image to user://Custom/QWERTY/Papercuts.png
+Saved info.json to user://Custom/QWERTY/info.json
+Succesful Save
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 4878 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+{ "beatz_path": "user://Custom/QWERTY/QWERTY-GuayabR.beatz", "id": "SONGID QWERTY 1762473056.613_1922619086", "song_name": "QWERTY", "album": "Papercuts", "artist": "Linkin Park", "year": 2024.0, "diff_texture_path": "", "bpm": 206, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9223033498154037879>, "stream": "user://Custom/QWERTY/QWERTY - Linkin Park.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/QWERTY/" }
+Selected song: QWERTY by Linkin Park (2024) from album Papercuts
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(124.0, 41.5)(248.0, 83.0)
+(4) Saving settings
+Saved new preset: Open
+With EQs: {
+	"31": 2.0,
+	"62": 4.0,
+	"125": 1.0,
+	"250": -2.0,
+	"500": -4.0,
+	"1000": -3.0,
+	"2000": 2.0,
+	"4000": 5.0,
+	"8000": 8.0,
+	"16000": 12.0
+}
+{
+	"Flat": {
+		"31": 0.0,
+		"62": 0.0,
+		"125": 0.0,
+		"250": 0.0,
+		"500": 0.0,
+		"1000": 0.0,
+		"2000": 0.0,
+		"4000": 0.0,
+		"8000": 0.0,
+		"16000": 0.0
+	},
+	"Bass": {
+		"31": 5.0,
+		"62": 6.0,
+		"125": 2.0,
+		"250": 0.0,
+		"500": -4.0,
+		"1000": -4.0,
+		"2000": 0.0,
+		"4000": 0.0,
+		"8000": 1.0,
+		"16000": 2.0
+	},
+	"Bass Compensate": {
+		"31": 4.0,
+		"62": 6.0,
+		"125": 2.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -4.0,
+		"2000": 0.0,
+		"4000": 2.0,
+		"8000": 5.0,
+		"16000": 8.0
+	},
+	"Open": {
+		"31": 2.0,
+		"62": 4.0,
+		"125": 1.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 2.0,
+		"4000": 5.0,
+		"8000": 8.0,
+		"16000": 12.0
+	},
+	"Open / Bass": {
+		"31": 7.0,
+		"62": 8.0,
+		"125": 6.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 1.0,
+		"4000": 3.0,
+		"8000": 6.0,
+		"16000": 10.0
+	},
+	"Open / Bassier": {
+		"31": 8.0,
+		"62": 10.0,
+		"125": 7.0,
+		"250": 0.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 1.0,
+		"4000": 5.0,
+		"8000": 8.0,
+		"16000": 10.0
+	}
+}
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (0.4, 0.7, 0.3, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9223033303974537130>
+Using notes in chart
+-1200
+175000 total points and 124.73 per note
+Waiting 1.434
+Waited
+-1200
+Reset waiting: 1.434
+-1200
+Reset waiting: 1.434
+New high score! { "file": "user://Custom/QWERTY/QWERTY-GuayabR.beatz", "score": 174700, "notes_hit": 1403, "max_streak": 1403, "exacts": 676, "insanes": 623, "perfects": 101, "earlies": 3, "lates": 0, "misses": 0, "date": "11/09/2025" }
+Updated lifetime points: 27635633.9818198
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 4780 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+User has already seen the popup and chose to not show again
+Done
+(5) Saving settings
+No song is selected.
+Saving settings
+Saved new preset: Open
+With EQs: {
+	"31": 0.0,
+	"62": 4.0,
+	"125": 0.0,
+	"250": -3.0,
+	"500": -4.0,
+	"1000": -3.0,
+	"2000": 2.0,
+	"4000": 5.0,
+	"8000": 8.0,
+	"16000": 12.0
+}
+{
+	"Flat": {
+		"31": 0.0,
+		"62": 0.0,
+		"125": 0.0,
+		"250": 0.0,
+		"500": 0.0,
+		"1000": 0.0,
+		"2000": 0.0,
+		"4000": 0.0,
+		"8000": 0.0,
+		"16000": 0.0
+	},
+	"Bass": {
+		"31": 5.0,
+		"62": 6.0,
+		"125": 2.0,
+		"250": 0.0,
+		"500": -4.0,
+		"1000": -4.0,
+		"2000": 0.0,
+		"4000": 0.0,
+		"8000": 1.0,
+		"16000": 2.0
+	},
+	"Bass Compensate": {
+		"31": 4.0,
+		"62": 6.0,
+		"125": 2.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -4.0,
+		"2000": 0.0,
+		"4000": 2.0,
+		"8000": 5.0,
+		"16000": 8.0
+	},
+	"Open": {
+		"31": 0.0,
+		"62": 4.0,
+		"125": 0.0,
+		"250": -3.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 2.0,
+		"4000": 5.0,
+		"8000": 8.0,
+		"16000": 12.0
+	},
+	"Open / Bass": {
+		"31": 7.0,
+		"62": 8.0,
+		"125": 6.0,
+		"250": -2.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 1.0,
+		"4000": 3.0,
+		"8000": 6.0,
+		"16000": 10.0
+	},
+	"Open / Bassier": {
+		"31": 8.0,
+		"62": 10.0,
+		"125": 7.0,
+		"250": 0.0,
+		"500": -4.0,
+		"1000": -3.0,
+		"2000": 1.0,
+		"4000": 5.0,
+		"8000": 8.0,
+		"16000": 10.0
+	}
+}
+settings back
+0
+The Hunting Party
+Loading album charts
+new bright (0.8, 0.7, 0.8, 1.0)
+Starting song scan for album: The Hunting Party
+Scanning user://Custom/Guilty All the Same (feat. Rakim) by GuayabR
+scanning user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/Guilty All the Same (feat. Rakim)-GuayabR.beatz
+Queued 1 songs (album: The Hunting Party)
+Added item 0
+Done
+Playing from context, 0, C:/Users/PC ELITE/AppData/Roaming/Godot/app_userdata/Beatz! X/Custom/Guilty All the Same (feat. Rakim) by GuayabR/Guilty All the Same (feat. Rakim)-GuayabR.beatz
+{ "beatz_path": "user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/Guilty All the Same (feat. Rakim)-GuayabR.beatz", "id": "SONGID Guilty All the Same (feat. Rakim) by GuayabR 1762232029.718_3835947854", "song_name": "Guilty All the Same (feat. Rakim)", "album": "The Hunting Party", "artist": "Linkin Park/Rakim", "year": 2014.0, "diff_texture_path": "user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/Impossible.png", "bpm": 200, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9222982774791597935>, "stream": "user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/Guilty All the Same (feat. Rakim) - Linkin Park.mp3", "local_beat_offset": 79.0, "selected_background": "user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/hunt.png" }
+✅ Loaded audio stream:user://Custom/Guilty All the Same (feat. Rakim) by GuayabR/Guilty All the Same (feat. Rakim) - Linkin Park.mp3(mp3)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+new bright (0.8, 0.7, 0.8, 1.0)
+Song stream set in main scene.<AudioStreamMP3#-9222982472650708500>
+Using notes in chart
+-1200
+500000 total points and 155.67 per note
+No waiting
+Updated lifetime points: 28117157.3756687
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5652 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+Internal song res://Resources/Songs/Within The Sadness (1f1n1ty Remix).mp3
+(44) No song_info.json found in res://
+Saving settings
+{ "beatz_path": "user://Custom/Hopes and Dreams - Toby Fox/Hopes and Dreams-GuayabR.beatz", "id": "SONGID Hopes and Dreams - Toby Fox 1761888531.72_3630499418", "song_name": "Hopes and Dreams", "album": "UNDERTALE Soundtrack", "artist": "Toby Fox", "year": 2015.0, "diff_texture_path": "", "bpm": 130, "charter": "GuayabR", "speed": 5.0, "cover_texture": <ImageTexture#-9222917580258272603>, "stream": "user://Custom/Hopes and Dreams - Toby Fox/Hopes and Dreams - Toby Fox.mp3", "local_beat_offset": 0.0, "selected_background": "user://Custom/Hopes and Dreams - Toby Fox/" }
+Selected song: Hopes and Dreams by Toby Fox (2015) from album UNDERTALE Soundtrack
+
+<Object#null>
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+(2) (791.0, 51.5)(1582.0, 103.0)
+(101.5, 41.5)(203.0, 83.0)
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+hiding cuz playing s
+Song stream set in main scene.<AudioStreamMP3#-9222916874239468402>
+355
+Using notes in chart
+-1200
+175000 total points and 136.83 per note
+Waiting 0.855
+Waited
+Updated lifetime points: 28291730.1366027
+end back
+(2) 
+main:
+EQ settings loaded for bus: Song
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+✅ Background options loaded:14
+total songs 251
+Failed to open Custom Charts directory. ERR 31 Invalid parameter
+Queued 251 songs
+Song loading took 5276 ms
+Profile path:user://Profile/pfps/From Zero (Deluxe Edition).png
+Banner path:user://Profile/banners/FromZeroWall.png
+Saving settings
+Done
+User has already seen the popup and chose to not show again
+--- Debugging process stopped ---

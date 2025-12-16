@@ -21,10 +21,26 @@ Includes:
 Includes:
 - Within The Sadness (Onefin Remix) - Onefin | Extreme
 - Dark Matter Suite (Onefin & LOrbSheddy Remix) - Onefin | Hard
+- The Falling Mysts - Dimrain47 | Insanity
+- The Drill - Magnificense & 7 SKIES | Extreme
+- SOUL PASSIVATION - Album Mix - X2H | Insanity
 - Powersound - ELEPS | Insanity
+- Moonlight Sonata (3rd Movement) Meganeko Remix - meganeko | Impossible
+- MONTAGEM TOMADA - MXZI | Extreme
+- Magic Touch (31 Song Mashup) - Romos | Hard
 - Lunar Abyss - Lchavasse | Insanity
 - KOCMOC - SLEEPING HUMMINGBIRD | Insanity
+- Interstellar Piano - Gursimran | Easy
+- Imposter Syndrome - Shirobon, Frankmusik | Extreme
+- Galaxy Collapse - 黒皇帝 | Impossible
+- Explorers - Hinkin | Extreme
+- Drank - okxyvro! | Hard
+- DIA DELÍCIA - Nakama, Mc Staff, ΣP | Normal
 - CHEGOU 3 - shonci | Hard
+- Cascade - Kubbi | Extreme
+- Biggest NCS Songs - NoCopyrightSounds | Extreme
+- Better Days - LAKEY INSPIRED | Easy
+- Aleph 0 - LeaF & Optie | Hard
 ## FULL LEVEL EDITOR.
 CREATE YOUR OWN BEATZMAPS.
 You can:
@@ -41,12 +57,13 @@ You can:
 ## THE SONG LIST
 YOUR RHYTHMS will be listed here!
 All songs are editable, this includes:
-- included charts (Rhythms listed above)
+- included charts (Creo songs listed above)
 - Uploaded .bx beatzmaps
 - Recorded charts
 ## Extensive settings
 I want Beatz to be as customizable as possible!
 With Settings you can change:
+- Keybinds
 - Basic Audio settings
 - Your Note Style
 - Toggle Note Animations
@@ -58,11 +75,10 @@ With Settings you can change:
 - Toggle Background Pulse
 - Change Background Pulse Strength
 - Change Default Background Image
-- Change your Beatz profile picture / banner
 - Change basic Display Settings
 - Toggle Discord Rich Presence
 ## Game Information
-- Version 1.3.1 (11/1/2025)
+- Version 1.3.1 (10/26/2025)
 - Beatz! X Developed since march 2025.
 - Beatz! Browser Developed since september 2024 until april 2025. (Ended development at version 1.9) https://github.com/GuayabR/Beatz-Browser
 - Beatz! Developed since march 2024 until september 2024. (Ended development at version LOAD//FETCH 5.3.4.5) https://github.com/GuayabR/Beatz
@@ -72,5 +88,5 @@ I will try to regularly update it as much as possible.
 Please, any feedback is more than welcome.
 
 #### https://beatzx.com
-#### Contact: info@beatzx.com / https://twitter.com/PlayBeatzX / https://instagram.com/playbeatzx
+#### Contact: playbeatzx@gmail.com / https://twitter.com/PlayBeatzX / https://instagram.com/playbeatzx
 If you would like to contribute to this project please dm me through my contact.

@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://o15qeacsm4vf"]
+
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_r23rd"]
+[ext_resource type="Script" uid="uid://bwogyk0urk0r2" path="res://Scenes/slogan.gd" id="2_oe2ph"]
+
+[node name="slogan" type="RichTextLabel"]
+custom_minimum_size = Vector2(650, 32)
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 35.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("1_r23rd")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 22
+text = "FEEL. YOUR RHYTHM."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+script = ExtResource("2_oe2ph")

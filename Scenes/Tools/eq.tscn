@@ -1,0 +1,784 @@
+[gd_scene load_steps=5 format=3 uid="uid://df322jlo7g3if"]
+
+[ext_resource type="Script" uid="uid://elw7qrtgywr5" path="res://Scenes/Tools/eq.gd" id="1_dtip5"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="2_qb7do"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="3_qb7do"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="4_xrfby"]
+
+[node name="eq" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 691.0
+offset_bottom = 515.0
+script = ExtResource("1_dtip5")
+
+[node name="eq_cont" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -343.0
+offset_top = 44.0
+offset_right = 343.0
+offset_bottom = 239.0
+grow_horizontal = 2
+theme = ExtResource("2_qb7do")
+alignment = 1
+
+[node name="eq_slider1" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label" type="RichTextLabel" parent="eq_cont/eq_slider1"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = 3.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "31 Hz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value2" type="RichTextLabel" parent="eq_cont/eq_slider1"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -19.0
+offset_right = 32.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider2" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label2" type="RichTextLabel" parent="eq_cont/eq_slider2"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = 3.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "62 Hz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value3" type="RichTextLabel" parent="eq_cont/eq_slider2"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -19.0
+offset_right = 32.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider3" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label3" type="RichTextLabel" parent="eq_cont/eq_slider3"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = 3.0
+offset_right = 36.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "125 Hz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value4" type="RichTextLabel" parent="eq_cont/eq_slider3"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = -19.0
+offset_right = 36.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider4" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label4" type="RichTextLabel" parent="eq_cont/eq_slider4"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = 3.0
+offset_right = 36.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "250 Hz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value5" type="RichTextLabel" parent="eq_cont/eq_slider4"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = -19.0
+offset_right = 36.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider5" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label5" type="RichTextLabel" parent="eq_cont/eq_slider5"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = 3.0
+offset_right = 36.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "500 Hz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value6" type="RichTextLabel" parent="eq_cont/eq_slider5"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -36.5
+offset_top = -19.0
+offset_right = 36.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider6" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label6" type="RichTextLabel" parent="eq_cont/eq_slider6"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = 3.0
+offset_right = 31.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "1 kHz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value7" type="RichTextLabel" parent="eq_cont/eq_slider6"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = -19.0
+offset_right = 31.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider7" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label7" type="RichTextLabel" parent="eq_cont/eq_slider7"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = 3.0
+offset_right = 31.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "2 kHz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value8" type="RichTextLabel" parent="eq_cont/eq_slider7"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = -19.0
+offset_right = 31.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider8" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label8" type="RichTextLabel" parent="eq_cont/eq_slider8"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = 3.0
+offset_right = 31.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "4 kHz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value9" type="RichTextLabel" parent="eq_cont/eq_slider8"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = -19.0
+offset_right = 31.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider9" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label9" type="RichTextLabel" parent="eq_cont/eq_slider9"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = 3.0
+offset_right = 31.5
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "8 kHz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value10" type="RichTextLabel" parent="eq_cont/eq_slider9"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.5
+offset_top = -19.0
+offset_right = 31.5
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_slider10" type="VSlider" parent="eq_cont"]
+custom_minimum_size = Vector2(65, 250)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+min_value = -64.0
+max_value = 24.0
+scrollable = false
+tick_count = 40
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="eq_label10" type="RichTextLabel" parent="eq_cont/eq_slider10"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.0
+offset_top = 3.0
+offset_right = 31.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "16 kHz"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_value11" type="RichTextLabel" parent="eq_cont/eq_slider10"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.0
+offset_top = -19.0
+offset_right = 31.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+text = "0.0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="title" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -108.125
+offset_right = 108.125
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 28
+text = "---- Equalizer ----"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="eq_to_menu_song_toggle" type="CheckButton" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -254.5
+offset_top = 338.0
+offset_right = 254.5
+offset_bottom = 383.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "EQ Applies to Menu Song"
+
+[node name="save_preset" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -263.5
+offset_top = 396.0
+offset_right = 263.5
+offset_bottom = 445.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Save Preset"
+
+[node name="preset_name" type="LineEdit" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -263.5
+offset_top = 396.0
+offset_right = 203.5
+offset_bottom = 445.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("3_qb7do")
+theme_override_font_sizes/font_size = 34
+placeholder_text = "Preset name..."
+emoji_menu_enabled = false
+
+[node name="cancel" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 214.5
+offset_top = 396.0
+offset_right = 263.5
+offset_bottom = 445.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("4_xrfby")
+theme_override_font_sizes/font_size = 34
+text = ""
+
+[node name="presets" type="OptionButton" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -168.25
+offset_top = 458.0
+offset_right = 168.25
+offset_bottom = 501.0
+grow_horizontal = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+text_overrun_behavior = 3
+clip_text = true
+expand_icon = true
+selected = 0
+fit_to_longest_item = false
+item_count = 4
+popup/item_0/text = "Flat"
+popup/item_0/id = 0
+popup/item_1/text = "Bass"
+popup/item_1/id = 1
+popup/item_2/text = "Bass Compensate"
+popup/item_2/id = 3
+popup/item_3/text = "Custom"
+popup/item_3/id = 2
+popup/item_3/separator = true
+
+[node name="remove_preset" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 181.5
+offset_top = 456.0
+offset_right = 228.5
+offset_bottom = 503.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+tooltip_text = "Remove selected preset"
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("4_xrfby")
+theme_override_font_sizes/font_size = 34
+text = ""
+
+[node name="rename_preset" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -228.5
+offset_top = 456.0
+offset_right = -181.5
+offset_bottom = 503.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+tooltip_text = "Rename selected preset"
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("4_xrfby")
+theme_override_font_sizes/font_size = 26
+text = ""
+
+[node name="confirm_remove" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -228.5
+offset_top = 456.0
+offset_right = 170.5
+offset_bottom = 503.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+tooltip_text = "Rename selected preset"
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_qb7do")
+theme_override_constants/outline_size = 9
+theme_override_font_sizes/font_size = 22
+text = "Remove [p_name]?"
+clip_text = true
+
+[connection signal="drag_ended" from="eq_cont/eq_slider1" to="." method="_on_eq_slider_1_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider1" to="." method="_on_eq_slider_1_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider2" to="." method="_on_eq_slider_2_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider2" to="." method="_on_eq_slider_2_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider3" to="." method="_on_eq_slider_3_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider3" to="." method="_on_eq_slider_3_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider4" to="." method="_on_eq_slider_4_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider4" to="." method="_on_eq_slider_4_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider5" to="." method="_on_eq_slider_5_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider5" to="." method="_on_eq_slider_5_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider6" to="." method="_on_eq_slider_6_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider6" to="." method="_on_eq_slider_6_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider7" to="." method="_on_eq_slider_7_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider7" to="." method="_on_eq_slider_7_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider8" to="." method="_on_eq_slider_8_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider8" to="." method="_on_eq_slider_8_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider9" to="." method="_on_eq_slider_9_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider9" to="." method="_on_eq_slider_9_value_changed"]
+[connection signal="drag_ended" from="eq_cont/eq_slider10" to="." method="_on_eq_slider_10_drag_ended"]
+[connection signal="value_changed" from="eq_cont/eq_slider10" to="." method="_on_eq_slider_10_value_changed"]
+[connection signal="toggled" from="eq_to_menu_song_toggle" to="." method="_on_eq_to_menu_song_toggle_toggled"]
+[connection signal="pressed" from="save_preset" to="." method="_on_save_preset_pressed"]
+[connection signal="text_submitted" from="preset_name" to="." method="_on_preset_name_text_submitted"]
+[connection signal="pressed" from="cancel" to="." method="_on_cancel_pressed"]
+[connection signal="item_selected" from="presets" to="." method="_on_presets_item_selected"]
+[connection signal="pressed" from="remove_preset" to="." method="_on_remove_preset_pressed"]
+[connection signal="pressed" from="rename_preset" to="." method="_on_rename_preset_pressed"]
+[connection signal="pressed" from="confirm_remove" to="." method="_on_confirm_remove_pressed"]

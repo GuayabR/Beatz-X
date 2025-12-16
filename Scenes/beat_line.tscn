@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://djqmsgprsd4b7"]
+
+[ext_resource type="Texture2D" uid="uid://c6bi78jh2q002" path="res://Resources/Arrows/beatLine.png" id="1_xu672"]
+
+[node name="beatLine" type="Sprite2D"]
+scale = Vector2(2.85, 0.4)
+texture = ExtResource("1_xu672")

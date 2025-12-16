@@ -6,10 +6,19 @@ var selected_stream_path: String
 var selected_title: String
 var selected_artist: String
 var selected_album: String
-var selected_cover
+var selected_cover: Image
 var selected_year: int
 
+var selected_background: Image
+var selected_background_name: String
+
+var background_vid_path: String = ""
+
+var selected_beat_offset: float
+
 var selected_beatz_path
+
+var colors: Array[Color]
 
 var start_wait: int = 0 
 
@@ -35,9 +44,7 @@ var current_scale: float = 1.0
 
 var fading: bool = false
 
-var screen = "song"
-
-var imported_beatz
+var screen: String = "song"
 
 func _process(delta: float):
 	if $song.playing and $song.get_playback_position() >= preview_end and not fading:
@@ -80,12 +87,20 @@ func _process(delta: float):
 		# Smooth transitions
 		$Title.scale = lerp($Title.scale, Vector2.ONE * title_target, 13.0 * delta)
 		$Artist.scale = lerp($Artist.scale, Vector2.ONE * bg_target * 1.1, 10.0 * delta)
-		$vis_anim.scale = lerp($vis_anim.scale, Vector2(2.6, 2.6) * cover_target, 15.0 * delta)
+		$vis_anim.scale = lerp($vis_anim.scale, Vector2(2.6, 2.6) * cover_target, 25.0 * delta)
 		$cover_anim.scale = lerp($cover_anim.scale, Vector2.ONE * cover_target, 20.0 * delta)
 		$bg_cover_anim.scale = lerp($bg_cover_anim.scale, Vector2(1.0, 1.0) * bg_target, 16.0 * delta)
 
 func _ready() -> void:
-	if Globals.settings.misc_settings.reduce_motion:
+	if Settings.misc.menu_bg_img_path != "":
+		var img := Image.load_from_file(Settings.misc.menu_bg_img_path)
+		if img: # make sure it loaded
+			var tex := ImageTexture.create_from_image(img)
+			$TransitionRect.texture = tex
+		else:
+			print("Failed to load image at path:", Settings.misc.menu_bg_img_path)
+	
+	if Settings.misc.reduce_motion:
 		$AnimationPlayer.play("load_song", -1, 250.0)
 	else:
 		$AnimationPlayer.play("load_song")
@@ -105,11 +120,12 @@ func _ready() -> void:
 	$Artist.pivot_offset.x = $Artist.size.x / 2
 	print($Artist.pivot_offset, $Artist.size)
 	
-	$cover_anim/circlemask/cover.texture = selected_cover
-	$bg_cover_anim/bg_cover.texture = selected_cover
+	$cover_anim/circlemask/cover.texture = ImageTexture.create_from_image(selected_cover)
+	$bg_cover_anim/bg_cover.texture = ImageTexture.create_from_image(selected_cover)
 	
-	var extracted_colors = extract_dominant_colors(selected_cover)
+	var extracted_colors: Array[Color] = General.extract_dominant_colors(selected_cover)
 	$vis_anim/Visualizer.colors = extracted_colors
+	colors = extracted_colors
 	
 	var diff_texture := "" 
 	if not selected_diff_texture: 
@@ -153,8 +169,7 @@ func _ready() -> void:
 	
 	spectrum = AudioServer.get_bus_effect_instance(AudioServer.get_bus_index("Song"), 0) as AudioEffectSpectrumAnalyzerInstance
 	
-	
-	imported_beatz = Globals.import_beatz_file(selected_beatz_path)
+	General._set_rpc(selected_title + " - " + selected_artist, "Selected a Song!", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "", int(Time.get_unix_time_from_system()), int(Time.get_unix_time_from_system() + $song.stream.get_length() * 1000))
 
 func _fade_out_and_loop():
 	fading = true
@@ -173,131 +188,48 @@ func _on_fade_out_complete():
 		$song.volume_db = -80.0
 		$vis_anim/Visualizer/Song_left.volume_db = -80.0
 		$vis_anim/Visualizer/Song_right.volume_db = -80.0
-		tween.parallel().tween_property($song, "volume_db", 0.0, 1.25).set_trans(Tween.TRANS_CUBIC)
+		tween.tween_property($song, "volume_db", 0.0, 1.25).set_trans(Tween.TRANS_CUBIC)
 		tween.parallel().tween_property($vis_anim/Visualizer/Song_left, "volume_db", 0.0, 1.25).set_trans(Tween.TRANS_CUBIC)
 		tween.parallel().tween_property($vis_anim/Visualizer/Song_right, "volume_db", 0.0, 1.25).set_trans(Tween.TRANS_CUBIC)
 	else:
 		$song.volume_db = 0.0
-
-var _color_from_string_map: Dictionary = {}
-
-func extract_dominant_colors(texture: Texture2D) -> Array[Color]:
-	print("Extracting dominant colors...")
-	var image: Image = texture.get_image()
-	if image.is_compressed():
-		print("Image is compressed. Decompressing...")
-		image.decompress()
-	image.resize(64, 1, Image.INTERPOLATE_TRILINEAR)
-	print("Image resized to 64x1")
-	
-	var color_counts = _scan_colors(image, false)
-	print("Scanned normal colors. Found:", color_counts.size(), "distinct colors")
-	
-	var dark_count = 0
-	var total_count = 0
-	for c in color_counts.keys():
-		var color = _color_from_string_map.get(c, Color(0, 0, 0))
-		total_count += color_counts[c]
-		if color.r < 0.314 or color.g < 0.314 or color.b < 0.314:
-			dark_count += color_counts[c]
-	print("Total color samples:", total_count)
-	print("Dark color samples:", dark_count)
-	
-	if total_count > 0 and float(dark_count) / float(total_count) > 0.6:
-		print("Too many dark colors. Trying to scan for brighter colors...")
-		var bright_counts = _scan_colors(image, true)
-		print("Scanned bright colors. Found:", bright_counts.size(), "distinct colors")
-		if bright_counts.size() > 0:
-			color_counts = bright_counts
-		else:
-			print("No brighter colors found. Brightening existing dark colors...")
-			var new_counts = {}
-			for c in color_counts.keys():
-				var original_color = _color_from_string_map.get(c, Color(0, 0, 0))
-				var brighter := Color(
-					clamp(original_color.r + 0.3, 0, 1),
-					clamp(original_color.g + 0.3, 0, 1),
-					clamp(original_color.b + 0.3, 0, 1),
-					1.0
-				)
-				var key_str := str(brighter)
-				new_counts[key_str] = color_counts[c]
-				_color_from_string_map[key_str] = brighter
-			color_counts = new_counts
-			_latest_color_counts = color_counts
-			
-	var sorted_colors = color_counts.keys()
-	sorted_colors.sort_custom(Callable(self, "_compare_colors_by_frequency"))
-	print("Sorted colors by frequency")
-	
-	var result: Array[Color] = []
-	for i in range(min(6, sorted_colors.size())):
-		var col_str = sorted_colors[i]
-		result.append(_color_from_string_map.get(col_str, Color(0, 0, 0)))
-		
-	print("Final extracted colors:", result)
-	return result
-
-var _latest_color_counts: Dictionary
-
-func _scan_colors(image: Image, only_bright: bool) -> Dictionary:
-	var counts := {}
-	for x in range(image.get_width()):
-		var c: Color = image.get_pixel(x, 0)
-		if only_bright:
-			if c.r < 0.314 and c.g < 0.314 and c.b < 0.314:
-				continue
-		else:
-			if c.r < 0.05 and c.g < 0.05 and c.b < 0.05:
-				continue
-		var key_color := Color(
-			round(c.r * 10.0) / 10.0,
-			round(c.g * 10.0) / 10.0,
-			round(c.b * 10.0) / 10.0,
-			1.0
-		)
-		var key_str := str(key_color)
-		counts[key_str] = counts.get(key_str, 0) + 1
-		_color_from_string_map[key_str] = key_color
-
-	print("Scan complete. only_bright =", only_bright, "Unique entries:", counts.size())
-	_latest_color_counts = counts
-	return counts
-
-func _compare_colors_by_frequency(a: String, b: String) -> int:
-	if not _latest_color_counts.has(a) or not _latest_color_counts.has(b):
-		print("Missing color count for", a, "or", b)
-		return 0
-	var result = _latest_color_counts[b] - _latest_color_counts[a]
-	#print("Comparing ", a, " vs ", b, " -> ", result)
-	return result
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		_on_back_pressed()
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if not get_viewport().gui_get_focus_owner() and event.is_action_pressed("ui_cancel") or event.is_action_pressed("controller-back"):
 		_on_back_pressed()
-	elif event.is_action_pressed("ui_accept"):
+	elif screen == "song" and event.is_action_pressed("ui_accept") or event.is_action_pressed("controller-accept"):
 		_on_play_button_up()
+	elif event.is_action_pressed("controller-pause"):
+		_on_go_to_stgs_pressed()
 
 func _on_play_button_up() -> void:
 	$Play.release_focus()
 
 	# Optional animation before loading screen
-	if Globals.settings.misc_settings.reduce_motion:
+	if Settings.misc.reduce_motion:
 		$AnimationPlayer.play("play_song", -1, 250.0)
 	else:
 		$AnimationPlayer.play("play_song")
+		
+		var tween := create_tween()
+		tween.tween_property($song, "volume_db", -80.0, 1.0)
 		await get_tree().create_timer(1.0).timeout
 		
-	var game = Globals.MAIN.instantiate()
+	var game = General.MAIN.instantiate()
 	
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
 	game.set("song", $song.stream)
 	game.set("song_title", selected_title)
+	game.set("BPM", selected_bpm)
+	game.set("local_beat_offset", selected_beat_offset)
+	game.set("selected_background", selected_background)
+	game.set("selected_background_name", selected_background_name)
+	game.set("background_vid_path", background_vid_path)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
 	game.set("year", selected_year)
@@ -309,6 +241,7 @@ func _on_play_button_up() -> void:
 	game.set("customNotes", notes)
 	game.set("chart_name", selected_chart_name)
 	game.set("start_wait", start_wait)
+	game.set("colors", colors)
 	
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
@@ -324,11 +257,16 @@ func _on_back_pressed() -> void:
 		var menu := preload("res://Scenes/main_menu.tscn").instantiate()
 		menu.set("current_menu", "list")
 		
-		if Globals.settings.misc_settings.reduce_motion:
+		var tween := create_tween()
+		tween.tween_property($song, "volume_db", -80.0, 1.25)
+		
+		if Settings.misc.reduce_motion:
 			$AnimationPlayer.play("play_song", -1, 250.0)
 		else:
 			$AnimationPlayer.play("play_song")
 			await get_tree().create_timer(1.0).timeout
+		
+		
 		
 		get_tree().root.add_child(menu)
 		get_tree().current_scene.queue_free()
@@ -348,7 +286,7 @@ func _on_go_to_stgs_pressed() -> void:
 	screen = "settings"
 
 func _on_edit_pressed() -> void:
-	var edit = Globals.EDITOR.instantiate()
+	var edit = General.EDITOR.instantiate()
 	
 	edit.set("selected_stream", $song.stream)
 	edit.set("selected_stream_path", selected_stream_path)
@@ -365,6 +303,8 @@ func _on_edit_pressed() -> void:
 	edit.set("preview_start", preview_start)
 	edit.set("preview_end",preview_end)
 	
+	edit.set("local_beat_offset", selected_beat_offset)
+	
 	edit.set("start_wait", start_wait)
 	
 	edit.set("selected_difficulty", selected_difficulty)
@@ -372,10 +312,23 @@ func _on_edit_pressed() -> void:
 	edit.set("notes", notes)
 	edit.set("selected_chart_name", selected_chart_name)
 	
+	edit.set("selected_background", selected_background)
+	edit.set("selected_background_name", selected_background_name)
+	
+	edit.set("background_vid_path", background_vid_path)
+	
 	edit.set("selected_beatz_path", selected_beatz_path)
 	
 	edit.set("selected_bpm", selected_bpm)
 	edit.set("selected_charter", selected_charter)
+	
+	edit.set("colors", colors)
+	
+	var tween := create_tween()
+	tween.tween_property($song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
+	
+	$AnimationPlayer.play("play_song")
+	await get_tree().create_timer(0.81).timeout
 	
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()

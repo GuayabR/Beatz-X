@@ -3,7 +3,7 @@ extends ScrollContainer
 var beatz_file
 
 func _set_items():
-	var best_score = _get_best_score(beatz_file)
+	var best_score: Dictionary = _get_best_score(beatz_file)
 	if best_score:
 		$scores_cont/best_cont/best_label.text = "BEST SCORE:"
 		$scores_cont/best_cont/best.text = format_number_with_commas(int(best_score.score)) + "!"
@@ -12,6 +12,9 @@ func _set_items():
 		$scores_cont/best_cont/best_insanes.text = "Insanes: " + str(int(best_score.insanes))
 		$scores_cont/best_cont/best_perfects.text = "Perfects: " + str(int(best_score.perfects))
 		$scores_cont/best_cont/best_most_misses.text = "Misses: " + str(int(best_score.misses))
+		$scores_cont/best_cont/best_earlies.text = "Earlies: " + str(int(best_score.earlies))
+		$scores_cont/best_cont/best_lates.text = "Lates: " + str(int(best_score.lates))
+		
 	else:
 		$scores_cont/best_cont/best_label.text = "No score yet for this song"
 		$scores_cont/best_cont/best.text = "-"
@@ -20,10 +23,12 @@ func _set_items():
 		$scores_cont/best_cont/best_insanes.text = "-"
 		$scores_cont/best_cont/best_perfects.text = "-"
 		$scores_cont/best_cont/best_most_misses.text = "-"
+		$scores_cont/best_cont/best_earlies.text = "-"
+		$scores_cont/best_cont/best_lates.text = "-"
 
 func _get_best_score(file_path: String) -> Dictionary:
-	var pw = "8YouAreNOTsupposedToBeHereThisKeyIsVerySecureDoNOTeditYourScoresItsBetterWhenYouAchieveAFullPerfectOnYourOwnÑ"
-	var dotfile_path = "user://.scores_data"
+	var pw: String = "8YouAreNOTsupposedToBeHereThisKeyIsVerySecureDoNOTeditYourScoresItsBetterWhenYouAchieveAFullPerfectOnYourOwnÑ"
+	var dotfile_path: String = "user://.scores_data"
 	if not FileAccess.file_exists(dotfile_path):
 		return {}
 	
