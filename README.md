@@ -1,6 +1,6 @@
-# Beatz! X (1.3.1 10/26/2025)
-### FEEL YOUR RHYTHM.
-#### Made in Godot 4.5 by GuayabR
+# Beatz! X (1.5.0 // "TWENTYFIVE" 12/16/2025)
+### VISUALIZE YOUR RHYTHM.
+#### Made in Godot 4.5 by GuayabR.
 
 ## Songs from Creo!
 #### FEEL CREO'S RHYTHM.
@@ -49,6 +49,7 @@ You can:
 - Freely delete notes
 - Add .mp3, .ogg and .wav files for your custom song
 - Add .png and .jpg for your custom songs cover image
+- Add any video for your beatzmaps background video!
 - Add .png and .jpg for your beatzmap's background image
 - Add .png or .jpg for your beatzmap's difficulty image
 - Use your mp3s metadata to fill out Song title, Artist, Album, Year Released and Album Cover fields
@@ -63,12 +64,12 @@ All songs are editable, this includes:
 ## Extensive settings
 I want Beatz to be as customizable as possible!
 With Settings you can change:
-- Keybinds
-- Basic Audio settings
+- Extensive Audio settings (Basic volume settings + Full 10 Band Equalizer with Preset saving!)
 - Your Note Style
 - Toggle Note Animations
 - Toggle Menu Animations
-- Change Note Speed
+- Toggle beatzmap background videos in editor or in-game
+- Change Note Speed freely
 - Change the Note Offset (Sync up your notes)
 - Change the global Game Speed (Like a Speedhack)
 - Toggle Background Visualizers
@@ -78,7 +79,7 @@ With Settings you can change:
 - Change basic Display Settings
 - Toggle Discord Rich Presence
 ## Game Information
-- Version 1.3.1 (10/26/2025)
+- Version 1.5.0 "TWENTYFIVE" (12/16/2025)
 - Beatz! X Developed since march 2025.
 - Beatz! Browser Developed since september 2024 until april 2025. (Ended development at version 1.9) https://github.com/GuayabR/Beatz-Browser
 - Beatz! Developed since march 2024 until september 2024. (Ended development at version LOAD//FETCH 5.3.4.5) https://github.com/GuayabR/Beatz
