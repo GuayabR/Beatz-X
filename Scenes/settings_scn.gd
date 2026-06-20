@@ -43,6 +43,7 @@ signal bg_vids_toggled(toggled_on: bool)
 signal editor_bg_vids_toggled(toggled_on: bool)
 
 signal cover_loops_toggled(toggled_on: bool)
+signal cover_loop_selected_song_toggled(toggled_on: bool)
 signal editor_cover_loops_toggled(toggled_on: bool)
 signal cover_loops_playing_bar_toggled(toggled_on: bool)
 
@@ -191,6 +192,12 @@ func _apply_loaded_settings():
 	%editor_seek_vid_scroll_toggle.set_pressed_no_signal(Settings.misc.editor_seek_vid_along_scroll)
 	
 	%cover_loops_toggle.set_pressed_no_signal(Settings.misc.cover_loops)
+	
+	%cover_loops_in_selected_bg_toggle.set_pressed_no_signal(Settings.misc.cover_loops_selected_song)
+	
+	if Settings.misc.cover_loops:
+		%cover_loops_in_selected_bg_toggle.show()
+		%space54.show()
 	
 	%editor_cover_loops_toggle.set_pressed_no_signal(Settings.misc.editor_cover_loops)
 	
@@ -1506,6 +1513,13 @@ func _on_bg_vids_edit_toggle_toggled(toggled_on: bool) -> void:
 
 func _on_cover_loops_toggled(toggled_on: bool) -> void:
 	%cover_loops_toggle.release_focus()
+	if toggled_on:
+		%cover_loops_in_selected_bg_toggle.show()
+		%space54.show()
+	else:
+		%cover_loops_in_selected_bg_toggle.hide()
+		%space54.hide()
+	
 	Settings.misc.cover_loops = toggled_on
 	cover_loops_toggled.emit(toggled_on)
 	save_stgs()
@@ -1846,3 +1860,10 @@ func _on_new_path_text_submitted(_new_text: String) -> void:
 	_on_add_path_pressed()
 	$ScrollContainer/settings_list/vbox/HBoxContainer/new_path.release_focus()
 	
+
+
+func _on_cover_loops_in_selected_bg_toggled(toggled_on: bool) -> void:
+	%cover_loops_in_selected_bg_toggle.release_focus()
+	Settings.misc.cover_loops_selected_song = toggled_on
+	save_stgs()
+	cover_loop_selected_song_toggled.emit(toggled_on)

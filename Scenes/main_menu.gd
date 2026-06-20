@@ -608,7 +608,9 @@ func _on_settings_button_up() -> void:
 
 func _on_main_list_song_sel() -> void: # When a song is selected, fade out the background song
 	var tween := create_tween()
-	tween.tween_property($bg_song, "volume_db", -80.0, 1.2)
+	tween.set_parallel().tween_property($bg_song, "pitch_scale", 0.001, 0.43).set_ease(Tween.EASE_IN)
+	tween.tween_property($bg_song, "volume_db", -80.0, 1.0).set_ease(Tween.EASE_IN)
+	
 
 func _on_accept_pressed() -> void:
 	$popup_leave/Panel/Accept.release_focus()

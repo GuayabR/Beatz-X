@@ -2521,7 +2521,7 @@ func _on_edit_btn_pressed() -> void:
 	edit.new_beatzmap = false
 
 	edit.set("saved", editor_saved)
-	edit.set("playtest_start_pos", start_pos)
+	edit.set("playtest_start_pos", start_pos + Beatz.BASE_REC_TIME / 1.5)
 
 	edit.set("start_wait", start_wait)
 

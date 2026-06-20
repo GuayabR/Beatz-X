@@ -1322,7 +1322,6 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 	progress_update.call()
 
 	await $AnimationPlayer.animation_finished
-	await get_tree().create_timer(1.0).timeout
 
 	var game = SceneLoader.loaded_scene.instantiate()
 

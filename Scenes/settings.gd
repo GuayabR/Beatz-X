@@ -59,6 +59,7 @@ var settings: Dictionary[String, Variant] = {
 		"bg_videos": true,
 		"editor_bg_videos": true,
 		"cover_loops": true,
+		"cover_loops_selected_song": true,
 		"editor_cover_loops": true,
 		"cover_loops_playing_bar": true,
 		"editor_seek_vid_along_scroll": true,

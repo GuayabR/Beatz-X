@@ -2739,7 +2739,7 @@ func _on_playtest_test_pressed() -> void:
 	test.set("playback_speed", playtest_playback_speed)
 
 	print("Giving main a start pos of ", $Control/chart_controls/chart_scroll.value)
-	test.set("start_pos", playtest_start_pos)
+	test.set("start_pos", playtest_start_pos - Beatz.BASE_REC_TIME / 1.5)
 
 	get_tree().root.add_child(test)
 	get_tree().current_scene.queue_free()

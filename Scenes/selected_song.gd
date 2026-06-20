@@ -126,11 +126,17 @@ func _ready() -> void:
 	$cover_anim/circlemask/cover.texture = ImageTexture.create_from_image(selected_cover)
 	$bg_cover_anim/bg_cover.texture = ImageTexture.create_from_image(selected_cover)
 	
-	if cover_loop_vid_path != "":
+	if cover_loop_vid_path != "" and Settings.misc.cover_loops:
 		cover_loop_vid_path = ProjectSettings.globalize_path(cover_loop_vid_path)
 		$cover_anim/circlemask/VideoPlayback.set_video_path(cover_loop_vid_path)
+		$bg_cover_anim/VideoPlayback.set_video_path(cover_loop_vid_path)
+		if not Settings.misc.cover_loops_selected_song:
+			$bg_cover_anim/VideoPlayback.hide()
+			$bg_cover_anim/VideoPlayback.pause()
 	else:
 		$cover_anim/circlemask/VideoPlayback.hide()
+		$bg_cover_anim/VideoPlayback.hide()
+		
 	
 	var extracted_colors: Array[Color] = General.extract_dominant_colors(selected_cover)
 	$vis_anim/Visualizer.colors = extracted_colors
@@ -388,7 +394,11 @@ func _on_back_pressed() -> void:
 		get_tree().current_scene.queue_free()
 		get_tree().current_scene = menu
 	elif screen == "settings":
-		$AnimationPlayer.play("back_from_stgs")
+		if $settings.position.x > 55 and $settings.position.x < 1921.0:
+			$AnimationPlayer.play("back_from_stgs", 0.1)
+			$go_to_stgs.disabled = false
+		else:
+			$AnimationPlayer.play("back_from_stgs")
 		screen = "song"
 
 func _on_song_finished() -> void:
@@ -402,60 +412,93 @@ func _on_go_to_stgs_pressed() -> void:
 	screen = "settings"
 
 func _on_edit_pressed() -> void:
-	var edit = load(General.EDITOR).instantiate()
-	
+	SceneLoader.load_scene(General.EDITOR)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
+	var anim_speed_multiplier := 1.0
+
+	var tween := create_tween()
+	tween.tween_property($song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
+
+	$AnimationPlayer.play("play_song")
+
+	# speed up animation if scene loading takes longer
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed_multiplier = 1.5
+
+	await get_tree().create_timer(0.81 / anim_speed_multiplier).timeout
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var edit = SceneLoader.loaded_scene.instantiate()
+
 	edit.set("selected_stream", $song.stream)
 	edit.set("selected_stream_path", selected_stream_path)
-	
+
 	edit.new_beatzmap = false
-	
+
 	edit.set("selected_title", selected_title)
 	edit.set("selected_album", selected_album)
-	
+
 	edit.set("selected_cover", selected_cover)
 	edit.set("selected_artist", selected_artist)
 	edit.set("selected_year", selected_year)
-	
+
 	edit.set("preview_start", preview_start)
-	edit.set("preview_end",preview_end)
-	
+	edit.set("preview_end", preview_end)
+
 	edit.set("local_beat_offset", selected_beat_offset)
-	
+
 	edit.set("start_wait", start_wait)
-	
+
 	edit.set("selected_difficulty", selected_difficulty)
 	edit.set("selected_diff_texture", $cover_anim/circlemask/difficulty_label.texture)
 	edit.set("notes", notes)
 	edit.set("selected_chart_name", selected_chart_name)
-	
+
 	edit.set("selected_background", selected_background)
 	edit.set("selected_background_name", selected_background_name)
-	
+
 	edit.set("background_vid_path", background_vid_path)
 	edit.set("cover_loop_vid_path", cover_loop_vid_path)
-	
+
 	edit.set("selected_beatz_path", selected_beatz_path)
-	
+
 	edit.set("selected_bpm", selected_bpm)
 	edit.set("selected_charter", selected_charter)
-	
+
 	edit.set("colors", colors)
-	
-	var tween := create_tween()
-	tween.tween_property($song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
-	
-	$AnimationPlayer.play("play_song")
-	await get_tree().create_timer(0.81).timeout
-	
+
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
-
 
 func _on_settings_cover_loops_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		$cover_anim/circlemask/VideoPlayback.play()
 		$cover_anim/circlemask/VideoPlayback.show()
+		if Settings.misc.cover_loops_selected_song:
+			$bg_cover_anim/VideoPlayback.play()
+			$bg_cover_anim/VideoPlayback.show()
 	else:
 		$cover_anim/circlemask/VideoPlayback.pause()
 		$cover_anim/circlemask/VideoPlayback.hide()
+		$bg_cover_anim/VideoPlayback.pause()
+		$bg_cover_anim/VideoPlayback.hide()
+
+func _on_settings_cover_loop_selected_song_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		$bg_cover_anim/VideoPlayback.play()
+		$bg_cover_anim/VideoPlayback.show()
+	else:
+		$bg_cover_anim/VideoPlayback.pause()
+		$bg_cover_anim/VideoPlayback.hide()

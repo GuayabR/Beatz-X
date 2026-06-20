@@ -959,6 +959,32 @@ scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
 
+[node name="cover_loops_in_selected_bg_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the cover loop also show
+on the spinning album cover in the background
+of your selected song."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 31
+text = "Show in background"
+
+[node name="space54" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="editor_cover_loops_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -3500,6 +3526,7 @@ libraries = {
 [connection signal="toggled" from="ScrollContainer/settings_list/bg_vids_edit_toggle" to="." method="_on_bg_vids_edit_toggle_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/editor_seek_vid_scroll_toggle" to="." method="_on_editor_seek_vid_scroll_toggle_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/cover_loops_toggle" to="." method="_on_cover_loops_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/cover_loops_in_selected_bg_toggle" to="." method="_on_cover_loops_in_selected_bg_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/editor_cover_loops_toggle" to="." method="_on_editor_cover_loops_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/cover_loops_playing_bar_toggle" to="." method="_on_cover_loops_playing_bar_toggled"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/note_speed_drop" to="." method="_on_note_speed_item_selected"]
