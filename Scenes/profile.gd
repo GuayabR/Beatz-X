@@ -17,14 +17,13 @@ func set_banner(banner: ImageTexture):
 	$banner.modulate = Color.GRAY
 
 func _ready() -> void:
-	$name_side/username.text = "[" + Settings.game.clan + "] [b]%s[/b]" % Settings.game.username
+	$name_side/username.text = "[" + Settings.game.clan + "] [b]%s[/b]" % (Settings.game.username if not General.epic_user_info else General.epic_user_info["display_name"])
 	$name_side/title.text = Settings.game.title
 
 	var profile_path = Settings.game.profile_path
 	var banner_path = Settings.game.banner_path
 
 	if profile_path != "":
-		print("Profile path:", profile_path)
 		if FileAccess.file_exists(profile_path):
 			var img := Image.new()
 			var err := img.load(profile_path)
@@ -38,7 +37,6 @@ func _ready() -> void:
 			push_warning("Profile path does not exist: " + profile_path)
 
 	if banner_path != "":
-		print("Banner path:", banner_path)
 		if FileAccess.file_exists(banner_path):
 			var img := Image.new()
 			var err := img.load(banner_path)

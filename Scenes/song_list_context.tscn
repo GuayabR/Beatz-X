@@ -19,9 +19,9 @@ corner_radius_bottom_left = 16
 [node name="song_list_context" type="Panel"]
 anchors_preset = -1
 anchor_right = 0.120000005
-anchor_bottom = 0.29900002
+anchor_bottom = 0.33
 offset_right = 0.59999084
-offset_bottom = 0.07998657
+offset_bottom = -0.4000244
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_dgv2k")
@@ -88,9 +88,10 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="play" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Play this chart"
 
 [node name="Label2" type="Label" parent="buttons"]
@@ -99,9 +100,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 1
 
 [node name="edit" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Edit this chart"
 
 [node name="Label" type="Label" parent="buttons"]
@@ -110,11 +112,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 1
 
 [node name="go_to_album" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 tooltip_text = "Show all Charts from
 this album."
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Go to Album"
 
 [node name="Label5" type="Label" parent="buttons"]
@@ -123,11 +126,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 1
 
 [node name="play_as_bg_song" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 tooltip_text = "You can also press the mouse scroll wheel on a song list item
 to quickly play it as the background song"
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Play as Background Song"
 
 [node name="Label3" type="Label" parent="buttons"]
@@ -136,9 +140,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 1
 
 [node name="delete" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Delete this chart"
 
 [node name="Label4" type="Label" parent="buttons"]
@@ -147,9 +152,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 1
 
 [node name="open_explorer" type="Button" parent="buttons"]
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Open in Explorer"
 
 [node name="item_meta" type="Label" parent="."]

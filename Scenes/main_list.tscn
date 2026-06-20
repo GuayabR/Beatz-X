@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://72iwv8sulrfp"]
+[gd_scene load_steps=32 format=3 uid="uid://72iwv8sulrfp"]
 
 [ext_resource type="Script" uid="uid://b8v6i072uumyo" path="res://Scenes/main_list.gd" id="1_53lae"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="1_t4y1h"]
@@ -13,7 +13,10 @@
 [ext_resource type="Texture2D" uid="uid://k8yi31jqksm1" path="res://Resources/Unreleased.png" id="9_3gvlj"]
 [ext_resource type="Theme" uid="uid://bjp4vqou7f4gl" path="res://Resources/Themes/editor_theme.tres" id="9_ckusj"]
 [ext_resource type="AudioStream" uid="uid://dxq0i86kkonyh" path="res://Resources/SFX/hoverBtn.mp3" id="9_eobli"]
+[ext_resource type="Script" uid="uid://bp06dbygc8w6c" path="res://Scenes/main_list_item_list.gd" id="10_weva2"]
+[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="11_xf874"]
 [ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="12_ckusj"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="12_v7441"]
 [ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="13_dy18g"]
 [ext_resource type="PackedScene" uid="uid://c710qquuxbtvy" path="res://Scenes/album_view.tscn" id="16_4d6o5"]
 
@@ -690,6 +693,7 @@ grow_vertical = 2
 script = ExtResource("1_53lae")
 
 [node name="background" type="TextureRect" parent="."]
+visible = false
 modulate = Color(0.529067, 0.529067, 0.529067, 1)
 z_index = -1
 layout_mode = 1
@@ -803,10 +807,13 @@ offset_right = 778.5
 offset_bottom = 658.0
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
 theme_override_constants/icon_margin = 30
 theme_override_fonts/font = ExtResource("7_ckusj")
 theme_override_font_sizes/font_size = 22
 theme_override_styles/panel = SubResource("StyleBoxFlat_4d6o5")
+allow_search = false
 max_text_lines = 4
 item_count = 8
 fixed_icon_size = Vector2i(110, 110)
@@ -826,6 +833,7 @@ item_6/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | 
 item_6/icon = ExtResource("9_3gvlj")
 item_7/text = "  Impossible | Beatz! Originals | Test Song, by GuayabR | 2025 | Custom"
 item_7/icon = ExtResource("9_3gvlj")
+script = ExtResource("10_weva2")
 
 [node name="del_custom_panel" type="Panel" parent="center"]
 z_index = 5
@@ -895,6 +903,189 @@ theme = ExtResource("12_ckusj")
 theme_override_font_sizes/font_size = 30
 text = "Confirm"
 
+[node name="create_panel" type="Panel" parent="center"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -391.75
+offset_top = -176.0
+offset_right = 391.75
+offset_bottom = 176.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(391.75, 176)
+theme = ExtResource("9_ckusj")
+
+[node name="create_title" type="Label" parent="center/create_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -371.0
+offset_top = 24.0
+offset_right = 371.0
+offset_bottom = 138.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 35
+text = "You will create a new Chart
+Would you like to start editing or
+add a song and start recording?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="center/create_panel"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.75
+offset_top = -134.0
+offset_right = 0.75
+offset_bottom = -76.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="edit" type="Button" parent="center/create_panel/HBoxContainer"]
+custom_minimum_size = Vector2(175, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 26
+text = "Start Editing"
+
+[node name="record" type="Button" parent="center/create_panel/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 26
+text = "Add song and Record"
+
+[node name="create_cancel" type="Button" parent="center/create_panel/HBoxContainer"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 26
+text = "Cancel"
+
+[node name="loading_charts_panel" type="Panel" parent="center"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -391.75
+offset_top = -176.0
+offset_right = 391.75
+offset_bottom = 176.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(391.75, 176)
+theme = ExtResource("9_ckusj")
+
+[node name="loading_lbl" type="Label" parent="center/loading_charts_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -371.0
+offset_top = 51.0
+offset_right = 371.0
+offset_bottom = 87.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("11_xf874")
+theme_override_font_sizes/font_size = 35
+text = "Loading {NUM} charts..."
+horizontal_alignment = 1
+
+[node name="progress" type="Label" parent="center/loading_charts_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -371.0
+offset_top = 255.0
+offset_right = 371.0
+offset_bottom = 284.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "0 / 100"
+horizontal_alignment = 1
+
+[node name="details" type="Label" parent="center/loading_charts_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -381.0
+offset_top = -72.0
+offset_right = 381.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 18
+text = "Unzipping to
+AppData\\Roaming\\Godot\\app_userdata\\Beatz! X\\Custom\\Song Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="center/loading_charts_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -331.0
+offset_top = 110.0
+offset_right = 331.0
+offset_bottom = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("12_ckusj")
+show_percentage = false
+
+[node name="VideoPlayback" type="Control" parent="center/loading_charts_panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -19.0
+offset_top = -46.0
+offset_right = 19.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(19, 19)
+script = ExtResource("12_v7441")
+path = "uid://bpugs16ce7qd2"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 2.0
+pitch_adjust = false
+loop = true
+blend_mode = 1
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
 [node name="top_right" type="Control" parent="."]
 z_index = 1
 layout_mode = 1
@@ -911,9 +1102,9 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -936.0
+offset_left = -958.0
 offset_top = 60.0
-offset_right = -73.0
+offset_right = -353.0
 offset_bottom = 118.0
 grow_horizontal = 2
 tooltip_text = "The list will filter out all items that don't match your search.
@@ -924,6 +1115,46 @@ theme_override_fonts/font = ExtResource("7_ckusj")
 theme_override_font_sizes/font_size = 36
 placeholder_text = "Search Songs"
 clear_button_enabled = true
+
+[node name="sort" type="OptionButton" parent="top_right"]
+z_index = 2
+layout_mode = 0
+offset_left = -306.0
+offset_top = 62.0
+offset_right = -38.0
+offset_bottom = 116.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_font_sizes/font_size = 26
+selected = 0
+item_count = 7
+popup/item_0/text = "Title (A-Z)"
+popup/item_0/id = 1
+popup/item_1/text = "Artist (A-Z)"
+popup/item_1/id = 5
+popup/item_2/text = "Album (A-Z)"
+popup/item_2/id = 2
+popup/item_3/text = "Year (Newest-Oldest)"
+popup/item_3/id = 3
+popup/item_4/text = "Difficulty"
+popup/item_4/id = 0
+popup/item_5/text = "Charter (A-Z)"
+popup/item_5/id = 4
+popup/item_6/text = "Date Modified"
+popup/item_6/id = 6
+
+[node name="reverse_order" type="CheckButton" parent="top_right"]
+z_index = 2
+layout_mode = 0
+offset_left = -125.0
+offset_top = 138.0
+offset_right = -44.0
+offset_bottom = 180.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("12_ckusj")
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 26
+text = ""
 
 [node name="top_left" type="Control" parent="."]
 z_index = 1
@@ -1021,7 +1252,10 @@ offset_left = 74.0
 offset_top = 608.0
 offset_right = 149.0
 offset_bottom = 683.0
-tooltip_text = "CREATE From Scratch your own Beatzmap!"
+tooltip_text = "CREATE From Scratch your own Beatzmap!
+You can also drop a valid audio file
+into the game, and you will automatically start editing!
+(Valid audio files: .mp3, .ogg, .wav)"
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
 theme_override_fonts/font = ExtResource("13_dy18g")
@@ -1068,24 +1302,25 @@ offset_bottom = 17.0
 grow_horizontal = 0
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
-theme_override_font_sizes/font_size = 60
-text = "^"
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 46
+text = ""
 
 [node name="scrl_down" type="Button" parent="center_right"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -46.9998
-offset_top = 150.0
-offset_right = 61.0002
-offset_bottom = 270.0
+offset_left = -155.0
+offset_top = 45.0
+offset_right = -47.0
+offset_bottom = 165.0
 grow_horizontal = 0
-rotation = 3.14159
 mouse_default_cursor_shape = 2
 theme = ExtResource("12_ckusj")
-theme_override_font_sizes/font_size = 60
-text = "^"
+theme_override_fonts/font = ExtResource("13_dy18g")
+theme_override_font_sizes/font_size = 46
+text = ""
 
 [node name="center_bottom" type="Control" parent="."]
 z_index = 1
@@ -1169,15 +1404,20 @@ offset_right = 1920.0034
 [connection signal="item_selected" from="center/song_list" to="." method="_on_song_selected"]
 [connection signal="pressed" from="center/del_custom_panel/del_no" to="." method="_on_edit_cancel_pressed"]
 [connection signal="pressed" from="center/del_custom_panel/del_yes" to="." method="_on_edit_confirm_pressed"]
+[connection signal="pressed" from="center/create_panel/HBoxContainer/edit" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="center/create_panel/HBoxContainer/record" to="." method="_on_record_pressed"]
+[connection signal="pressed" from="center/create_panel/HBoxContainer/create_cancel" to="." method="_on_create_cancel"]
 [connection signal="focus_entered" from="top_right/search" to="." method="_on_search_focus_entered"]
 [connection signal="focus_exited" from="top_right/search" to="." method="_on_search_focus_exited"]
 [connection signal="text_changed" from="top_right/search" to="." method="_on_search_bar_text_changed"]
+[connection signal="item_selected" from="top_right/sort" to="." method="_on_sort_item_selected"]
+[connection signal="toggled" from="top_right/reverse_order" to="." method="_on_reverse_order_toggled"]
 [connection signal="button_up" from="top_left/back" to="." method="_on_back_button_up"]
 [connection signal="pressed" from="top_left/reload" to="." method="_on_reload_pressed"]
 [connection signal="pressed" from="top_left/edit" to="." method="_on_edit_pressed"]
 [connection signal="pressed" from="top_left/dlt_all" to="." method="_on_dlt_all_pressed"]
 [connection signal="pressed" from="top_left/open_beatz_bxzip" to="." method="_on_open_beatz_bxzip_pressed"]
-[connection signal="pressed" from="top_left/create" to="." method="_on_create_pressed"]
+[connection signal="pressed" from="top_left/create" to="." method="_on_create_req"]
 [connection signal="pressed" from="top_left/random" to="." method="_on_random_pressed"]
 [connection signal="pressed" from="center_right/scrl_up" to="." method="_on_scrl_up_pressed"]
 [connection signal="pressed" from="center_right/scrl_down" to="." method="_on_scrl_down_pressed"]

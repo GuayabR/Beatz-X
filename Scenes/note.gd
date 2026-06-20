@@ -5,16 +5,30 @@ var spawned_at: float
 
 var type: String
 var style: String = Settings.misc.note_style
-var faded := false # Becomes true when hit perfectly, insanely or exactly
-var faded_great := false # Becomes true when not hit perfectly, insanely or exactly
+var faded: bool = false # Becomes true when hit perfectly, insanely or exactly
+var faded_great: bool = false # Becomes true when not hit perfectly, insanely or exactly
+
+var effects = []
 
 var hold_ms: float = -1.0
 @onready var hold_bar: Line2D = $HoldBar2D
 
-var rec := false
+var rec: bool = false
 
-var edit := false
-var editor_deleted := false
+var edit: bool = false
+var editor_deleted: bool = false
+
+var selected := false
+
+var note_index: int
+
+var note_id: String = ""
+
+var is_recording_hold: bool = false
+
+signal editor_hovered(note)
+signal editor_unhovered(note)
+signal editor_pressed(note, event)
 
 func _ready() -> void:
 	if rec:
@@ -24,6 +38,12 @@ func _ready() -> void:
 	if not edit:
 		$editor_hitbox.queue_free()
 		#$HoldBar.queue_free()
+		$editor_effect_label.hide()
+	
+	if not effects.is_empty() and edit and type == "Effect":
+			$editor_effect_label.text = JSON.stringify(effects, "\t")
+	else:
+		$editor_effect_label.hide()
 	
 	if Settings.misc.note_style == "dance":
 		match type:
@@ -60,9 +80,8 @@ func _ready() -> void:
 			$noteImg.self_modulate = Settings.circles[type + "Chart"]
 			hold_bar.self_modulate = Settings.circles[type + "Chart"]
 	
-	hold_bar.z_index = 3
-	$note_hold_end.z_index = 3
-	$note_hold_end.visible = true if edit == true and hold_ms > 0.0 else false
+	$note_hold_end.z_index = 2
+	$note_hold_end.visible = true if edit == true and hold_ms > 0.0 and Settings.misc.editor_show_note_hold_ends else false
 	$note_hold_end.scale = Vector2(0.25, 0.25)
 	
 	hold_bar.self_modulate.a = 0.75
@@ -70,18 +89,35 @@ func _ready() -> void:
 	hold_bar.rotation_degrees = 180.0
 	
 	$HoldBar.z_index = -1
-	$HoldBar.size.y = Beatz.time_to_y(hold_ms) * 1.5
+	$HoldBar.size.y = (Beatz.time_to_y(hold_ms, edit) * Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER) * Beatz.playback_speed
 	$HoldBar.self_modulate.a = 0.5
-	hold_bar.points[1].y = Beatz.time_to_y(hold_ms) * 1.5
-	hold_bar.points[2].y = (Beatz.time_to_y(hold_ms) * 1.5) + clampf(hold_bar.points[1].y / 5.0, 7.5, 50.0)
-	$note_hold_end.position.y = Beatz.time_to_y(hold_ms) * -1.5
-	#print(Beatz.time_to_y(hold_ms) * -1.5)
+	hold_bar.points[1].y = (Beatz.time_to_y(hold_ms, edit) * Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER) * Beatz.playback_speed
+	hold_bar.points[2].y = ((Beatz.time_to_y(hold_ms, edit) * Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER) * Beatz.playback_speed) + clampf(hold_bar.points[1].y / 5.0, 7.5, 50.0)
+	$note_hold_end.position.y = (Beatz.time_to_y(hold_ms, edit) * -Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER) * Beatz.playback_speed
+	
+	if hold_ms > 0.0:
+		$editor_hitbox.size.y = Beatz.time_to_y(hold_ms, edit) * Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER + 100
+		$editor_hitbox.position.y = Beatz.time_to_y(hold_ms, edit) * -Beatz.ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER - 25
 	
 	$noteImg.scale = Vector2(Settings.circles.size, Settings.circles.size) if Settings.misc.note_style == "circles" else Vector2.ONE 
 	$shadow.scale = Vector2(Settings.circles.size, Settings.circles.size) if Settings.misc.note_style == "circles" else Vector2.ONE
 	$HoldBar2D.width = 52.0 * Settings.circles.size if Settings.misc.note_style == "circles" else 52.0
 	$HoldBar.size.x = 28.0 * Settings.circles.size if Settings.misc.note_style == "circles" else 28.0
 	#$HoldBar.position.x =
+	
+	if Settings.misc.hold_bar_no_end_fade:
+		$HoldBar2D.gradient = null
+		$HoldBar2D.points[1].y -= 20.0
+		$HoldBar2D.points[2].y -= 25.0
+	else:
+		$HoldBar2D.gradient = preload("res://Resources/misc/hold_note_end_fade.tres")
+	
+	if Settings.misc.hold_bar_solid:
+		$HoldBar2D.material.blend_mode = 0
+		$HoldBar2D.modulate = Color.WHITE
+	else:
+		$HoldBar2D.material.blend_mode = 1
+		$HoldBar2D.modulate = Color(1.0, 1.0, 1.0, 0.851)
 	
 	if Settings.misc.note_anims == false:
 		$noteImg.position = Vector2.ZERO
@@ -91,10 +127,21 @@ func _ready() -> void:
 func update_hold_visual(pixels: float) -> void:
 	if hold_ms > 0:
 		if hold_bar:
-			hold_bar.points[1].y -= pixels
-			hold_bar.points[2].y -= pixels
+			hold_bar.points[1].y -= pixels if hold_bar.points[1].y > 15 else 0
+			hold_bar.points[2].y -= pixels if hold_bar.points[2].y > 20 else 0
 		if $note_hold_end: $note_hold_end.position.y += pixels
 		if $HoldBar: $HoldBar.size.y -= pixels
+
+func create_hold_visual(pixels: float) -> void:
+	if hold_bar:
+		hold_bar.points[1].y += pixels
+		hold_bar.points[2].y += pixels
+
+	if $note_hold_end:
+		$note_hold_end.position.y -= pixels
+
+	if $HoldBar:
+		$HoldBar.size.y += pixels
 
 func great_hit():
 	faded_great = true
@@ -109,7 +156,7 @@ func great_hit():
 	var target_rot = rand
 	tween.tween_property($noteImg, "rotation_degrees", target_rot, 1.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	
-	self.z_index = -2
+	z_index = -2
 	
 	await get_tree().create_timer(1.0).timeout
 	queue_free()
@@ -179,6 +226,26 @@ func editor_reset():
 	$noteImg.rotation_degrees = 0.0
 	$shadow.self_modulate = Color.TRANSPARENT
 
+func _on_editor_hitbox_mouse_entered() -> void:
+	if editor_deleted or faded:
+		return
+	emit_signal("editor_hovered", self)
+
+
+func _on_editor_hitbox_mouse_exited() -> void:
+	if editor_deleted or faded:
+		return
+	emit_signal("editor_unhovered", self)
+
+
+func _on_editor_hitbox_gui_input(event: InputEvent) -> void:
+	if editor_deleted or faded:
+		return
+
+	if event is InputEventMouseButton:
+		if event.pressed:
+			emit_signal("editor_pressed", self, event)
+
 func reset_game():
 	if hold_bar: hold_bar.queue_free()
 	if $HoldBar: $HoldBar.queue_free()
@@ -214,8 +281,18 @@ func set_type(noteType: String):
 
 	# normal styles
 	var base := "res://Resources/Arrows/" + style + "/" + style
-
+	
+	modulate = Color.WHITE
+	self_modulate = Color.WHITE
+	
 	match noteType:
+		"Section":
+			$noteImg.texture = load("res://Resources/Arrows/beatLine.png")
+			$note_hold_end.texture = load("res://Resources/Arrows/beatLine.png")
+			modulate = Color.CYAN
+		"Effect":
+			$noteImg.texture = load("res://Resources/favicon.png")
+			$note_hold_end.texture = load("res://Resources/favicon.png")
 		"Upleft":
 			$noteImg.texture = load(base + "NoteUpleft.png")
 			$note_hold_end.texture = load(base + "NoteUpleft.png")
@@ -240,3 +317,13 @@ func set_type(noteType: String):
 		"Upright":
 			$noteImg.texture = load(base + "NoteUpright.png")
 			$note_hold_end.texture = load(base + "NoteUpright.png")
+		_:
+			if noteType != "out": print("Unrecognized note type: ", noteType)
+			if Settings.misc.show_error_notes:
+				$noteImg.texture = load("res://Resources/NoteUpTransparent.png")
+				$note_hold_end.texture = load("res://Resources/Arrows/NoteUp.png")
+				modulate = Color.RED
+			else:
+				modulate = Color.TRANSPARENT
+				self_modulate = Color.TRANSPARENT
+				hide()

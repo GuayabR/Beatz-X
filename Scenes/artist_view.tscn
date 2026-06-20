@@ -1,0 +1,126 @@
+[gd_scene load_steps=9 format=3 uid="uid://3pp0ln2sx50u"]
+
+[ext_resource type="Script" uid="uid://da7pkit72c47q" path="res://Scenes/artist_view.gd" id="1_uh8l2"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="2_ce3ee"]
+[ext_resource type="Texture2D" uid="uid://bckw85g8ivu68" path="res://Resources/misc/Linkin Park.png" id="2_o6lev"]
+[ext_resource type="Texture2D" uid="uid://bg01et6qg8bdv" path="res://Resources/misc/Megadeth.png" id="3_4swhb"]
+[ext_resource type="PackedScene" uid="uid://da55mf3b65c15" path="res://Scenes/Visualizer.tscn" id="4_e1spv"]
+[ext_resource type="Theme" uid="uid://brpctj3pblpnn" path="res://Resources/Themes/main_list_theme.tres" id="6_tmr7b"]
+[ext_resource type="Texture2D" uid="uid://cm62ywke30e0c" path="res://Resources/Covers/Aura.png" id="7_3hiij"]
+[ext_resource type="Texture2D" uid="uid://djin5rtpbcqga" path="res://Resources/misc/creo.jpg" id="8_wluop"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uh8l2")
+
+[node name="bg" type="Control" parent="."]
+self_modulate = Color(0.44314563, 0.44314563, 0.44314563, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ce3ee")
+path = "uid://bbev4vad84hqv"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 2.0
+pitch_adjust = null
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="top_intro" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 306.0
+grow_horizontal = 2
+
+[node name="artist_bg" type="TextureRect" parent="top_intro"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_o6lev")
+expand_mode = 2
+stretch_mode = 6
+
+[node name="logo" type="TextureRect" parent="top_intro"]
+visible = false
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -836.0
+offset_top = -117.0
+offset_right = -38.0
+offset_bottom = 117.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = ExtResource("3_4swhb")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="artist_name" type="RichTextLabel" parent="top_intro"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -832.0
+offset_top = -88.0
+offset_bottom = 88.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/normal_font_size = 76
+text = "ARTIST NAME"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Visualizer" parent="." instance=ExtResource("4_e1spv")]
+layout_mode = 1
+
+[node name="song_list" type="ItemList" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 105.0
+offset_top = -773.0
+offset_right = -105.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("6_tmr7b")
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+theme_override_constants/outline_size = 4
+theme_override_constants/icon_margin = 12
+theme_override_font_sizes/font_size = 18
+max_text_lines = 3
+item_count = 2
+fixed_icon_size = Vector2i(76, 76)
+item_0/text = "   test"
+item_0/icon = ExtResource("7_3hiij")
+item_1/text = "   other"
+item_1/icon = ExtResource("8_wluop")
+
+[connection signal="gui_input" from="song_list" to="." method="_on_song_list_gui_input"]

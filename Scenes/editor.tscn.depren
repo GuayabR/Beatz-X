@@ -1,0 +1,5006 @@
+[gd_scene load_steps=64 format=3 uid="uid://cobclrhdkc7ju"]
+
+[ext_resource type="Script" uid="uid://cqcj17e2xfik7" path="res://Scenes/editor.gd" id="1_exjlx"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_nfgmo"]
+[ext_resource type="PackedScene" uid="uid://b5t0lioff7gvs" path="res://Scenes/fps.tscn" id="2_op3c8"]
+[ext_resource type="Texture2D" uid="uid://cj42i2klxxoxx" path="res://Resources/Background1.jpeg" id="3_nfgmo"]
+[ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="3_op3c8"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="4_cnbw5"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="4_efg2m"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="5_0l4bc"]
+[ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="5_o8yew"]
+[ext_resource type="FontFile" uid="uid://dijbrvdklfy0p" path="res://Resources/misc/Parabolica/Parabolica Bold.otf" id="6_06d57"]
+[ext_resource type="Texture2D" uid="uid://d4l3hysf8spj8" path="res://Resources/Arrows/NoteUpleft.png" id="6_i5vsu"]
+[ext_resource type="Texture2D" uid="uid://ci4swnrqnoxvw" path="res://Resources/Arrows/NoteDownleft.png" id="7_3lyd6"]
+[ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="7_pee1p"]
+[ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="8_3lyd6"]
+[ext_resource type="Theme" uid="uid://bjp4vqou7f4gl" path="res://Resources/Themes/editor_theme.tres" id="8_cnbw5"]
+[ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="8_pee1p"]
+[ext_resource type="FontFile" uid="uid://bjv8af3kcdpip" path="res://Resources/misc/Parabolica/Parabolica Bold Test.otf" id="9_af0oh"]
+[ext_resource type="Texture2D" uid="uid://8qm55yafn6jw" path="res://Resources/Arrows/NoteDown.png" id="9_o8yew"]
+[ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="10_u6te5"]
+[ext_resource type="Texture2D" uid="uid://m0mup57j474t" path="res://Resources/Arrows/NoteRight.png" id="11_efg2m"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="11_iis80"]
+[ext_resource type="Texture2D" uid="uid://dk3ejeg3fplhp" path="res://Resources/misc/extreme_label.png" id="11_u6te5"]
+[ext_resource type="Texture2D" uid="uid://cap1b0y0yjwk4" path="res://Resources/Arrows/NoteDownright.png" id="12_iis80"]
+[ext_resource type="Texture2D" uid="uid://dik2fewb7cn23" path="res://Resources/Arrows/NoteUpright.png" id="13_06d57"]
+[ext_resource type="Texture2D" uid="uid://c6bi78jh2q002" path="res://Resources/Arrows/beatLine.png" id="14_af0oh"]
+[ext_resource type="Texture2D" uid="uid://c1lwlpk8n64v4" path="res://Resources/misc/favicon.png" id="19_af0oh"]
+[ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="22_u6te5"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_op3c8"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_u6te5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_op3c8"]
+bg_color = Color(0, 0, 0, 0.639216)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+corner_radius_top_left = 16
+corner_radius_top_right = 5
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06d57"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u6te5"]
+content_margin_left = 8.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_efg2m"]
+
+[sub_resource type="Gradient" id="Gradient_6utg8"]
+interpolation_mode = 2
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_efg2m"]
+colors = PackedColorArray(1, 0, 1, 0.0705882, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_iis80"]
+colors = PackedColorArray(0, 0.364706, 1, 0.0823529, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_3lyd6"]
+colors = PackedColorArray(1, 0, 0, 0.0745098, 1, 0, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_pee1p"]
+colors = PackedColorArray(1, 1, 0, 0.105882, 1, 0.670588, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_o8yew"]
+colors = PackedColorArray(0, 1, 0, 0.121569, 0, 1, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_u6te5"]
+colors = PackedColorArray(0, 1, 1, 0.121569, 0, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_06d57"]
+colors = PackedColorArray(1, 0, 1, 0.0941176, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_af0oh"]
+colors = PackedColorArray(1, 0, 0, 0.0745098, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_cnbw5"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_op3c8"]
+offsets = PackedFloat32Array(0, 0.912037, 1)
+colors = PackedColorArray(1, 0, 0, 1, 1, 0.721569, 0, 1, 1, 0.721569, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_l5j4h"]
+offsets = PackedFloat32Array(0, 0.967593, 1)
+colors = PackedColorArray(1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_ukxwk"]
+offsets = PackedFloat32Array(0, 0.953704, 1)
+colors = PackedColorArray(0, 0, 1, 1, 0.952941, 0, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_0l4bc"]
+offsets = PackedFloat32Array(0, 0.939815, 1)
+colors = PackedColorArray(1, 1, 0, 1, 0, 0.98697, 0, 1, 0, 0.988235, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_i5vsu"]
+offsets = PackedFloat32Array(0, 0.907407, 1)
+colors = PackedColorArray(0, 0.988235, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_ruwpr"]
+offsets = PackedFloat32Array(0, 0.939815, 1)
+colors = PackedColorArray(0, 1, 0.752941, 1, 0.478431, 0, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_1giqv"]
+offsets = PackedFloat32Array(0, 0.958333, 1)
+colors = PackedColorArray(0.498039, 0, 1, 1, 0.980392, 0, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="Animation" id="Animation_cnbw5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/song_details/song_title:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(23, 23)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/song_details/song_artist:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(23, 62)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control/song_details/album:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(23, 93)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Control/song_details/year:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(23, 124)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Control/editor_title:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(876, 23)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Control/chart_details/chart_name:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-194, 23)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Control/chart_details/charter:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-120, 62)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Control/chart_details/diff:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-303, 101)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Control/chart_details/bpm:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-52, 132)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Control/chart_details/note_count:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-147, 163)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Control/chart_details/note_speed:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-150, 194)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("settings:position")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1920, 0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("back:position")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(13, -200)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("loading_text:modulate")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("overlay:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_06d57"]
+resource_name = "back_to_edit"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("settings:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.148651, 0.148651),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(1920, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("back:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.148651, 1),
+"update": 0,
+"values": [Vector2(13, 13), Vector2(13, -200)]
+}
+
+[sub_resource type="Animation" id="Animation_u6te5"]
+resource_name = "exit"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("loading_text:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.29730198, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("overlay:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2.219141, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_af0oh"]
+resource_name = " go_to_settings"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("settings:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.148651, 1),
+"update": 0,
+"values": [Vector2(1920, 0), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("back:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.148651, 1),
+"update": 0,
+"values": [Vector2(13, -200), Vector2(13, 13)]
+}
+
+[sub_resource type="Animation" id="Animation_op3c8"]
+resource_name = "init"
+length = 1.2667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = false
+tracks/0/path = NodePath("Control/song_details/song_title:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.566667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-400, 23), Vector2(23, 23)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/path = NodePath("Control/song_details/song_artist:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0333333, 0.633333),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-400, 62), Vector2(23, 62)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = false
+tracks/2/path = NodePath("Control/song_details/album:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0666667, 0.7),
+"transitions": PackedFloat32Array(0.189465, 0.189465),
+"update": 0,
+"values": [Vector2(-400, 93), Vector2(23, 93)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = false
+tracks/3/path = NodePath("Control/song_details/year:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.1, 0.8),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-400, 124), Vector2(23, 124)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = false
+tracks/4/path = NodePath("Control/editor_title:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(876, -100), Vector2(876, 23)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = false
+tracks/5/path = NodePath("Control/chart_details/chart_name:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.0333333, 0.766667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 23), Vector2(-194, 23)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = false
+tracks/6/path = NodePath("Control/chart_details/charter:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.0666667, 0.833333),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 62), Vector2(-120, 62)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = false
+tracks/7/path = NodePath("Control/chart_details/diff:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.166667, 0.9),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 101), Vector2(-113, 101)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = false
+tracks/8/path = NodePath("Control/chart_details/bpm:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.266667, 1.03333),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 132), Vector2(-52, 132)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = false
+tracks/9/path = NodePath("Control/chart_details/note_count:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.333333, 1.16667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 163), Vector2(-147, 163)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = false
+tracks/10/path = NodePath("Control/chart_details/note_speed:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.433333, 1.26667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(300, 194), Vector2(-150, 194)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("loading_text:modulate")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(3.0314329, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("overlay:modulate")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0, 0.93333334),
+"transitions": PackedFloat32Array(0.28717458, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("settings:position")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1920, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0l4bc"]
+_data = {
+&"RESET": SubResource("Animation_cnbw5"),
+&"back_to_edit": SubResource("Animation_06d57"),
+&"exit": SubResource("Animation_u6te5"),
+&"go_to_settings": SubResource("Animation_af0oh"),
+&"init": SubResource("Animation_op3c8")
+}
+
+[sub_resource type="Animation" id="Animation_i5vsu"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/editor_controls/dlt_btn:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(207, -70)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/editor_controls/view_btn:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(207, -166)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control/editor_controls/place_btn:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(40, -70)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Control/editor_controls/reload:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(40, -166)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Control/chart_controls/saved_to_popup:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(57, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_0l4bc"]
+resource_name = "init2"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/editor_controls/dlt_btn:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.733333),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-300, -70), Vector2(207, -70)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/editor_controls/view_btn:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0666667, 0.8),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-300, -166), Vector2(207, -166)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control/editor_controls/place_btn:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.2, 0.966667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-500, -70), Vector2(40, -70)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Control/editor_controls/reload:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.266667, 1.06667),
+"transitions": PackedFloat32Array(0.189465, 1),
+"update": 0,
+"values": [Vector2(-500, -166), Vector2(40, -166)]
+}
+
+[sub_resource type="Animation" id="Animation_l5j4h"]
+resource_name = "saved_popup"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/chart_controls/saved_to_popup:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.466667, 1.36667),
+"transitions": PackedFloat32Array(0.183011, 3.4822, 1),
+"update": 0,
+"values": [Vector2(57, 0), Vector2(-320, 0), Vector2(50, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3lyd6"]
+_data = {
+&"RESET": SubResource("Animation_i5vsu"),
+&"init2": SubResource("Animation_0l4bc"),
+&"saved_popup": SubResource("Animation_l5j4h")
+}
+
+[sub_resource type="Animation" id="Animation_iis80"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/song_details/sha:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_efg2m"]
+resource_name = "cover_spin"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/song_details/sha:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 60),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_06d57"]
+_data = {
+&"RESET": SubResource("Animation_iis80"),
+&"cover_spin": SubResource("Animation_efg2m")
+}
+
+[node name="editor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_exjlx")
+snap_division = null
+
+[node name="overlay" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 7
+z_as_relative = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+texture = ExtResource("2_nfgmo")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="cam" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+
+[node name="song" type="AudioStreamPlayer" parent="."]
+bus = &"Song"
+
+[node name="beatlines" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="fps" parent="Control" instance=ExtResource("2_op3c8")]
+z_index = 10
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -13.5
+offset_top = -22.0
+offset_right = 13.5
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(13.5, 13.5)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 14
+single_line_mode = true
+
+[node name="bg" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("2_nfgmo")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VideoPlayback" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_right = 480.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = null
+playback_speed = null
+pitch_adjust = null
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="note_effect_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0.35300002)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 407.0
+offset_right = 809.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_ul_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 515.0
+offset_right = 917.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_dl_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 627.0
+offset_right = 1029.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_l_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 739.0
+offset_right = 1141.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_d_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 851.0
+offset_right = 1240.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_u_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 960.0
+offset_right = 1349.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_r_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 1069.0
+offset_right = 1462.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_dr_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 1179.0
+offset_right = 1563.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="note_ur_lane" type="TextureRect" parent="Control"]
+self_modulate = Color(1, 1, 1, 0)
+material = SubResource("CanvasItemMaterial_op3c8")
+layout_mode = 1
+offset_left = 1286.0
+offset_right = 1670.0
+offset_bottom = 1080.0
+scale = Vector2(0.28, 1)
+texture = ExtResource("3_nfgmo")
+
+[node name="editor_title" type="RichTextLabel" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -84.0
+offset_top = 23.0
+offset_right = 84.0
+offset_bottom = 90.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("6_06d57")
+theme_override_font_sizes/normal_font_size = 55
+text = "Editor"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="zoom_label" type="RichTextLabel" parent="Control"]
+visible = false
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 113.0
+offset_top = -373.0
+offset_right = 279.0
+offset_bottom = -347.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 25
+text = "Zoom: 10.0"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="zoom_scroll" type="HSlider" parent="Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -847.0
+offset_top = 193.0
+offset_right = -681.0
+offset_bottom = 209.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+min_value = 1.0
+value = 10.0
+
+[node name="song_details" type="Control" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="song_title" type="RichTextLabel" parent="Control/song_details"]
+z_index = 3
+layout_mode = 0
+offset_left = 23.0
+offset_top = 23.0
+offset_right = 232.0
+offset_bottom = 62.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 38
+text = "Song Name"
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="song_artist" type="RichTextLabel" parent="Control/song_details"]
+z_index = 3
+layout_mode = 0
+offset_left = 23.0
+offset_top = 62.0
+offset_right = 101.0
+offset_bottom = 93.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_fonts/bold_font = ExtResource("9_af0oh")
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+bbcode_enabled = true
+text = "Artist"
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="album" type="RichTextLabel" parent="Control/song_details"]
+z_index = 3
+layout_mode = 0
+offset_left = 23.0
+offset_top = 93.0
+offset_right = 130.0
+offset_bottom = 124.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 30
+text = "Album"
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="year" type="RichTextLabel" parent="Control/song_details"]
+z_index = 3
+layout_mode = 0
+offset_left = 23.0
+offset_top = 124.0
+offset_right = 82.0
+offset_bottom = 153.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 28
+text = "Year"
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="song_path" type="RichTextLabel" parent="Control/song_details"]
+z_index = 3
+layout_mode = 0
+offset_left = 23.0
+offset_top = 153.0
+offset_right = 515.0
+offset_bottom = 174.0
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 20
+text = "Path:"
+fit_content = true
+autowrap_mode = 2
+vertical_alignment = 1
+
+[node name="sha" type="TextureRect" parent="Control/song_details"]
+visible = false
+modulate = Color(1, 1, 1, 0.75000006)
+clip_children = 2
+material = SubResource("CanvasItemMaterial_u6te5")
+layout_mode = 1
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 106.0
+offset_bottom = 103.0
+scale = Vector2(7.07676, 7.07676)
+pivot_offset = Vector2(50, 50)
+mouse_filter = 2
+texture = ExtResource("7_pee1p")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="cover_spin" type="TextureRect" parent="Control/song_details/sha"]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 100.0
+mouse_filter = 2
+texture = ExtResource("8_3lyd6")
+expand_mode = 1
+
+[node name="cover_loop" type="Control" parent="Control/song_details/sha"]
+modulate = Color(1, 1, 1, 0.75000006)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = null
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="chart_details" type="Control" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+mouse_filter = 1
+
+[node name="chart_name" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -234.0
+offset_top = 23.0
+offset_right = -25.0
+offset_bottom = 62.0
+grow_horizontal = 0
+pivot_offset = Vector2(209, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 38
+text = "Chart name"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="charter" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -160.0
+offset_top = 62.0
+offset_right = -25.0
+offset_bottom = 101.0
+grow_horizontal = 0
+pivot_offset = Vector2(135, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 38
+text = "Charter"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="diff" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -343.0
+offset_top = 101.0
+offset_right = -24.0
+offset_bottom = 132.0
+grow_horizontal = 0
+pivot_offset = Vector2(128, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "Difficulty: Easy (10.82)"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="diff2" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -344.0
+offset_top = 196.0
+offset_right = -25.0
+offset_bottom = 227.0
+grow_horizontal = 0
+pivot_offset = Vector2(128, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "Peak NPS: 10.2"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="diff3" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -344.0
+offset_top = 228.0
+offset_right = -25.0
+offset_bottom = 259.0
+grow_horizontal = 0
+pivot_offset = Vector2(128, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "Average NPS: 6.8"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="diff_tex" type="TextureRect" parent="Control/chart_details"]
+self_modulate = Color(1, 1, 1, 0.490196)
+z_index = 2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -152.0
+offset_top = 98.0
+offset_right = -26.0
+offset_bottom = 129.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("11_u6te5")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="bpm" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -92.0
+offset_top = 132.0
+offset_right = -25.0
+offset_bottom = 163.0
+grow_horizontal = 0
+pivot_offset = Vector2(67, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "BPM"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="note_count" type="RichTextLabel" parent="Control/chart_details"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -187.0
+offset_top = 163.0
+offset_right = -24.999802
+offset_bottom = 194.0
+grow_horizontal = 0
+pivot_offset = Vector2(162, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "Note Count"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="note_speed" type="RichTextLabel" parent="Control/chart_details"]
+visible = false
+z_index = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -190.0
+offset_top = 194.0
+offset_right = -24.999908
+offset_bottom = 225.0
+grow_horizontal = 0
+pivot_offset = Vector2(165, 0)
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 30
+text = "Note Speed"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="editor_controls" type="Control" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+
+[node name="place_btn" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -110.0
+offset_right = 185.0
+offset_bottom = -40.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Place"
+
+[node name="reload" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -206.0
+offset_right = 185.0
+offset_bottom = -136.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Reload"
+
+[node name="dlt_btn" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 207.0
+offset_top = -110.0
+offset_right = 352.0
+offset_bottom = -40.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Delete"
+
+[node name="view_btn" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 207.0
+offset_top = -206.0
+offset_right = 352.0
+offset_bottom = -136.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "View"
+
+[node name="tools" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -303.0
+offset_right = 185.0
+offset_bottom = -232.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Tools"
+icon_alignment = 1
+expand_icon = true
+
+[node name="view_notes_array" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 207.0
+offset_top = -303.0
+offset_right = 352.0
+offset_bottom = -232.0
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 22
+text = "View Notes
+Array"
+icon_alignment = 1
+expand_icon = true
+
+[node name="settings_btn" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 123.0
+offset_top = -390.0
+offset_right = 184.49997
+offset_bottom = -328.5
+grow_vertical = 0
+tooltip_text = "Settings"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 30
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="help_btn" type="Button" parent="Control/editor_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -390.0
+offset_right = 101.5
+offset_bottom = -328.5
+grow_vertical = 0
+tooltip_text = "Editor Help"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 39
+text = "?"
+icon_alignment = 1
+expand_icon = true
+
+[node name="grid_snap_switch" type="Button" parent="Control/editor_controls"]
+visible = false
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -537.0
+offset_right = 168.0
+offset_bottom = -485.0
+grow_vertical = 0
+tooltip_text = "Snap placed and dragged notes to 1/2 of a beat"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 34
+text = "1/2"
+icon_alignment = 1
+expand_icon = true
+
+[node name="redo_btn" type="Button" parent="Control/editor_controls"]
+visible = false
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 116.0
+offset_top = -383.0
+offset_right = 168.0
+offset_bottom = -331.0
+grow_vertical = 0
+tooltip_text = "Redo Action"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 34
+disabled = true
+text = ">"
+icon_alignment = 1
+expand_icon = true
+
+[node name="undo_btn" type="Button" parent="Control/editor_controls"]
+visible = false
+z_index = 3
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -381.0
+offset_right = 92.0
+offset_bottom = -329.0
+grow_vertical = 0
+tooltip_text = "Undo Action"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 34
+disabled = true
+text = "<"
+icon_alignment = 1
+expand_icon = true
+
+[node name="chart_btns" type="Control" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="play" type="Button" parent="Control/chart_btns"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -332.0
+offset_top = -110.0
+offset_right = -187.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Play"
+
+[node name="playtest" type="Button" parent="Control/chart_btns"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -165.0
+offset_top = -110.0
+offset_right = -20.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Test"
+
+[node name="chart_controls" type="Control" parent="Control"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="chart_scroll" type="VSlider" parent="Control/chart_controls"]
+layout_mode = 0
+offset_left = -448.0
+offset_top = -427.0
+offset_right = -432.0
+offset_bottom = 415.0
+pivot_offset = Vector2(0, 421)
+mouse_force_pass_scroll_events = false
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+step = 0.0
+
+[node name="pos_label" type="RichTextLabel" parent="Control/chart_controls"]
+self_modulate = Color(1, 1, 1, 0.498039)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = 277.0
+offset_right = -40.0
+offset_bottom = 318.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 36
+text = "D Y Pos: "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="scroll_lbl" type="RichTextLabel" parent="Control/chart_controls"]
+self_modulate = Color(1, 1, 1, 0.482353)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = 319.0
+offset_right = -40.0
+offset_bottom = 360.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 36
+text = "D Time: "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="scroll_val" type="RichTextLabel" parent="Control/chart_controls"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = 359.0
+offset_right = -40.0
+offset_bottom = 400.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/normal_font = ExtResource("5_0l4bc")
+theme_override_font_sizes/normal_font_size = 36
+text = "Time: "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="exit" type="Button" parent="Control/chart_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -121.0
+offset_right = -23.0
+offset_bottom = -51.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Exit"
+
+[node name="save" type="Button" parent="Control/chart_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -35.0
+offset_right = -23.0
+offset_bottom = 35.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Saved"
+
+[node name="edit_meta" type="Button" parent="Control/chart_controls"]
+z_index = 3
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = 51.0
+offset_right = -23.0
+offset_bottom = 153.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 38
+text = "Edit
+Data"
+
+[node name="saved_to_popup" type="RichTextLabel" parent="Control/chart_controls"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 17.0
+offset_top = -20.0
+offset_right = 138.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/outline_size = 12
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 35
+text = "Saved!"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="edit_meta_cont" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="save_dialogue" type="Panel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -513.5
+offset_top = -515.5
+offset_right = 513.5
+offset_bottom = 515.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_op3c8")
+
+[node name="save_lbl" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -158.0
+offset_top = -468.0
+offset_right = 158.0
+offset_bottom = -428.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 36
+text = "Edit Custom Chart"
+fit_content = true
+autowrap_mode = 0
+
+[node name="save_btn" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = 393.0
+offset_right = -18.0
+offset_bottom = 452.0
+grow_horizontal = 2
+grow_vertical = 0
+focus_next = NodePath("../cancel_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Save!"
+
+[node name="cancel_btn" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -3.0
+offset_top = 393.0
+offset_right = 141.0
+offset_bottom = 452.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Cancel"
+
+[node name="chart_name_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.0
+offset_top = -418.0
+offset_right = -168.0
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Chart name..."
+focus_neighbor_left = NodePath("../explorer_open_btn")
+focus_neighbor_right = NodePath("../metadata_use_check")
+focus_neighbor_bottom = NodePath("../song_name_edit")
+focus_next = NodePath("../song_name_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Chart Name..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="song_name_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -139.5
+offset_top = -418.0
+offset_right = 139.5
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Song name..."
+focus_next = NodePath("../charter_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Song Name..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="charter_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -418.0
+offset_right = 447.0
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Your Username..."
+focus_next = NodePath("../diff_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Your Username..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="diff_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.0
+offset_top = -323.0
+offset_right = -168.0
+offset_bottom = -256.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "\"Easy\", \"Normal\", \"Hard\", \"Extreme\", \"Insanity\" and \"Impossible\" are the default chart difficulties.
+If no difficulty is set here, \"Hard\" will be used."
+focus_next = NodePath("../diff_texture_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Difficulty..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="diff_texture_edit" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -141.0
+offset_top = -304.0
+offset_right = 84.0
+offset_bottom = -235.0
+grow_horizontal = 2
+tooltip_text = "Add a custom difficulty label texture. (Optional)"
+focus_next = NodePath("../clear_diff")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 16
+text = "Difficulty
+Texture: "
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_diff" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 94.0
+offset_top = -304.0
+offset_right = 141.0
+offset_bottom = -236.0
+grow_horizontal = 2
+tooltip_text = "Clear the custom difficulty label image."
+focus_next = NodePath("../bpm_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 20
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bpm_edit" type="LineEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -323.0
+offset_right = 447.0
+offset_bottom = -256.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "BPM..."
+focus_next = NodePath("../song_file_select")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "BPM..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="song_file_select" type="Button" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -448.0
+offset_top = -229.0
+offset_right = -166.0
+offset_bottom = -162.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_next = NodePath("../artist_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+text = "Add a song file..."
+
+[node name="song_file_label" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -451.0
+offset_top = -159.0
+offset_right = -163.0
+offset_bottom = -94.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxEmpty_06d57")
+text = "No song added."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="artist_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -446.0
+offset_top = -70.0
+offset_right = -167.0
+offset_bottom = -20.0
+grow_horizontal = 2
+tooltip_text = "Artist (Optional)"
+focus_next = NodePath("../album_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Artist"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="album_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -139.5
+offset_top = -90.0
+offset_right = 139.5
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Album (Optional)"
+focus_next = NodePath("../year_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Album"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="year_edit" type="LineEdit" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -91.0
+offset_right = 447.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Year released (Optional)"
+focus_next = NodePath("../album_cover_edit")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Year Released"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="album_cover_edit" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -141.0
+offset_top = -209.0
+offset_right = 141.0
+offset_bottom = -142.0
+grow_horizontal = 2
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Album Cover: "
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="cover_img_details" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -108.0
+offset_top = -156.0
+offset_right = 109.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "640x640
+Cover
+2.5 MB"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="fetch_cover" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -142.0
+offset_top = -152.0
+offset_right = -112.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Fetch album cover using
+Artist or album."
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="rotate_cover" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 111.0
+offset_top = -152.0
+offset_right = 141.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bg_img_edit" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 167.0
+offset_top = -209.0
+offset_right = 449.0
+offset_bottom = -142.0
+grow_horizontal = 2
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Background
+ Image:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_bg" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 419.0
+offset_top = -152.0
+offset_right = 449.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bg_img_details" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 164.0
+offset_top = -156.0
+offset_right = 453.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Background"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="bg_vid_edit" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 167.0
+offset_top = 8.0
+offset_right = 449.0
+offset_bottom = 75.0
+grow_horizontal = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Background
+ Video:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="VideoPlayback" type="Control" parent="Control/edit_meta_cont/bg_vid_edit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 161.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = false
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="search_bg_vid" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 167.0
+offset_top = 65.0
+offset_right = 197.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "This will open a youtube search query for your artists music video.
+If you find one, go to the \">> cobalt\" tab
+and paste the link of your video of choice and download it as \"✨ auto\".
+After you download it, add it into your beatzmap!"
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="clear_bg_vid" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 419.0
+offset_top = 65.0
+offset_right = 449.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Remove the background video from this chart."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bg_vid_details" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 200.0
+offset_top = 61.0
+offset_right = 416.0
+offset_bottom = 151.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Background Video"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="cover_loop_edit" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -448.0
+offset_top = 8.0
+offset_right = -166.0
+offset_bottom = 75.0
+grow_horizontal = 2
+tooltip_text = "Add a Cover Loop for this chart!"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Cover Loop
+ Video:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="VideoPlayback" type="Control" parent="Control/edit_meta_cont/cover_loop_edit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 215.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = false
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="clear_loop" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -196.0
+offset_top = 65.0
+offset_right = -166.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Remove the Cover Loop from this chart."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="cover_loop_hint" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -448.0
+offset_top = 65.0
+offset_right = -418.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "A Cover Loop is a small square video
+animation that will play
+instead of the regular
+cover if the user's setting
+for Cover Loops is enabled.
+(Preferrably use a fully square
+video, that loops seamlessly.)"
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 25
+text = "?"
+icon_alignment = 1
+expand_icon = true
+
+[node name="cover_loop_details" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -415.0
+offset_top = 61.0
+offset_right = -198.0
+offset_bottom = 151.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Cover Loop Video"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="metadata_use_check" type="CheckBox" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 205.0
+offset_top = -460.0
+offset_right = 424.0
+offset_bottom = -425.0
+grow_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 22
+text = "Use Song Metadata"
+alignment = 1
+
+[node name="explorer_open_btn" type="Button" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+offset_left = -428.0
+offset_top = -460.0
+offset_right = -199.0
+offset_bottom = -425.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 22
+text = "Open in Explorer"
+
+[node name="bg_color_lbl" type="RichTextLabel" parent="Control/edit_meta_cont"]
+visible = false
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -111.5
+offset_top = -21.0
+offset_right = 111.5
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 26
+text = "Background Colour"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="bg_color_pick" type="ColorPickerButton" parent="Control/edit_meta_cont"]
+visible = false
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -106.5
+offset_top = 11.0
+offset_right = 106.5
+offset_bottom = 68.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 1)
+
+[node name="sig_cols_lbl" type="RichTextLabel" parent="Control/edit_meta_cont"]
+visible = false
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -104.0
+offset_top = 78.0
+offset_right = 104.0
+offset_bottom = 105.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 26
+text = "Signature Colours"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="sig_colors_cont" type="HBoxContainer" parent="Control/edit_meta_cont"]
+visible = false
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.5
+offset_top = 114.0
+offset_right = 450.5
+offset_bottom = 169.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="sig_color_pick" type="ColorPickerButton" parent="Control/edit_meta_cont/sig_colors_cont"]
+z_index = 5
+custom_minimum_size = Vector2(177.595, 0)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="sig_color_pick2" type="ColorPickerButton" parent="Control/edit_meta_cont/sig_colors_cont"]
+z_index = 5
+custom_minimum_size = Vector2(177.595, 0)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="sig_color_pick3" type="ColorPickerButton" parent="Control/edit_meta_cont/sig_colors_cont"]
+z_index = 5
+custom_minimum_size = Vector2(177.595, 0)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="sig_color_pick4" type="ColorPickerButton" parent="Control/edit_meta_cont/sig_colors_cont"]
+z_index = 5
+custom_minimum_size = Vector2(177.595, 0)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="sig_color_pick5" type="ColorPickerButton" parent="Control/edit_meta_cont/sig_colors_cont"]
+z_index = 5
+custom_minimum_size = Vector2(177.595, 0)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="create_map_panel" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="save_dialogue" type="Panel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -513.5
+offset_top = -515.5
+offset_right = 513.5
+offset_bottom = 515.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_op3c8")
+
+[node name="setup_lbl" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -166.0
+offset_top = -468.0
+offset_right = 166.0
+offset_bottom = -428.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 36
+text = "Setup Beatzmap"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="mandatory_notice" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -235.5
+offset_top = 369.0
+offset_right = 235.5
+offset_bottom = 386.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 16
+text = "You need at least a chart name, song file and bpm to start editing."
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="complete_setup_btn" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -133.0
+offset_top = 403.0
+offset_right = 133.0
+offset_bottom = 462.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+disabled = true
+text = "Start Editing!"
+
+[node name="chart_name_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.0
+offset_top = -418.0
+offset_right = -168.0
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Chart name..."
+focus_neighbor_left = NodePath("../explorer_open_btn")
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Chart Name..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="song_name_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -139.5
+offset_top = -418.0
+offset_right = 139.5
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Song name..."
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Song Name..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="charter_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -418.0
+offset_right = 447.0
+offset_bottom = -351.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Your Username..."
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Your Username..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="diff_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -447.0
+offset_top = -323.0
+offset_right = -168.0
+offset_bottom = -256.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "\"Easy\", \"Normal\", \"Hard\", \"Extreme\", \"Insanity\" and \"Impossible\" are the default chart difficulties.
+If no difficulty is set here, \"Hard\" will be used."
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Difficulty..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="diff_texture_edit" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -141.0
+offset_top = -304.0
+offset_right = 84.0
+offset_bottom = -235.0
+grow_horizontal = 2
+tooltip_text = "Add a custom difficulty label texture. (Optional)"
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 16
+text = "Difficulty
+Texture: "
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_diff" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 94.0
+offset_top = -304.0
+offset_right = 141.0
+offset_bottom = -236.0
+grow_horizontal = 2
+tooltip_text = "Clear the custom difficulty label image."
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 20
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bpm_edit" type="LineEdit" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -323.0
+offset_right = 447.0
+offset_bottom = -256.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "BPM..."
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "BPM..."
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="song_file_select" type="Button" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -448.0
+offset_top = -229.0
+offset_right = -166.0
+offset_bottom = -162.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+text = "Add a song file..."
+
+[node name="song_file_label" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -451.0
+offset_top = -159.0
+offset_right = -163.0
+offset_bottom = -94.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxEmpty_06d57")
+text = "No song added."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="artist_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -446.0
+offset_top = -70.0
+offset_right = -167.0
+offset_bottom = -20.0
+grow_horizontal = 2
+tooltip_text = "Artist (Optional)"
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Artist"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="album_edit" type="TextEdit" parent="Control/create_map_panel"]
+z_index = 5
+clip_contents = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -139.5
+offset_top = -90.0
+offset_right = 139.5
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Album (Optional)"
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Album"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+tab_input_mode = false
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="year_edit" type="LineEdit" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 168.0
+offset_top = -90.0
+offset_right = 447.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Year released (Optional)"
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("5_0l4bc")
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Optional: Year Released"
+emoji_menu_enabled = false
+backspace_deletes_composite_character_enabled = true
+caret_blink = true
+caret_mid_grapheme = true
+
+[node name="album_cover_edit" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -141.0
+offset_top = -209.0
+offset_right = 141.0
+offset_bottom = -142.0
+grow_horizontal = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Album Cover: "
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="rotate_cover" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 112.0
+offset_top = -152.0
+offset_right = 142.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="fetch_cover" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -141.0
+offset_top = -152.0
+offset_right = -111.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Fetch album cover using
+Artist or album."
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="cover_img_details" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -108.0
+offset_top = -157.0
+offset_right = 109.0
+offset_bottom = -94.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 16
+text = "640x640
+Cover
+2.5 MB"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="bg_img_edit" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 167.0
+offset_top = -209.0
+offset_right = 449.0
+offset_bottom = -142.0
+grow_horizontal = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Background
+ Image:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_bg" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 420.0
+offset_top = -152.0
+offset_right = 450.0
+offset_bottom = -122.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bg_img_details" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 164.0
+offset_top = -157.0
+offset_right = 453.0
+offset_bottom = -93.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 16
+text = "No Background"
+fit_content = true
+horizontal_alignment = 1
+metadata/background_name = ""
+
+[node name="bg_vid_edit" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 167.0
+offset_top = 8.0
+offset_right = 449.0
+offset_bottom = 75.0
+grow_horizontal = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Background
+ Video:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="VideoPlayback" type="Control" parent="Control/create_map_panel/bg_vid_edit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 147.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = false
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="clear_bg_vid" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 419.0
+offset_top = 65.0
+offset_right = 449.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="bg_vid_details" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 164.0
+offset_top = 58.0
+offset_right = 453.0
+offset_bottom = 148.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Background Video"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="cover_loop_edit" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -452.0
+offset_top = 8.0
+offset_right = -170.0
+offset_bottom = 75.0
+grow_horizontal = 2
+tooltip_text = "Add a Cover Loop Video
+to this Chart!"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Cover Loop
+ Video:"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="VideoPlayback" type="Control" parent="Control/create_map_panel/cover_loop_edit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 215.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_efg2m")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = false
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="clear_loop" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 65.0
+offset_right = -170.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Remove this chart's cover loop."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="cover_loop_details" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -419.0
+offset_top = 61.0
+offset_right = -203.0
+offset_bottom = 151.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Cover Loop Video"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="cover_loop_hint" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -452.0
+offset_top = 65.0
+offset_right = -422.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 25
+text = "?"
+icon_alignment = 1
+expand_icon = true
+
+[node name="import_from_beatz" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -141.0
+offset_top = -12.0
+offset_right = 141.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!
+(HEAVILY WIP)
+(BG VIDEOS DO NOT YET SAVE)"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Import Existing
+ Notes from .beatz File"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_imported_notes" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 111.0
+offset_top = 65.0
+offset_right = 141.0
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="beatz_details" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -144.5
+offset_top = 58.0
+offset_right = 144.5
+offset_bottom = 117.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Imported Notes"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="metadata_use_check" type="CheckBox" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 205.0
+offset_top = -460.0
+offset_right = 424.0
+offset_bottom = -425.0
+grow_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 22
+text = "Use Song Metadata"
+alignment = 1
+
+[node name="explorer_open_btn" type="Button" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 0
+offset_left = -428.0
+offset_top = -460.0
+offset_right = -199.0
+offset_bottom = -425.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 22
+text = "Open in Explorer"
+
+[node name="save_to_list" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="save_dialogue" type="Panel" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -394.5
+offset_top = -183.5
+offset_right = 394.5
+offset_bottom = 183.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_op3c8")
+
+[node name="setup_lbl" type="RichTextLabel" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -166.0
+offset_top = -144.0
+offset_right = 166.0
+offset_bottom = -104.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 36
+text = "Save / Share"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="saving_to_lbl" type="RichTextLabel" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -361.0
+offset_top = -75.0
+offset_right = 362.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 28
+text = "Saving to:"
+fit_content = true
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="save_to_list" type="Button" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = 10.0
+offset_right = -46.0
+offset_bottom = 69.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Save to List"
+
+[node name="save_copy_to_list" type="Button" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -35.0
+offset_top = 10.0
+offset_right = 320.0
+offset_bottom = 69.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Save Copy to List"
+
+[node name="share_to_bx" type="Button" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = 100.0
+offset_right = 320.0
+offset_bottom = 159.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Share! (As .bx file)"
+
+[node name="back" type="Button" parent="Control/save_to_list"]
+z_index = 4
+layout_mode = 1
+offset_left = -370.0
+offset_top = -234.0
+offset_right = -246.0
+offset_bottom = -175.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Back"
+
+[node name="exit_warn" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="save_dialogue" type="Panel" parent="Control/exit_warn"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -394.5
+offset_top = -183.5
+offset_right = 394.5
+offset_bottom = 183.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_op3c8")
+
+[node name="exit_lbl" type="RichTextLabel" parent="Control/exit_warn"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -166.0
+offset_top = -138.0
+offset_right = 166.0
+offset_bottom = -98.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 36
+text = "Exiting Editor"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="warn_lbl" type="RichTextLabel" parent="Control/exit_warn"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -361.5
+offset_top = -92.0
+offset_right = 361.5
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 36
+text = "Are you sure you want to exit editing {Song name}?
+
+Unsaved edits will be lost."
+fit_content = true
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="exit" type="Button" parent="Control/exit_warn"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -205.0
+offset_top = 65.0
+offset_right = -30.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Exit"
+
+[node name="cancel" type="Button" parent="Control/exit_warn"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 29.0
+offset_top = 65.0
+offset_right = 204.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_fonts/font = ExtResource("3_op3c8")
+theme_override_font_sizes/font_size = 36
+text = "Cancel"
+
+[node name="note_array_panel" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="Panel" type="Panel" parent="Control/note_array_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -351.0
+offset_top = -440.0
+offset_right = 351.0
+offset_bottom = 494.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_cnbw5")
+
+[node name="array" type="CodeEdit" parent="Control/note_array_panel"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -346.0
+offset_top = -435.0
+offset_right = 346.0
+offset_bottom = 489.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Edit the internal Notes Array
+This means once you press enter
+The chart itself will reload with your new values"
+theme = ExtResource("4_cnbw5")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_readonly_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 8
+theme_override_constants/line_spacing = 10
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxEmpty_u6te5")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_efg2m")
+text = "[]"
+emoji_menu_enabled = false
+wrap_mode = 1
+scroll_smooth = true
+minimap_draw = true
+minimap_width = 130
+caret_multiple = false
+code_completion_enabled = true
+indent_size = 8
+indent_automatic = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+
+[node name="n_array_back" type="Button" parent="Control/note_array_panel"]
+layout_mode = 1
+offset_left = -328.0
+offset_top = -486.0
+offset_right = -239.0
+offset_bottom = -443.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="n_array_view_raw" type="Button" parent="Control/note_array_panel"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 34.0
+offset_top = -402.0
+offset_right = 185.0
+offset_bottom = -359.0
+grow_horizontal = 0
+tooltip_text = "View Notes array without filtering null values
+(Might cause significant fps drops)"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 30
+text = "View Raw"
+
+[node name="n_array_submit" type="Button" parent="Control/note_array_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 34.0
+offset_top = -343.0
+offset_right = 185.0
+offset_bottom = -300.0
+grow_horizontal = 0
+tooltip_text = "Reload the Chart with your new edits to the Internal Notes Array"
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 30
+text = "Submit"
+
+[node name="tools" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="Panel" type="Panel" parent="Control/tools"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -508.0
+offset_top = -373.0
+offset_right = 508.0
+offset_bottom = 373.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_cnbw5")
+
+[node name="tools_label" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -58.0
+offset_top = -333.0
+offset_right = 58.0
+offset_bottom = -277.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 40
+text = "Tools"
+fit_content = true
+autowrap_mode = 0
+
+[node name="tools_exit" type="Button" parent="Control/tools"]
+layout_mode = 1
+offset_left = -485.0
+offset_top = -407.0
+offset_right = -410.0
+offset_bottom = -368.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[node name="offset_lbl" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -207.0
+offset_top = -256.0
+offset_right = 207.0
+offset_bottom = -212.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 28
+text = "Offset all notes by specified time"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="offset_all" type="LineEdit" parent="Control/tools"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -76.5
+offset_top = -203.0
+offset_right = 76.5
+offset_bottom = -168.0
+grow_horizontal = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 26
+placeholder_text = "Offset (ms)"
+alignment = 1
+
+[node name="beat_offset_lbl" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -207.0
+offset_top = -117.0
+offset_right = 207.0
+offset_bottom = -73.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "Offset beatlines by specified time"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="beat_offset_lbl2" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -211.0
+offset_top = -82.0
+offset_right = 211.0
+offset_bottom = -38.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 28
+bbcode_enabled = true
+text = "[i](Less = Earlier | More = Later)[/i]"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="beat_offset" type="LineEdit" parent="Control/tools"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -76.5
+offset_top = -50.0
+offset_right = 76.5
+offset_bottom = -15.0
+grow_horizontal = 2
+tooltip_text = "In case your file has empty sound at the start, you can offset the beatlines to align them properly with your file."
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 26
+placeholder_text = "Offset (ms)"
+alignment = 1
+
+[node name="beat_offset_value" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -93.0
+offset_top = -24.0
+offset_right = 93.0
+offset_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 20
+text = "(Current offset: 0.0)"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/tools"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -391.0
+offset_top = 38.0
+offset_right = 391.0
+offset_bottom = 78.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="align_hold_ends" type="Button" parent="Control/tools/HBoxContainer"]
+z_index = 4
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!
+(HEAVILY WIP)
+(BG VIDEOS DO NOT YET SAVE)"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Align Notes by Hold Tails"
+icon_alignment = 2
+expand_icon = true
+
+[node name="align_dbl_notes" type="Button" parent="Control/tools/HBoxContainer"]
+z_index = 4
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!
+(HEAVILY WIP)
+(BG VIDEOS DO NOT YET SAVE)"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Align Notes by Position"
+icon_alignment = 2
+expand_icon = true
+
+[node name="rm_duplicate_notes" type="Button" parent="Control/tools/HBoxContainer"]
+z_index = 4
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!
+(HEAVILY WIP)
+(BG VIDEOS DO NOT YET SAVE)"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Remove Duplicate Notes"
+icon_alignment = 2
+expand_icon = true
+
+[node name="rm_align_info" type="RichTextLabel" parent="Control/tools"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -126.0
+offset_top = 92.0
+offset_right = 126.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 20
+text = "No notes removed/aligned."
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="import_from_beatz" type="Button" parent="Control/tools"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -141.0
+offset_top = 185.0
+offset_right = 141.0
+offset_bottom = 252.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Add a Background Video
+to your Beatzmap!
+(HEAVILY WIP)
+(BG VIDEOS DO NOT YET SAVE)"
+focus_next = NodePath("../rotate_cover")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = " Reimport Existing
+ Notes from .beatz File"
+alignment = 0
+icon_alignment = 2
+expand_icon = true
+
+[node name="clear_imported_notes" type="Button" parent="Control/tools"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 111.0
+offset_top = 263.0
+offset_right = 141.0
+offset_bottom = 293.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate 90 degrees in case your image wasn't oriented properly."
+focus_next = NodePath("../save_btn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = ""
+icon_alignment = 1
+expand_icon = true
+
+[node name="beatz_details" type="RichTextLabel" parent="Control/tools"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -144.5
+offset_top = 255.0
+offset_right = 144.5
+offset_bottom = 314.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No Imported Notes"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/background_name = ""
+
+[node name="help" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="Panel" type="Panel" parent="Control/help"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -508.0
+offset_top = -373.0
+offset_right = 508.0
+offset_bottom = 373.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_cnbw5")
+
+[node name="help_label" type="RichTextLabel" parent="Control/help"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -58.0
+offset_top = -333.0
+offset_right = 58.0
+offset_bottom = -277.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 40
+text = "Editor Help"
+fit_content = true
+autowrap_mode = 0
+
+[node name="overall_help" type="RichTextLabel" parent="Control/help"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -205.5
+offset_top = -277.0
+offset_right = 205.5
+offset_bottom = 54.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 25
+theme_override_font_sizes/bold_font_size = 25
+theme_override_font_sizes/italics_font_size = 14
+bbcode_enabled = true
+text = "To Create a [b]Beatzmap[/b]:
+Add a [b]Song file[/b]
+[i](.mp3, .ogg, .wav)[/i]
+Name your Song
+Add your Username
+Listen to the [b]rhythm[/b]
+Place notes according to the rhythm
+[b]Feel your Rhythm[/b]
+Once finished
+Save and share your [b]beatzmap[/b]
+to the world!"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="keybinds_help" type="RichTextLabel" parent="Control/help"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -96.0
+offset_top = 64.0
+offset_right = 96.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 40
+text = "Keybinds"
+fit_content = true
+autowrap_mode = 0
+
+[node name="binds" type="RichTextLabel" parent="Control/help"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -185.5
+offset_top = 131.0
+offset_right = 185.5
+offset_bottom = 351.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 25
+text = "CRTL+S: Save
+CRTL+SHIFT+S: Share
+CRTL+ALT+S: Save Copy
+CTRL+Q: Quit (No Save)
+CTLR+SHIFT+Q: Save and Quit
+C	: Delete Notes
+Q: View Notes
+E: Place Notes"
+fit_content = true
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="help_exit" type="Button" parent="Control/help"]
+layout_mode = 1
+offset_left = -469.0
+offset_top = -334.0
+offset_right = -377.0
+offset_bottom = -282.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[node name="notes" type="Node2D" parent="."]
+z_index = 4
+y_sort_enabled = true
+
+[node name="note_backdrop" type="Line2D" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+position = Vector2(221, 3)
+points = PackedVector2Array(739, 1080, 739, -211)
+width = 880.5
+gradient = SubResource("Gradient_6utg8")
+antialiased = true
+
+[node name="settings" parent="." instance=ExtResource("22_u6te5")]
+z_index = 9
+layout_mode = 1
+offset_right = -0.00048828125
+
+[node name="back" type="TextureButton" parent="."]
+z_index = 15
+layout_mode = 0
+offset_left = 13.0
+offset_top = -200.0
+offset_right = 177.0
+offset_bottom = -36.0
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(82, 82)
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("8_pee1p")
+texture_pressed = ExtResource("5_o8yew")
+
+[node name="stationary_notes" type="Node2D" parent="."]
+z_index = -2
+
+[node name="noteEffectSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(463, 989)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("19_af0oh")
+
+[node name="noteUpleftSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(574.2, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("6_i5vsu")
+
+[node name="noteDownleftSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(684.2, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("7_3lyd6")
+
+[node name="noteLeftSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(795.2, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("8_pee1p")
+
+[node name="noteDownSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(905.2, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("9_o8yew")
+
+[node name="noteUpSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(1015.2, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("10_u6te5")
+
+[node name="noteRightSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(1124, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("11_efg2m")
+
+[node name="noteDownrightSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(1235, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("12_iis80")
+
+[node name="noteUprightSprite" type="Sprite2D" parent="stationary_notes"]
+z_index = 3
+position = Vector2(1344, 988.3)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("13_06d57")
+
+[node name="lines" type="Sprite2D" parent="stationary_notes"]
+visible = false
+self_modulate = Color(0, 1, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(961, 868)
+scale = Vector2(10, 0.1)
+
+[node name="linemiddle" type="Sprite2D" parent="stationary_notes/lines"]
+top_level = true
+z_index = 101
+position = Vector2(960, 988.2)
+scale = Vector2(15, 0.3)
+texture = ExtResource("14_af0oh")
+
+[node name="lineexact1" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 1, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(960, 978)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="lineexact2" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 1, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(960, 1000)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="lineinsane1" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(1, 0.988235, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(961, 958.9)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="lineinsane2" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(1, 0.988235, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(961, 1018.9)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="lineperfect1" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 0.878431, 1, 1)
+top_level = true
+z_index = 100
+position = Vector2(960, 917.45)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="lineperfect2" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 0.878431, 1, 1)
+top_level = true
+z_index = 100
+position = Vector2(960, 1061.45)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="linegreat1" type="Sprite2D" parent="stationary_notes/lines"]
+top_level = true
+z_index = 100
+position = Vector2(960, 734.45)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+metadata/pos = 643.05
+
+[node name="linegreat2" type="Sprite2D" parent="stationary_notes/lines"]
+top_level = true
+z_index = 100
+position = Vector2(960, 1244.45)
+scale = Vector2(15, 0.15)
+texture = ExtResource("14_af0oh")
+
+[node name="exact_hit_line_debug" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 1, 0, 0.415686)
+top_level = true
+z_index = 100
+position = Vector2(960, 989)
+scale = Vector2(5.47966, 3.7473)
+texture = ExtResource("14_af0oh")
+
+[node name="insane_hit_line_debug" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(1, 1, 0, 0.360784)
+top_level = true
+z_index = 99
+position = Vector2(961, 988.95)
+scale = Vector2(6.111, 10)
+texture = ExtResource("14_af0oh")
+
+[node name="perfect_hit_line_debug" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(0, 0.788235, 1, 0.258824)
+top_level = true
+z_index = 98
+position = Vector2(960, 989.5)
+scale = Vector2(6.947, 24)
+texture = ExtResource("14_af0oh")
+
+[node name="great_hit_line_debug" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(1, 1, 1, 0.0823529)
+top_level = true
+z_index = 97
+position = Vector2(960, 989.5)
+scale = Vector2(9.35, 85)
+texture = ExtResource("14_af0oh")
+
+[node name="linemiss" type="Sprite2D" parent="stationary_notes/lines"]
+self_modulate = Color(1, 0, 0, 1)
+top_level = true
+z_index = 100
+position = Vector2(961, 1376.45)
+scale = Vector2(35, 0.35)
+texture = ExtResource("14_af0oh")
+
+[node name="ColorRect" type="ColorRect" parent="stationary_notes"]
+visible = false
+z_index = 2
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 520.0
+offset_top = 989.0
+offset_right = 1400.0
+offset_bottom = 1164.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0, 0, 0, 1)
+
+[node name="lanes" type="Node2D" parent="."]
+
+[node name="Line2D12" type="Line2D" parent="lanes"]
+position = Vector2(-165, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_efg2m")
+antialiased = true
+
+[node name="Line2D13" type="Line2D" parent="lanes"]
+position = Vector2(-55, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_iis80")
+antialiased = true
+
+[node name="Line2D6" type="Line2D" parent="lanes"]
+position = Vector2(56, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_3lyd6")
+antialiased = true
+
+[node name="Line2D7" type="Line2D" parent="lanes"]
+position = Vector2(167, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_pee1p")
+antialiased = true
+
+[node name="Line2D8" type="Line2D" parent="lanes"]
+position = Vector2(277, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_o8yew")
+antialiased = true
+
+[node name="Line2D9" type="Line2D" parent="lanes"]
+position = Vector2(386, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_u6te5")
+antialiased = true
+
+[node name="Line2D10" type="Line2D" parent="lanes"]
+position = Vector2(495, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_06d57")
+antialiased = true
+
+[node name="Line2D11" type="Line2D" parent="lanes"]
+position = Vector2(605, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 110.0
+gradient = SubResource("Gradient_af0oh")
+antialiased = true
+
+[node name="lanes2" type="Node2D" parent="."]
+
+[node name="Line2D10" type="Line2D" parent="lanes2"]
+position = Vector2(-332, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_cnbw5")
+antialiased = true
+
+[node name="Line2D" type="Line2D" parent="lanes2"]
+position = Vector2(-220, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_cnbw5")
+antialiased = true
+
+[node name="Line2D2" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(112, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_op3c8")
+
+[node name="Line2D6" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(-110, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_l5j4h")
+
+[node name="Line2D7" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(1, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_ukxwk")
+
+[node name="Line2D3" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(221, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_0l4bc")
+
+[node name="Line2D4" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(330, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_i5vsu")
+
+[node name="Line2D8" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(441, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_ruwpr")
+
+[node name="Line2D9" type="Line2D" parent="lanes2"]
+self_modulate = Color(1, 1, 1, 0.878431)
+position = Vector2(550, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_1giqv")
+
+[node name="Line2D5" type="Line2D" parent="lanes2"]
+position = Vector2(660, 0)
+points = PackedVector2Array(739, 1080, 739, 0)
+width = 4.0
+gradient = SubResource("Gradient_cnbw5")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_0l4bc")
+}
+autoplay = "init"
+
+[node name="popups" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_3lyd6")
+}
+
+[node name="album_spin" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_06d57")
+}
+autoplay = "cover_spin"
+
+[node name="loading_text" type="RichTextLabel" parent="."]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 12
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -104.75
+offset_top = -101.0
+offset_right = 104.75
+offset_bottom = -43.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 19
+theme_override_font_sizes/normal_font_size = 45
+text = "Loading..."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="Popup" type="Popup" parent="."]
+transparent_bg = true
+oversampling_override = 1.0
+title = "Are you sure>"
+initial_position = 2
+size = Vector2i(480, 320)
+always_on_top = true
+
+[node name="VBoxContainer" type="Panel" parent="Popup"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -43.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_cnbw5")
+
+[node name="title" type="RichTextLabel" parent="Popup/VBoxContainer"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -121.0
+offset_top = 44.0
+offset_right = 121.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/normal_font_size = 28
+text = "You have unsaved Changes!
+Are you sure you want to quit?"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Popup/VBoxContainer"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -107.0
+offset_bottom = -41.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="cancel_btn" type="Button" parent="Popup/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120.275, 43.375)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"
+
+[node name="Label" type="Label" parent="Popup/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "   "
+
+[node name="save_and_quit_btn" type="Button" parent="Popup/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120.275, 43.375)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Save and
+Quit"
+
+[node name="Label2" type="Label" parent="Popup/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "   "
+
+[node name="quit_btn" type="Button" parent="Popup/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120.275, 43.375)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Quit"
+
+[connection signal="save" from="." to="." method="_on_save"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="finished" from="song" to="." method="_on_song_finished"]
+[connection signal="value_changed" from="Control/zoom_scroll" to="." method="_on_zoom_scroll_value_changed"]
+[connection signal="pressed" from="Control/editor_controls/place_btn" to="." method="_on_place_btn_pressed"]
+[connection signal="pressed" from="Control/editor_controls/reload" to="." method="_on_reload_pressed"]
+[connection signal="pressed" from="Control/editor_controls/dlt_btn" to="." method="_on_dlt_btn_pressed"]
+[connection signal="pressed" from="Control/editor_controls/view_btn" to="." method="_on_view_btn_pressed"]
+[connection signal="pressed" from="Control/editor_controls/tools" to="." method="_on_tools_pressed"]
+[connection signal="pressed" from="Control/editor_controls/view_notes_array" to="." method="_on_view_notes_array_pressed"]
+[connection signal="pressed" from="Control/editor_controls/settings_btn" to="." method="_on_settings_btn_pressed"]
+[connection signal="pressed" from="Control/editor_controls/help_btn" to="." method="_on_help_btn_pressed"]
+[connection signal="pressed" from="Control/editor_controls/grid_snap_switch" to="." method="_on_grid_snap_switch_pressed"]
+[connection signal="pressed" from="Control/editor_controls/redo_btn" to="." method="redo"]
+[connection signal="pressed" from="Control/editor_controls/undo_btn" to="." method="undo"]
+[connection signal="pressed" from="Control/chart_btns/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Control/chart_btns/playtest" to="." method="_on_playtest_pressed"]
+[connection signal="drag_ended" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_drag_ended"]
+[connection signal="value_changed" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_value_changed"]
+[connection signal="pressed" from="Control/chart_controls/exit" to="." method="_on_exit_warn_pressed"]
+[connection signal="pressed" from="Control/chart_controls/save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="Control/chart_controls/edit_meta" to="." method="_on_edit_meta_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/save_btn" to="." method="_on_save_meta_btn_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/cancel_btn" to="." method="_on_cancel_btn_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/diff_texture_edit" to="." method="_on_diff_texture_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_diff" to="." method="_on_clear_diff_texture_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/song_file_select" to="." method="_on_edit_song_file_select_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/album_cover_edit" to="." method="_on_album_cover_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/fetch_cover" to="." method="_on_fetch_cover_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/rotate_cover" to="." method="_on_rotate_cover_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/bg_img_edit" to="." method="_on_bg_img_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_bg" to="." method="_on_clear_bg_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/bg_vid_edit" to="." method="_on_bg_vid_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/search_bg_vid" to="." method="_on_search_bg_vid_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_bg_vid" to="." method="_on_clear_bg_vid_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/cover_loop_edit" to="." method="_on_cover_loop_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_loop" to="." method="_on_clear_loop_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/cover_loop_hint" to="." method="_on_clear_loop_pressed"]
+[connection signal="toggled" from="Control/edit_meta_cont/metadata_use_check" to="." method="_on_edit_metadata_use_check_toggled"]
+[connection signal="pressed" from="Control/edit_meta_cont/explorer_open_btn" to="." method="_on_explorer_open_btn_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/complete_setup_btn" to="." method="_on_complete_setup_btn_pressed"]
+[connection signal="text_changed" from="Control/create_map_panel/chart_name_edit" to="." method="_on_chart_name_edit_text_changed"]
+[connection signal="pressed" from="Control/create_map_panel/diff_texture_edit" to="." method="_on_diff_texture_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_diff" to="." method="_on_clear_diff_texture_pressed"]
+[connection signal="text_changed" from="Control/create_map_panel/bpm_edit" to="." method="_on_bpm_edit_text_changed"]
+[connection signal="pressed" from="Control/create_map_panel/song_file_select" to="." method="_on_song_file_select_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/album_cover_edit" to="." method="_on_album_cover_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/rotate_cover" to="." method="_on_rotate_cover_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/fetch_cover" to="." method="_on_fetch_cover_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/bg_img_edit" to="." method="_on_bg_img_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/bg_vid_edit" to="." method="_on_bg_vid_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_bg_vid" to="." method="_on_clear_bg_vid_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/cover_loop_edit" to="." method="_on_cover_loop_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_loop" to="." method="_on_clear_loop_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/import_from_beatz" to="." method="_on_import_from_beatz_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_imported_notes" to="." method="_on_clear_imported_notes_pressed"]
+[connection signal="toggled" from="Control/create_map_panel/metadata_use_check" to="." method="_on_metadata_use_check_toggled"]
+[connection signal="mouse_entered" from="Control/save_to_list/save_to_list" to="." method="_on_save_to_list_mouse_entered"]
+[connection signal="pressed" from="Control/save_to_list/save_to_list" to="." method="_on_save_to_list_pressed"]
+[connection signal="mouse_entered" from="Control/save_to_list/save_copy_to_list" to="." method="_on_save_copy_to_list_mouse_entered"]
+[connection signal="pressed" from="Control/save_to_list/save_copy_to_list" to="." method="_on_save_copy_to_list_pressed"]
+[connection signal="pressed" from="Control/save_to_list/share_to_bx" to="." method="_on_share_chart_pressed"]
+[connection signal="pressed" from="Control/save_to_list/back" to="." method="_on_saving_back_pressed"]
+[connection signal="pressed" from="Control/exit_warn/exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="Control/exit_warn/cancel" to="." method="_on_cancel_exit_pressed"]
+[connection signal="pressed" from="Control/note_array_panel/n_array_back" to="." method="_on_n_array_back_pressed"]
+[connection signal="pressed" from="Control/note_array_panel/n_array_view_raw" to="." method="_on_n_array_raw_pressed"]
+[connection signal="pressed" from="Control/note_array_panel/n_array_submit" to="." method="_on_n_array_submit"]
+[connection signal="pressed" from="Control/tools/tools_exit" to="." method="_on_tools_exit_pressed"]
+[connection signal="text_changed" from="Control/tools/offset_all" to="." method="_on_offset_all_text_changed"]
+[connection signal="text_submitted" from="Control/tools/offset_all" to="." method="_on_offset_all_text_submitted"]
+[connection signal="text_changed" from="Control/tools/beat_offset" to="." method="_on_beat_offset_text_changed"]
+[connection signal="text_submitted" from="Control/tools/beat_offset" to="." method="_on_beat_offset_text_submitted"]
+[connection signal="pressed" from="Control/tools/HBoxContainer/align_hold_ends" to="." method="_on_align_hold_ends_pressed"]
+[connection signal="pressed" from="Control/tools/HBoxContainer/align_dbl_notes" to="." method="_on_align_dbl_notes_pressed"]
+[connection signal="pressed" from="Control/tools/HBoxContainer/rm_duplicate_notes" to="." method="_on_rm_duplicate_notes_pressed"]
+[connection signal="pressed" from="Control/tools/import_from_beatz" to="." method="_on_import_from_beatz_pressed"]
+[connection signal="pressed" from="Control/tools/clear_imported_notes" to="." method="_on_clear_imported_notes_pressed" binds= [true]]
+[connection signal="pressed" from="Control/help/help_exit" to="." method="_on_help_exit_pressed"]
+[connection signal="edit_show_hold_ends_toggled" from="settings" to="." method="_on_settings_edit_show_hold_ends_toggled"]
+[connection signal="editor_bg_vids_toggled" from="settings" to="." method="_on_settings_editor_bg_vids_toggled"]
+[connection signal="editor_brightness_changed" from="settings" to="." method="_on_settings_editor_brightness_changed"]
+[connection signal="editor_cover_loops_toggled" from="settings" to="." method="_on_settings_editor_cover_loops_toggled"]
+[connection signal="editor_note_backdrop_opacity_changed" from="settings" to="." method="_on_settings_editor_note_backdrop_opacity_changed"]
+[connection signal="note_offset_changed" from="settings" to="." method="_on_settings_note_offset_changed"]
+[connection signal="note_style_changed" from="settings" to="." method="_on_settings_note_style_changed"]
+[connection signal="pressed" from="back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/cancel_btn" to="." method="_on_cancel_quit_btn_pressed"]
+[connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/save_and_quit_btn" to="." method="_on_save_and_quit_btn_pressed"]
+[connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/quit_btn" to="." method="_on_quit_btn_pressed"]

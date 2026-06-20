@@ -361,7 +361,6 @@ func force_fade_out(duration := 0.75) -> void:
 	if _fading or transitioning_to_zero or force_fading:
 		return
 	
-	print("Force fading out visualizer...")
 	force_fading = true
 	force_fade_timer = 0.0
 	force_fade_duration = duration
@@ -369,7 +368,6 @@ func force_fade_out(duration := 0.75) -> void:
 	force_target_right = right_max_values.duplicate()
 
 func force_fade_in():
-	print("Force fading in visualizer...")
 	_fading = false
 	force_fading = false
 	force_fade_timer = 0.0

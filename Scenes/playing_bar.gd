@@ -4,11 +4,12 @@ signal seek_ended(value_changed: bool, ending_value: float)
 signal seek_started(starting_value: float)
 signal seeked(value: float) # value changed
 
+signal going_to_artist(path: String)
 signal randomized
-signal previous_pressed
-signal next_pressed
+signal prev_next_pressed(path: String, prev_next: int)
 signal play_toggled
-signal going_to_song
+signal going_to_song(path: String)
+signal going_to_album(path: String)
 
 signal volume_drag_ended(value_changed: bool, value: float)
 signal volume_changed(value: float)
@@ -17,6 +18,8 @@ signal cover_pressed
 
 ## If true, hovering the left side of the screen just above the progress bar shows a Menu Song Volume slider, changing this slider changes the audio server volume but doesn't save it to settings.
 @export var enable_volume: bool = true
+
+var data
 
 var length: float = 0.0
 var current_pos: float = 0.0
@@ -35,38 +38,80 @@ var len_ms: float:
 	get():
 		return length / 1000
 
+var stream: String
+
 func _ready() -> void:
+	if OS.get_name() == "Android": $mbl.play("mbl_expand")
+	
 	$volume.value = Settings.game.menu_song_vol
 	$volume/Label.text = str(Settings.game.menu_song_vol)
 	if enable_volume: $volume.show()
 	else: $volume.hide()
 
-func set_song(title: String, artist: String, song_length: float, year: int, album: String, cover: Texture2D, cols: Array[Color]):
-	$title_artist_cont/title.text = "[b]%s[/b]" % title
-	$title_artist_cont/artist.text = artist
-	$length.text = "0:00 / " + General.format_time(song_length)
-	length = song_length
+func set_song(data_dict: Dictionary):
+	data = data_dict
+	$title_artist_cont/title.text = "[b]%s[/b]" % data["title"]
+	$title_artist_cont/artist.text = data["artist"]
+	$length.text = "0:00 / " + General.format_time(data["length"])
+	length = data["length"]
 	$playpause.text = ""
 	
-	if year:
-		$year.text = str(year)
-	else: print("No year for ", title)
+	playing = true
 	
-	if album != "":
-		$album.text = "[b]%s[/b]" % album
-	else: print("No album for ", title)
 	
-	if cover != null: 
-		$cover_mask/cover.texture = cover
-		$square_cover.texture = cover
-	else: print("No cover for ", title)
+	$go_to_song.tooltip_text = "Play %s!" % data["path"].get_file()
 	
-	if cols.is_empty():
-		$bg_col.color = Color.WHITE
-		$bg_col_grad.self_modulate = Color.WHITE
+	if data["year"]:
+		$year.text = str(int(data["year"]))
+		$year.show()
 	else: 
-		$bg_col.color = cols.pick_random()
-		$bg_col_grad.self_modulate = $bg_col.color
+		$year.hide()
+		print("No year for ", data["title"])
+	
+	if data["album"] != "":
+		$album.text = "[b]%s[/b]" % data["album"]
+		$album.show()
+	else:
+		$album.hide() 
+		print("No album for ", data["title"])
+	
+	if data["cover"] != null:
+		if data["cover"] is Image:
+			var tex := ImageTexture.create_from_image(data["cover"])
+			$cover_mask/cover.texture = tex
+			$square_cover.texture = tex
+		else:
+			$cover_mask/cover.texture = data["cover"]
+			$square_cover.texture = data["cover"]
+		if not showing: show_cover()
+		$cover_mask/VideoPlayback.close()
+		$cover_mask/VideoPlayback.hide()
+	else: 
+		hide_cover()
+		print("No cover for ", data["title"])
+	
+	if data["cover_loop"] != "" and Settings.misc.cover_loops_playing_bar:
+		$cover_mask/VideoPlayback.close()
+		$cover_mask/VideoPlayback.set_video_path(data["cover_loop"])
+		$cover_mask/VideoPlayback.show()
+		print(data["cover_loop"], " showing")
+	
+	if data["colors"].is_empty():
+		var t = create_tween()
+		t.tween_property($bg_col, "color", Color.WHITE, 0.5)
+		t.set_parallel().tween_property($VideoPlayback2, "modulate",Color.WHITE, 0.5)
+		t.set_parallel().tween_property($bg_col_grad, "self_modukate", Color.WHITE, 0.5)
+		t.set_parallel().tween_property($VideoPlayback, "modulate", Color.WHITE, 0.5)
+	else: 
+		var col = [General.get_dominant_color(data["cover"], 12), General.get_average_color(data["cover"], 16)]
+		var t = create_tween()
+		t.tween_property($bg_col, "color", col[0], 0.5)
+		t.set_parallel().tween_property($VideoPlayback2, "modulate", col[1], 0.5)
+		t.set_parallel().tween_property($bg_col_grad, "self_modulate", col[0], 0.5)
+		t.set_parallel().tween_property($VideoPlayback, "modulate", col[0], 0.5)
+	
+	if data["path"]:
+		stream = ProjectSettings.globalize_path(data["path"])
 
 func set_time(time_s: float = 1.0):
 	current_pos = time_s
@@ -75,12 +120,18 @@ func set_time(time_s: float = 1.0):
 
 func show_cover():
 	$hide.stop()
+	
+	if OS.get_name() == "Windows": $hide.play("show")
+	else: $hide.play("mbl_show")
+	
 	showing = true
-	$hide.play("show")
 
 func hide_cover():
 	$hide.stop()
-	$hide.play("hide")
+	
+	if OS.get_name() == "Windows": $hide.play("hide")
+	else: $hide.play("mbl_hide")
+	
 	showing = false
 
 func _on_progress_value_changed(value: float) -> void:
@@ -101,7 +152,7 @@ func _on_randomize_pressed() -> void:
 
 func _on_previous_pressed() -> void:
 	$previous.release_focus()
-	previous_pressed.emit()
+	prev_next_pressed.emit(stream, -1)
 
 func _on_playpause_pressed() -> void:
 	$playpause.release_focus()
@@ -115,11 +166,19 @@ func _on_playpause_pressed() -> void:
 
 func _on_next_pressed() -> void:
 	$next.release_focus()
-	next_pressed.emit()
+	prev_next_pressed.emit(stream, 1)
 
 func _on_go_to_song_pressed() -> void:
 	$go_to_song.release_focus()
-	going_to_song.emit()
+	going_to_song.emit(stream)
+
+func _on_go_to_album_pressed() -> void:
+	$go_to_album.release_focus()
+	going_to_album.emit(stream)
+
+func _on_go_to_artist_pressed() -> void:
+	$go_to_artist.release_focus()
+	going_to_artist.emit(stream)
 
 func _on_volume_drag_ended(value_changed: bool) -> void:
 	volume_drag_ended.emit(value_changed, $volume.value)
@@ -199,6 +258,7 @@ func _on_cover_mask_focus_entered() -> void:
 			if twe: twe.kill()
 			twe = create_tween()
 			twe.parallel().tween_property($cover_mask/cover, "rotation_degrees", 0.0 if $cover_mask/cover.rotation_degrees < 180.0 else 360.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			twe.parallel().tween_property($cover_mask/VideoPlayback, "rotation_degrees", 0.0 if $cover_mask/VideoPlayback.rotation_degrees < 180.0 else 360.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		2:
 			if twe: twe.kill()
 			$AnimationPlayer.play("rotate")

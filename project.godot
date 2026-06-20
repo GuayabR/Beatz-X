@@ -8,6 +8,10 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Beatz! X."
@@ -17,28 +21,42 @@ config/name_localized={
 config/description="Beatz! X.
 VISUALIZE. YOUR RHYTHM.
 By GuayabR."
-config/version="1.5.0"
+config/version="1.6.0"
 config/tags=PackedStringArray("beatz", "demo", "game", "rhythm")
 run/main_scene="uid://4puupvbpclaw"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.5", "Forward Plus")
 run/flush_stdout_on_print.debug=false
-run/delta_smoothing=false
 boot_splash/image="uid://byed1ljwunwsj"
 config/icon="uid://6cvc1r2mkha7"
 
 [audio]
 
+buses/default_bus_layout="uid://rghy1w6xgfll"
 driver/driver=""
 driver/output_latency=1
 
 [autoload]
 
+DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
+Gamepad_Cursor="*res://addons/GamepadCursor/gamepad_cursor.gd"
+General="*res://Scenes/general.gd"
 Settings="*res://Scenes/settings.gd"
 Beatz="*res://beatz.gd"
-General="*res://Scenes/general.gd"
-DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
-Id3TagParser="*res://addons/Id3TagParser/MP3ID3Tag.gd"
+SceneLoader="*res://Scenes/scene_loader.gd"
+Id3TagParser="*res://addons/Id3TagParser/improved_mp3id3_tag_parser.gd"
+EpicUserDataStore="*res://Scenes/epicuserdatastore.gd"
+AchieveMan="*res://Scenes/achieve_man.gd"
+EOSGRuntime="*res://addons/epic-online-services-godot/runtime.gd"
+HPlatform="*res://addons/epic-online-services-godot/heos/hplatform.gd"
+HAuth="*res://addons/epic-online-services-godot/heos/hauth.gd"
+HAchievements="*res://addons/epic-online-services-godot/heos/hachievements.gd"
+HFriends="*res://addons/epic-online-services-godot/heos/hfriends.gd"
+HStats="*res://addons/epic-online-services-godot/heos/hstats.gd"
+HLeaderboards="*res://addons/epic-online-services-godot/heos/hleaderboards.gd"
+HLobbies="*res://addons/epic-online-services-godot/heos/hlobbies.gd"
+HP2P="*res://addons/epic-online-services-godot/heos/hp2p.gd"
+HSessions="*res://addons/epic-online-services-godot/heos/hsessions.gd"
 
 [debug]
 
@@ -69,13 +87,15 @@ project/assembly_name="Beatz! X."
 movie_writer/video_quality=1.0
 movie_writer/ogv/audio_quality=1.0
 movie_writer/ogv/encoding_speed=2
+naming/node_name_casing=2
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Id3TagParser/plugin.cfg", "res://addons/discord-rpc-gd/plugin.cfg", "res://addons/gde_gozen/plugin.cfg", "res://addons/markdownlabel/plugin.cfg")
+enabled=PackedStringArray("res://addons/GamepadCursor/plugin.cfg", "res://addons/Id3TagParser/plugin.cfg", "res://addons/discord-rpc-gd/plugin.cfg", "res://addons/epic-online-services-godot/plugin.cfg", "res://addons/gde_gozen/plugin.cfg", "res://addons/markdownlabel/plugin.cfg", "res://addons/taskbar_progress/plugin.cfg")
 
 [gui]
 
+theme/default_font_multichannel_signed_distance_field=true
 theme/custom_font="uid://6jhh1vyac4f4"
 
 [input]
@@ -278,14 +298,14 @@ vol_down={
 [input_devices]
 
 pointing/android/enable_long_press_as_right_click=true
-pointing/android/disable_scroll_deadzone=true
 compatibility/legacy_just_pressed_behavior=true
-pointing/emulate_mouse_from_touch=false
+pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
+renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
-anti_aliasing/quality/msaa_2d=1
+textures/lossless_compression/force_png=true
 
 [shader_globals]
 

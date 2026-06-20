@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://l7ksfvfmfm60"]
+[gd_scene load_steps=33 format=3 uid="uid://l7ksfvfmfm60"]
 
 [ext_resource type="Script" uid="uid://0r052n8wuguj" path="res://Scenes/selected_song.gd" id="1_82m22"]
 [ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="2_hv8tc"]
@@ -13,8 +13,11 @@
 [ext_resource type="FontFile" uid="uid://7iq0o14bnlv0" path="res://Resources/misc/helvetica-255/Helvetica-Bold.ttf" id="6_7pdq2"]
 [ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="6_272fv"]
 [ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="7_0y5ll"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="10_7pdq2"]
 [ext_resource type="PackedScene" uid="uid://b5t0lioff7gvs" path="res://Scenes/fps.tscn" id="10_cue5o"]
 [ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="11_bkvc6"]
+[ext_resource type="Shader" uid="uid://cq5ympjwhjr3o" path="res://Resources/misc/note_recolour.gdshader" id="15_0y5ll"]
+[ext_resource type="PackedScene" uid="uid://utqa2rt7vj28" path="res://Scenes/achievement_container.tscn" id="16_mp32e"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_5vy6l"]
 
@@ -260,6 +263,42 @@ tracks/19/keys = {
 "update": 0,
 "values": [Vector2(895, 964)]
 }
+tracks/20/type = "value"
+tracks/20/imported = false
+tracks/20/enabled = true
+tracks/20/path = NodePath("vis_anim/Visualizer:visible")
+tracks/20/interp = 1
+tracks/20/loop_wrap = true
+tracks/20/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/21/type = "value"
+tracks/21/imported = false
+tracks/21/enabled = true
+tracks/21/path = NodePath("Artist:self_modulate")
+tracks/21/interp = 1
+tracks/21/loop_wrap = true
+tracks/21/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/22/type = "value"
+tracks/22/imported = false
+tracks/22/enabled = true
+tracks/22/path = NodePath("vis_anim/shadow:modulate")
+tracks/22/interp = 1
+tracks/22/loop_wrap = true
+tracks/22/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_tyr5u"]
 resource_name = "back_from_stgs"
@@ -418,6 +457,30 @@ tracks/12/keys = {
 "transitions": PackedFloat32Array(0.143587, 1),
 "update": 0,
 "values": [Vector2(895, 1140), Vector2(895, 964)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("vis_anim/Visualizer:visible")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("vis_anim/shadow:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.033333335, 1),
+"transitions": PackedFloat32Array(0.59460354, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_dh6jl"]
@@ -578,6 +641,30 @@ tracks/12/keys = {
 "transitions": PackedFloat32Array(4, 1),
 "update": 0,
 "values": [Vector2(895, 964), Vector2(895, 1140)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("vis_anim/Visualizer:visible")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0.93333334),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("vis_anim/shadow:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0.26666668, 0.96666664),
+"transitions": PackedFloat32Array(6.964401, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_82m22"]
@@ -950,12 +1037,30 @@ tracks/0/keys = {
 "update": 0,
 "values": [0.0, 6.28319]
 }
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("vis_anim/shadow/VideoPlayback:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 30),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -6.283185307179586]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_272fv"]
 _data = {
 &"RESET": SubResource("Animation_dar74"),
 &"spin": SubResource("Animation_rjvkx")
 }
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mp32e"]
+shader = ExtResource("15_0y5ll")
+shader_parameter/hue_offset = 0.0
+shader_parameter/brightness = 1.0
+shader_parameter/red_threshold = 0.2
 
 [sub_resource type="Animation" id="Animation_bkvc6"]
 length = 0.001
@@ -1081,6 +1186,78 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(960, 540)
 
+[node name="shadow" type="TextureRect" parent="vis_anim"]
+self_modulate = Color(0, 0, 0, 1)
+clip_children = 1
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -320.0
+offset_right = 320.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.55, 0.55)
+pivot_offset = Vector2(320, 320)
+mouse_filter = 2
+texture = ExtResource("6_272fv")
+expand_mode = 1
+
+[node name="VideoPlayback" type="Control" parent="vis_anim/shadow"]
+self_modulate = Color(1, 1, 1, 0.665)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_right = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(640, 320)
+script = ExtResource("10_7pdq2")
+path = "uid://bbev4vad84hqv"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 6.0
+pitch_adjust = false
+loop = true
+blend_mode = 4
+brightness_alpha_blend = true
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="VideoPlayback2" type="Control" parent="vis_anim/shadow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_right = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+pivot_offset = Vector2(640, 320)
+script = ExtResource("10_7pdq2")
+path = "uid://bbev4vad84hqv"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 6.0
+pitch_adjust = false
+loop = true
+blend_mode = 4
+brightness_alpha_blend = true
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
 [node name="Visualizer" parent="vis_anim" instance=ExtResource("4_cue5o")]
 z_index = 2
 layout_mode = 1
@@ -1195,6 +1372,7 @@ texture = ExtResource("2_hv8tc")
 expand_mode = 1
 
 [node name="shadow" type="TextureRect" parent="cover_anim/circlemask/cover"]
+visible = false
 modulate = Color(0, 0, 0, 0.407843)
 z_index = -1
 layout_mode = 1
@@ -1214,6 +1392,34 @@ pivot_offset = Vector2(320, 320)
 mouse_filter = 2
 texture = ExtResource("6_272fv")
 expand_mode = 1
+
+[node name="VideoPlayback" type="Control" parent="cover_anim/circlemask"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -320.0
+offset_right = 320.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(320, 320)
+script = ExtResource("10_7pdq2")
+path = null
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = null
+pitch_adjust = null
+loop = true
+blend_mode = null
+brightness_alpha_blend = null
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -1289,11 +1495,12 @@ autoplay = "spin"
 [node name="settings" parent="." instance=ExtResource("11_bkvc6")]
 z_index = 1
 layout_mode = 1
-offset_right = 0.00390625
+offset_right = 0.0036621094
 mouse_filter = 2
 
 [node name="back" type="TextureButton" parent="."]
 z_index = 5
+material = SubResource("ShaderMaterial_mp32e")
 layout_mode = 1
 offset_left = 50.0
 offset_top = 50.0
@@ -1303,7 +1510,6 @@ scale = Vector2(0.8, 0.8)
 pivot_offset = Vector2(82, 82)
 mouse_default_cursor_shape = 2
 texture_normal = ExtResource("2_rjvkx")
-texture_pressed = ExtResource("3_272fv")
 
 [node name="TransitionRect" type="TextureRect" parent="."]
 self_modulate = Color(1, 1, 1, 0)
@@ -1321,6 +1527,11 @@ texture = ExtResource("3_dar74")
 expand_mode = 1
 stretch_mode = 6
 
+[node name="achievement_cont" parent="." instance=ExtResource("16_mp32e")]
+z_index = 1
+layout_mode = 1
+mouse_filter = 2
+
 [node name="fps" parent="." instance=ExtResource("10_cue5o")]
 z_index = 10
 layout_mode = 1
@@ -1336,6 +1547,7 @@ offset_bottom = -15.0
 grow_horizontal = 0
 grow_vertical = 0
 pivot_offset = Vector2(13.5, 13.5)
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -1384,7 +1596,7 @@ anchor_bottom = 1.0
 offset_left = -126.0
 offset_top = -261.0
 offset_right = 126.0
-offset_bottom = -149.99939
+offset_bottom = -149.99878
 grow_horizontal = 2
 grow_vertical = 0
 mouse_force_pass_scroll_events = false
@@ -1406,7 +1618,7 @@ anchor_bottom = 1.0
 offset_left = -65.0
 offset_top = -116.0
 offset_right = 64.999756
-offset_bottom = -37.996826
+offset_bottom = -37.99695
 grow_horizontal = 2
 grow_vertical = 0
 mouse_force_pass_scroll_events = false
@@ -1435,6 +1647,7 @@ theme_override_font_sizes/font_size = 40
 text = "Settings"
 
 [connection signal="finished" from="song" to="." method="_on_song_finished"]
+[connection signal="cover_loops_toggled" from="settings" to="." method="_on_settings_cover_loops_toggled"]
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]
 [connection signal="button_up" from="Play" to="." method="_on_play_button_up"]
 [connection signal="pressed" from="Edit" to="." method="_on_edit_pressed"]

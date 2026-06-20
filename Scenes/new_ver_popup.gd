@@ -14,14 +14,15 @@ func check_for_update(user_wanted_to: bool = false):
 	voluntary = user_wanted_to
 	request.request(General.GITHUB_REL_URL)
 
+@warning_ignore("unused_parameter")
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if not Settings.game.show_vpopup and not voluntary: 
 		print("User has already seen the popup and chose to not show again")
 		return
 	
-	print(result)
-	print(response_code)
-	print(headers)
+	#print(result)
+	#print(response_code)
+	#print(headers)
 	
 	if response_code != 200:
 		$changelog.text = "Failed to fetch changelog (Error %d)" % response_code
@@ -47,8 +48,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	elif new_ver != Settings.game.version and new_ver != General.VERSION:
 		if new_ver > General.VERSION: print("User hasn't seen the popup nor do they have this version")
 		elif new_ver < General.VERSION: print("Users version is somehow higher than the release version but has not seen the popup")
-	
-	print(JSON.stringify(json, "	"))
 	
 	$title.text = "[b]" + json.name + "[/b]"
 	
@@ -77,7 +76,6 @@ func _on_ok_pressed() -> void:
 func _on_changelog_meta_clicked(meta: Variant) -> void:
 	$changelog.release_focus()
 	OS.shell_open(meta)
-	print(meta)
 
 func _on_download_pressed() -> void:
 	$HBoxContainer/download.release_focus()

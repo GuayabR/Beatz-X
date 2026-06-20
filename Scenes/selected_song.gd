@@ -7,12 +7,15 @@ var selected_title: String
 var selected_artist: String
 var selected_album: String
 var selected_cover: Image
+var selected_cover_path: String
 var selected_year: int
 
 var selected_background: Image
 var selected_background_name: String
 
 var background_vid_path: String = ""
+
+var cover_loop_vid_path: String = ""
 
 var selected_beat_offset: float
 
@@ -48,7 +51,6 @@ var screen: String = "song"
 
 func _process(delta: float):
 	if $song.playing and $song.get_playback_position() >= preview_end and not fading:
-		print("looping back")
 		if fade_out:
 			_fade_out_and_loop()
 		else:
@@ -105,34 +107,118 @@ func _ready() -> void:
 	else:
 		$AnimationPlayer.play("load_song")
 	
-	print($Title.pivot_offset, $Title.size)
 	$Title.text = str(selected_title)
 	$Artist.text = str(selected_artist)
 	
 	$CenterContainer/scores.beatz_file = selected_beatz_path
 	$CenterContainer/scores._set_items()
 	
+	if not selected_cover:
+		printerr("Selected cover is null using default")
+		selected_cover = preload("res://Resources/misc/noCover.png").get_image()
+	
 	await get_tree().process_frame
 	
 	$Title.pivot_offset.x = $Title.size.x / 2
-	print($Title.pivot_offset, $Title.size)
 	
 	$Artist.pivot_offset.x = $Artist.size.x / 2
-	print($Artist.pivot_offset, $Artist.size)
 	
 	$cover_anim/circlemask/cover.texture = ImageTexture.create_from_image(selected_cover)
 	$bg_cover_anim/bg_cover.texture = ImageTexture.create_from_image(selected_cover)
 	
+	if cover_loop_vid_path != "":
+		cover_loop_vid_path = ProjectSettings.globalize_path(cover_loop_vid_path)
+		$cover_anim/circlemask/VideoPlayback.set_video_path(cover_loop_vid_path)
+	else:
+		$cover_anim/circlemask/VideoPlayback.hide()
+	
 	var extracted_colors: Array[Color] = General.extract_dominant_colors(selected_cover)
 	$vis_anim/Visualizer.colors = extracted_colors
 	colors = extracted_colors
+	
+	if selected_cover:
+		var brightest_color: Color = General.get_average_color(selected_cover)
+		
+		$vis_anim/shadow/VideoPlayback.modulate = brightest_color
+		
+		var colored_sb = StyleBoxFlat.new()
+		colored_sb.bg_color = brightest_color # background color
+		colored_sb.bg_color.a = 0.463
+		colored_sb.corner_radius_top_left = 8
+		colored_sb.corner_radius_top_right = 4
+		colored_sb.corner_radius_bottom_left = 4
+		colored_sb.corner_radius_bottom_right = 8
+		colored_sb.set_border_width_all(2)
+		colored_sb.border_color = Color.WHITE
+		colored_sb.set_expand_margin_all(3.0)
+		colored_sb.set_content_margin_all(4.0)
+		colored_sb.corner_detail = 5
+		
+		var pressed_colored_sb = StyleBoxFlat.new()
+		pressed_colored_sb.bg_color = brightest_color # background color
+		pressed_colored_sb.bg_color.a = 0.95
+		pressed_colored_sb.corner_radius_top_left = 8
+		pressed_colored_sb.corner_radius_top_right = 4
+		pressed_colored_sb.corner_radius_bottom_left = 4
+		pressed_colored_sb.corner_radius_bottom_right = 8
+		pressed_colored_sb.set_border_width_all(2)
+		pressed_colored_sb.border_color = Color.WHITE
+		pressed_colored_sb.set_expand_margin_all(3.0)
+		pressed_colored_sb.set_content_margin_all(4.0)
+		pressed_colored_sb.corner_detail = 5
+		
+		var hover_colored_sb = StyleBoxFlat.new()
+		hover_colored_sb.bg_color = brightest_color # background color
+		hover_colored_sb.bg_color.a = 0.55
+		hover_colored_sb.corner_radius_top_left = 8
+		hover_colored_sb.corner_radius_top_right = 4
+		hover_colored_sb.corner_radius_bottom_left = 4
+		hover_colored_sb.corner_radius_bottom_right = 8
+		hover_colored_sb.set_border_width_all(2)
+		hover_colored_sb.border_color = Color.WHITE
+		hover_colored_sb.set_expand_margin_all(3.0)
+		hover_colored_sb.set_content_margin_all(4.0)
+		hover_colored_sb.corner_detail = 5
+		
+		var focus_colored_sb = StyleBoxFlat.new()
+		focus_colored_sb.bg_color = brightest_color # background color
+		focus_colored_sb.bg_color.a = 1.0
+		focus_colored_sb.corner_radius_top_left = 8
+		focus_colored_sb.corner_radius_top_right = 4
+		focus_colored_sb.corner_radius_bottom_left = 4
+		focus_colored_sb.corner_radius_bottom_right = 8
+		focus_colored_sb.set_border_width_all(2)
+		focus_colored_sb.border_color = Color.WHITE
+		focus_colored_sb.set_expand_margin_all(3.0)
+		focus_colored_sb.set_content_margin_all(4.0)
+		focus_colored_sb.corner_detail = 5
+		
+		$Play.add_theme_stylebox_override("normal", colored_sb)
+		$Edit.add_theme_stylebox_override("normal", colored_sb)
+		$go_to_stgs.add_theme_stylebox_override("normal", colored_sb)
+		
+		$Play.add_theme_stylebox_override("pressed", pressed_colored_sb)
+		$Edit.add_theme_stylebox_override("pressed", pressed_colored_sb)
+		$go_to_stgs.add_theme_stylebox_override("pressed", pressed_colored_sb)
+		
+		$Play.add_theme_stylebox_override("hover", hover_colored_sb)
+		$Edit.add_theme_stylebox_override("hover", hover_colored_sb)
+		$go_to_stgs.add_theme_stylebox_override("hover", hover_colored_sb)
+		
+		$Play.add_theme_stylebox_override("focus", focus_colored_sb)
+		$Edit.add_theme_stylebox_override("focus", focus_colored_sb)
+		$go_to_stgs.add_theme_stylebox_override("focus", focus_colored_sb)
+	else:
+		$vis_anim/shadow/VideoPlayback.modulate = Color.WHITE
+	
+	$vis_anim/shadow/VideoPlayback2.modulate = colors.pick_random() if not colors.is_empty() else Color.WHITE
+	
 	
 	var diff_texture := "" 
 	if not selected_diff_texture: 
 		diff_texture = "res://Resources/Misc/" + selected_difficulty + "_label.png"
 		$cover_anim/circlemask/difficulty_label.texture = load(diff_texture)
 	else: 
-		print("diff tex ", selected_diff_texture)
 		diff_texture = selected_diff_texture
 		if FileAccess.file_exists(diff_texture):
 			var img := Image.new()
@@ -201,8 +287,6 @@ func _notification(what: int) -> void:
 func _input(event: InputEvent) -> void:
 	if not get_viewport().gui_get_focus_owner() and event.is_action_pressed("ui_cancel") or event.is_action_pressed("controller-back"):
 		_on_back_pressed()
-	elif screen == "song" and event.is_action_pressed("ui_accept") or event.is_action_pressed("controller-accept"):
-		_on_play_button_up()
 	elif event.is_action_pressed("controller-pause"):
 		_on_go_to_stgs_pressed()
 
@@ -214,13 +298,31 @@ func _on_play_button_up() -> void:
 		$AnimationPlayer.play("play_song", -1, 250.0)
 	else:
 		$AnimationPlayer.play("play_song")
-		
+
 		var tween := create_tween()
 		tween.tween_property($song, "volume_db", -80.0, 1.0)
-		await get_tree().create_timer(1.0).timeout
-		
-	var game = General.MAIN.instantiate()
-	
+
+	SceneLoader.load_scene(General.MAIN)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
+	# speed up animation if it's still playing
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+
+	await get_tree().create_timer(0.65).timeout
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var game = SceneLoader.loaded_scene.instantiate()
+
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
 	game.set("song", $song.stream)
@@ -230,6 +332,7 @@ func _on_play_button_up() -> void:
 	game.set("selected_background", selected_background)
 	game.set("selected_background_name", selected_background_name)
 	game.set("background_vid_path", background_vid_path)
+	game.set("cover_loop_vid_path", cover_loop_vid_path)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
 	game.set("year", selected_year)
@@ -242,31 +345,44 @@ func _on_play_button_up() -> void:
 	game.set("chart_name", selected_chart_name)
 	game.set("start_wait", start_wait)
 	game.set("colors", colors)
-	
+
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = game
 
+@onready var loading_text: RichTextLabel = $loading_text
+
 func _on_back_pressed() -> void:
 	$back.release_focus()
+	
+	var playing_anim: bool = false
+	
 	if $AnimationPlayer.is_playing():
-		print("playing")
-		await $AnimationPlayer.animation_finished
+		playing_anim = true
 	
 	if screen == "song":
-		var menu := preload("res://Scenes/main_menu.tscn").instantiate()
-		menu.set("current_menu", "list")
+		SceneLoader.load_scene("res://Scenes/main_menu.tscn")
 		
 		var tween := create_tween()
-		tween.tween_property($song, "volume_db", -80.0, 1.25)
+		tween.tween_property($song, "volume_db", -80.0, 1.25).set_ease(Tween.EASE_IN)
+		tween.set_parallel().tween_property($song, "pitch_scale", 0.001, 1.2)
+		
+		var progress_update := func():
+			while SceneLoader.is_loading():
+				loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+				await get_tree().process_frame
+			loading_text.text = "Loading... 100%"
+
+		progress_update.call()
 		
 		if Settings.misc.reduce_motion:
 			$AnimationPlayer.play("play_song", -1, 250.0)
 		else:
-			$AnimationPlayer.play("play_song")
+			$AnimationPlayer.play("play_song", 0.2 if playing_anim else -1.0)
 			await get_tree().create_timer(1.0).timeout
 		
-		
+		var menu = SceneLoader.loaded_scene.instantiate()
+		menu.set("current_menu", "list")
 		
 		get_tree().root.add_child(menu)
 		get_tree().current_scene.queue_free()
@@ -286,7 +402,7 @@ func _on_go_to_stgs_pressed() -> void:
 	screen = "settings"
 
 func _on_edit_pressed() -> void:
-	var edit = General.EDITOR.instantiate()
+	var edit = load(General.EDITOR).instantiate()
 	
 	edit.set("selected_stream", $song.stream)
 	edit.set("selected_stream_path", selected_stream_path)
@@ -316,6 +432,7 @@ func _on_edit_pressed() -> void:
 	edit.set("selected_background_name", selected_background_name)
 	
 	edit.set("background_vid_path", background_vid_path)
+	edit.set("cover_loop_vid_path", cover_loop_vid_path)
 	
 	edit.set("selected_beatz_path", selected_beatz_path)
 	
@@ -333,3 +450,12 @@ func _on_edit_pressed() -> void:
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
+
+
+func _on_settings_cover_loops_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		$cover_anim/circlemask/VideoPlayback.play()
+		$cover_anim/circlemask/VideoPlayback.show()
+	else:
+		$cover_anim/circlemask/VideoPlayback.pause()
+		$cover_anim/circlemask/VideoPlayback.hide()

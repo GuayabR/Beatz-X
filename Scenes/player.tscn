@@ -1,0 +1,113 @@
+[gd_scene load_steps=5 format=3 uid="uid://pbsia0adt3y8"]
+
+[ext_resource type="Shader" uid="uid://diisx1xhywd23" path="res://Resources/misc/gdblending.gdshader" id="1_cvnsp"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="1_v0iea"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_cvnsp"]
+blend_mode = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cvnsp"]
+shader = ExtResource("1_cvnsp")
+
+[node name="Main" type="Control"]
+self_modulate = Color(0, 0, 1, 1)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="scene" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="scene"]
+visible = false
+z_index = -1
+material = SubResource("CanvasItemMaterial_cvnsp")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.4649247, 0, 0.34580213, 0.194)
+
+[node name="VideoPlayback" type="Control" parent="scene"]
+modulate = Color(1, 0, 0.70420504, 1)
+material = SubResource("ShaderMaterial_cvnsp")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 3.1415927
+pivot_offset = Vector2(960, 540)
+script = ExtResource("1_v0iea")
+path = "uid://bbev4vad84hqv"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 1.6
+pitch_adjust = false
+loop = true
+blend_mode = 4
+brightness_alpha_blend = true
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="VideoPlayback2" type="Control" parent="scene"]
+modulate = Color(1, 0, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(960, 540)
+script = ExtResource("1_v0iea")
+path = "uid://bbev4vad84hqv"
+enable_audio = false
+audio_speed_to_sync = null
+enable_auto_play = true
+playback_speed = 1.6
+pitch_adjust = false
+loop = true
+blend_mode = 4
+brightness_alpha_blend = true
+color_profile = null
+debug = null
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1144.0
+offset_top = 33.0
+offset_right = 181.0
+offset_bottom = 39.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Panel"]
+layout_mode = 0
+offset_left = -1144.0
+offset_top = -33.0
+offset_right = -184.0
+offset_bottom = 507.0
+
+[node name="SubViewport" type="SubViewport" parent="Panel/SubViewportContainer"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(960, 540)
+render_target_update_mode = 4

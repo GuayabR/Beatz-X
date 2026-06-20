@@ -1,0 +1,1859 @@
+[gd_scene load_steps=13 format=3 uid="uid://cgw81xrx28i5q"]
+
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_a7pkj"]
+[ext_resource type="Script" uid="uid://do6awrxpel5i7" path="res://Scenes/settings_scn.gd" id="1_udf7v"]
+[ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="2_udf7v"]
+[ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="3_l0pgo"]
+[ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="4_7le30"]
+[ext_resource type="Texture2D" uid="uid://c8j07g2itxkeh" path="res://Resources/Arrows/dance.png" id="5_4gs0j"]
+[ext_resource type="Texture2D" uid="uid://owb022syma0y" path="res://Resources/Arrows/techno.png" id="6_kbil8"]
+[ext_resource type="Texture2D" uid="uid://c5xoinmryyr1n" path="res://Resources/Arrows/para.png" id="7_6s4xg"]
+[ext_resource type="PackedScene" uid="uid://br1c31yobid10" path="res://Scenes/circle_note_settings.tscn" id="8_remi2"]
+[ext_resource type="PackedScene" uid="uid://df322jlo7g3if" path="res://Scenes/Tools/eq.tscn" id="9_bfr5k"]
+[ext_resource type="PackedScene" uid="uid://cb51l1suj4oox" path="res://Scenes/profile_small.tscn" id="10_k8428"]
+[ext_resource type="PackedScene" uid="uid://o15qeacsm4vf" path="res://Scenes/slogan.tscn" id="11_qj2da"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_udf7v")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = -100.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(860, 440)
+theme_override_font_sizes/font_size = 25
+current_tab = 2
+
+[node name="Game" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Game"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 19.0
+offset_right = -270.0
+offset_bottom = 569.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="note_speed_value_lbl" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Speed: 10.0 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_speed_value_edit" type="LineEdit" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("1_a7pkj")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="note_speed_edit" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+min_value = 1.0
+max_value = 50.0
+step = 0.01
+value = 10.0
+
+[node name="visualizer_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Visualizer"
+
+[node name="space17" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_vids_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Videos in Song"
+
+[node name="space18" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_vids_edit_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Background Videos in Editor"
+
+[node name="space27" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="cover_loops_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Cover Loops are Looped Animations that appear
+instead of a songs Album Cover.
+Not all songs include Cover Loops."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Cover Loops"
+
+[node name="space19" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="speed_label" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Game Speed ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="game_speed_edit" type="LineEdit" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+tooltip_text = "The speed of the game (like a speedhack, useful if you wanna practice, or give yourself a challenge)"
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+text = "1.0"
+placeholder_text = "Note spawn time offset (in ms)"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="bg_pulse_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the background pulse at all."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Background Pulses to Music"
+
+[node name="space23" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_vid_pulse_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the background pulse at all."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Background Video Pulses to Music"
+
+[node name="bg_pulse_lbl" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Pulse Strength: 16.0x ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="bg_pulse_slider" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "How fast or reactive should the background pulse to the song."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+min_value = 1.0
+step = 0.5
+value = 16.0
+scrollable = false
+
+[node name="bg_vid_pulse_lbl" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Video Pulse Strength: 8.0x ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="bg_vid_pulse_slider" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "How fast or reactive should the background pulse to the song."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+min_value = 1.0
+step = 0.5
+value = 8.0
+scrollable = false
+
+[node name="bg_img_add" type="Button" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Add New Background Image"
+icon_alignment = 2
+expand_icon = true
+
+[node name="space15" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 3)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_drop" type="OptionButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(750, 139.02)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/icon_max_width = 250
+theme_override_font_sizes/font_size = 32
+icon_alignment = 2
+expand_icon = true
+selected = 0
+item_count = 2
+popup/item_0/text = "Default"
+popup/item_0/icon = ExtResource("3_l0pgo")
+popup/item_0/id = 0
+popup/item_1/id = 1
+popup/item_1/separator = true
+
+[node name="space16" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 3)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_delete" type="Button" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Delete Current Background Image"
+icon_alignment = 2
+expand_icon = true
+
+[node name="bg_img_dlt_confirmation" type="HBoxContainer" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(750, 58.515)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+
+[node name="bg_img_delete_confirm" type="Button" parent="TabContainer/Game/VBoxContainer/bg_img_dlt_confirmation"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(672, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 40
+text = "Delete bg_name?"
+text_overrun_behavior = 3
+clip_text = true
+icon_alignment = 2
+expand_icon = true
+
+[node name="space17" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer/bg_img_dlt_confirmation"]
+custom_minimum_size = Vector2(-8.28, 0)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="bg_img_delete_cancel" type="Button" parent="TabContainer/Game/VBoxContainer/bg_img_dlt_confirmation"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("4_7le30")
+theme_override_font_sizes/font_size = 40
+text = ""
+icon_alignment = 2
+expand_icon = true
+
+[node name="menu_bg_brightness_label" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (Main Menu): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="menu_bg_brightness_slider" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="bg_brightness_label" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (In Game): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="bg_brightness_slider" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="note_backdrop_brightness" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Notes Backdrop Opacity (In Game): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_backdrop_brightness_slider" type="HSlider" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Differentiate the notes from the background
+by changing the backdrop opacity."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="bg_colour_toggle" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Should the Background and
+BG Visualizer be colored based on
+the album cover.
+Turning this off will colour them purple."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+button_pressed = true
+text = "Colour In Game Background
+based on Album Cover"
+
+[node name="space28" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="reduce_motion_check" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Disables animations."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Reduce Motion"
+
+[node name="space5" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="animated_scrolls_check" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Smooth Scrolling"
+
+[node name="space13" type="RichTextLabel" parent="TabContainer/Game/VBoxContainer"]
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="show_chart_alignment" type="CheckButton" parent="TabContainer/Game/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Show Chart Alignment "
+
+[node name="Editor" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Editor"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 287.0
+offset_right = -270.0
+offset_bottom = -325.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="hold_thresh_to_rm_lbl" type="RichTextLabel" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Editor Hold Note Minimum to Remove: 10.0 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="hold_thresh_to_rm_edit" type="HSlider" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How short you can make the hold time (in ms) of a note in the editor
+before it is considered a regular note."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+min_value = 5.0
+max_value = 75.0
+step = 0.01
+value = 10.0
+
+[node name="editor_bg_brightness_label" type="RichTextLabel" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Background Brightness (Editor): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="editor_bg_brightness_slider" type="HSlider" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="editor_note_backdrop_brightness" type="RichTextLabel" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Notes Backdrop Opacity (Editor): 50% ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="editor_note_backdrop_brightness_slider" type="HSlider" parent="TabContainer/Editor/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(710, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Differentiate the notes from the background
+by changing the backdrop opacity."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.5
+value = 50.0
+scrollable = false
+
+[node name="Display" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Display"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 73.0
+offset_right = -270.0
+offset_bottom = -69.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="fpsCheck" type="CheckButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Show FPS"
+
+[node name="space11" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="avrg_fps_check" type="CheckButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The engine automatically averages the FPS every second.
+This stops that and updates the FPS counter every frame without averaging."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+text = "Accurate FPS"
+
+[node name="space20" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="advanced_fps_check" type="CheckButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The engine automatically averages the FPS every second.
+This stops that and updates the FPS counter every frame without averaging."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 50
+button_pressed = true
+text = "Advanced FPS Options"
+
+[node name="fps_label" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Max FPS ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_options" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 0
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="fps_main_menu_lbl" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Main Menu) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_main_menu_options" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 4
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="fps_main_lbl" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Song) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_main_options" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 11
+item_count = 13
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "30"
+popup/item_1/id = 1
+popup/item_2/text = "60"
+popup/item_2/id = 2
+popup/item_3/text = "90"
+popup/item_3/id = 3
+popup/item_4/text = "120"
+popup/item_4/id = 4
+popup/item_5/text = "144"
+popup/item_5/id = 5
+popup/item_6/text = "165"
+popup/item_6/id = 6
+popup/item_7/text = "180"
+popup/item_7/id = 7
+popup/item_8/text = "240"
+popup/item_8/id = 8
+popup/item_9/text = "360"
+popup/item_9/id = 9
+popup/item_10/text = "540"
+popup/item_10/id = 10
+popup/item_11/text = "Unlimited FPS"
+popup/item_11/id = 11
+popup/item_12/text = "Custom"
+popup/item_12/id = 12
+
+[node name="fps_unfocused" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- FPS (Unfocused) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="fps_unfocused_options" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 1
+item_count = 14
+popup/item_0/text = "V-Sync"
+popup/item_0/id = 0
+popup/item_1/text = "15"
+popup/item_1/id = 13
+popup/item_2/text = "30"
+popup/item_2/id = 1
+popup/item_3/text = "60"
+popup/item_3/id = 2
+popup/item_4/text = "90"
+popup/item_4/id = 3
+popup/item_5/text = "120"
+popup/item_5/id = 4
+popup/item_6/text = "144"
+popup/item_6/id = 5
+popup/item_7/text = "165"
+popup/item_7/id = 6
+popup/item_8/text = "180"
+popup/item_8/id = 7
+popup/item_9/text = "240"
+popup/item_9/id = 8
+popup/item_10/text = "360"
+popup/item_10/id = 9
+popup/item_11/text = "540"
+popup/item_11/id = 10
+popup/item_12/text = "Unlimited FPS"
+popup/item_12/id = 11
+popup/item_13/text = "Custom"
+popup/item_13/id = 12
+
+[node name="space21" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="custom_fps" type="LineEdit" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Enter Custom FPS"
+alignment = 1
+
+[node name="res_label" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Window Resolution ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="display_resolutions" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 2
+item_count = 4
+popup/item_0/text = "3840x2160"
+popup/item_0/id = 1
+popup/item_1/text = "2560x1440"
+popup/item_1/id = 2
+popup/item_2/text = "1920x1080"
+popup/item_2/id = 3
+popup/item_3/text = "1280x720"
+popup/item_3/id = 4
+
+[node name="window_modes_label" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Window Modes ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="display_options" type="OptionButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 0
+item_count = 4
+popup/item_0/text = "Exclusive Fullscreen"
+popup/item_0/id = 0
+popup/item_1/text = "Fullscreen"
+popup/item_1/id = 1
+popup/item_2/text = "Maximized"
+popup/item_2/id = 2
+popup/item_3/text = "Windowed"
+popup/item_3/id = 3
+
+[node name="space3" type="RichTextLabel" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="borderless_check" type="CheckButton" parent="TabContainer/Display/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Borderless "
+
+[node name="Notes" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Notes"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 15.0
+offset_right = -270.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="mbl_btn_layout_label" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- MOBILE: Button Layout ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="mbl_btn_layout_drop" type="OptionButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+tooltip_text = "Change the look of your notes."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "4 Buttons"
+popup/item_0/icon = ExtResource("5_4gs0j")
+popup/item_0/id = 0
+popup/item_1/text = "2 + 2 Buttons"
+popup/item_1/icon = ExtResource("6_kbil8")
+popup/item_1/id = 1
+
+[node name="note_style_label" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Style ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_style_drop" type="OptionButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 50)
+layout_mode = 2
+tooltip_text = "Change the look of your notes."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/h_separation = 12
+theme_override_constants/icon_max_width = 650
+alignment = 1
+selected = 0
+item_count = 4
+popup/item_0/text = "Dance"
+popup/item_0/icon = ExtResource("5_4gs0j")
+popup/item_0/id = 0
+popup/item_1/text = "Techno"
+popup/item_1/icon = ExtResource("6_kbil8")
+popup/item_1/id = 1
+popup/item_2/text = "Para"
+popup/item_2/icon = ExtResource("7_6s4xg")
+popup/item_2/id = 2
+popup/item_3/text = "Circle"
+popup/item_3/id = 3
+
+[node name="space4" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 0)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="circle_note_settings" parent="TabContainer/Notes/VBoxContainer" instance=ExtResource("8_remi2")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 360)
+layout_mode = 2
+
+[node name="note_anim_toggle" type="CheckButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Note Animations"
+
+[node name="note_particle_fx_lbl" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Particle Effect ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_particle_fx" type="OptionButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+tooltip_text = "How fast notes drop down to the hit zone."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 30
+alignment = 1
+selected = 1
+item_count = 5
+popup/item_0/text = "None"
+popup/item_0/id = 1
+popup/item_1/text = "Splash"
+popup/item_1/id = 1
+popup/item_2/text = "Crash"
+popup/item_2/id = 2
+popup/item_3/text = "Disperse"
+popup/item_3/id = 3
+popup/item_4/text = "Orbit"
+popup/item_4/id = 4
+
+[node name="space10" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="hold_bar_keep_pos_toggle" type="CheckButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "The Start of the Hold Tail of a note does not center to the stationary note if toggled on.
+That Hold Tail will not center to the stationary note if not hit perfectly."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Note Hold Tail Keeps Its Position"
+
+[node name="space25" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="hold_tail_unfaded_toggle" type="CheckButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Removes the slight fade at the end
+of a hold note's tail."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Unfaded Note Hold Tail"
+
+[node name="space26" type="RichTextLabel" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="hold_tail_solid_toggle" type="CheckButton" parent="TabContainer/Notes/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Removes the transparency of a hold note's tail."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Solid Note Hold Tail"
+
+[node name="Sound" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Sound"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 17.0
+offset_right = -270.0
+offset_bottom = 65.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="master_vol_label" type="RichTextLabel" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Master Volume: 100 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="master_vol_edit" type="LineEdit" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("1_a7pkj")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="master_vol_slider" type="HSlider" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.25
+scrollable = false
+
+[node name="song_vol_label" type="RichTextLabel" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Song Volume: 80 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="song_vol_edit" type="LineEdit" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("1_a7pkj")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="song_vol_slider" type="HSlider" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.25
+scrollable = false
+
+[node name="menu_song_vol_label" type="RichTextLabel" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Menu Song Volume: 75 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="menu_song_vol_edit" type="LineEdit" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("1_a7pkj")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="menu_song_vol_slider" type="HSlider" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.25
+scrollable = false
+
+[node name="sfx_vol_label" type="RichTextLabel" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- SFX Volume: 45 ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="sfx_vol_edit" type="LineEdit" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+focus_mode = 1
+theme = ExtResource("1_a7pkj")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 36
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="sfx_vol_slider" type="HSlider" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+step = 0.25
+scrollable = false
+
+[node name="eq" parent="TabContainer/Sound/VBoxContainer" instance=ExtResource("9_bfr5k")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 505)
+layout_mode = 2
+
+[node name="note_offset_label" type="RichTextLabel" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "---- Note Offset (ms) ----"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="note_offset_edit" type="LineEdit" parent="TabContainer/Sound/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "The offset in ms of when the notes will spawn, useful if your bluetooth device has delay.
+(Negative number: notes spawn earlier. 
+Positive number: notes spawn later.)"
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+text = "10.0"
+placeholder_text = "Note spawn time offset (in ms)"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="Profile" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Profile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 50.0
+offset_right = -270.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="usr_lbl" type="RichTextLabel" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Username ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="username_edit" type="LineEdit" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your username"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="title_lbl" type="RichTextLabel" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Title ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="title_edit" type="LineEdit" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your Title"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="clan_lbl" type="RichTextLabel" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Clan ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="clan_edit" type="LineEdit" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_fonts/font = ExtResource("2_udf7v")
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Your Clan"
+alignment = 1
+expand_to_text_length = true
+virtual_keyboard_type = 3
+caret_blink = true
+
+[node name="space14" type="RichTextLabel" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+text = "--------------------------------------------------------------------------------------------------------------------------------------------------------"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="pfp_edit" type="Button" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(814, 101.61)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 30
+text = "Add your Profile Picture"
+icon_alignment = 2
+expand_icon = true
+
+[node name="banner_edit" type="Button" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(814, 101.61)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 30
+text = "Add your Banner"
+icon_alignment = 2
+expand_icon = true
+
+[node name="your_profile_view" type="RichTextLabel" parent="TabContainer/Profile/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/normal_font_size = 25
+text = "--- Preview ---"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="profile_small" parent="TabContainer/Profile/VBoxContainer" instance=ExtResource("10_k8428")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 175)
+layout_mode = 2
+
+[node name="Extra" type="Control" parent="TabContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+metadata/_tab_index = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Extra"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 250.0
+offset_top = 119.0
+offset_right = -250.0
+offset_bottom = -165.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="drp_toggle" type="CheckButton" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+text = "Discord Rich Presence "
+
+[node name="space9" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="credits_btn" type="Button" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 50
+text = "Credits"
+
+[node name="space6" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="redeem_btn" type="Button" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 50
+text = "Redeem Code"
+
+[node name="space7" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="see_tos" type="Button" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 50
+text = "Terms of Service"
+
+[node name="space8" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="see_github" type="Button" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Official GitHub for Beatz! X."
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 50
+text = "GitHub"
+
+[node name="space12" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 5)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="check_for_update" type="Button" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_a7pkj")
+theme_override_font_sizes/font_size = 50
+text = "Check for Update"
+
+[node name="lifetime_points" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 15
+text = "Lifetime Points: 0"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="ver" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 15
+text = "Beatz! X (Desktop Port) VERSION"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="slogan" parent="TabContainer/Extra/VBoxContainer" instance=ExtResource("11_qj2da")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="copyright" type="RichTextLabel" parent="TabContainer/Extra/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 32)
+layout_mode = 2
+theme = ExtResource("1_a7pkj")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/normal_font_size = 15
+text = "© 2025 GuayabR"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="settings_lbl" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -86.5
+offset_top = 27.0
+offset_right = 86.5
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/normal_font_size = 48
+text = "Settings"
+fit_content = true
+autowrap_mode = 0
+
+[connection signal="focus_entered" from="TabContainer/Game/VBoxContainer/note_speed_value_lbl" to="." method="_on_note_speed_value_lbl_focus_entered"]
+[connection signal="drag_ended" from="TabContainer/Game/VBoxContainer/note_speed_edit" to="." method="_on_note_speed_edit_drag_ended"]
+[connection signal="value_changed" from="TabContainer/Game/VBoxContainer/note_speed_edit" to="." method="_on_note_speed_edit_value_changed"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/visualizer_toggle" to="." method="_on_visualizer_toggle_toggled"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/bg_vids_toggle" to="." method="_on_bg_vids_toggle_toggled"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/bg_vids_edit_toggle" to="." method="_on_bg_vids_edit_toggle_toggled"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/cover_loops_toggle" to="." method="_on_cover_loops_toggled"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/bg_pulse_toggle" to="." method="_on_bg_pulse_toggle_toggled"]
+[connection signal="toggled" from="TabContainer/Game/VBoxContainer/bg_vid_pulse_toggle" to="." method="_on_bg_vid_pulse_toggle_toggled"]
+[connection signal="drag_ended" from="TabContainer/Game/VBoxContainer/bg_pulse_slider" to="." method="_on_bg_pulse_slider_drag_ended"]
+[connection signal="value_changed" from="TabContainer/Game/VBoxContainer/bg_pulse_slider" to="." method="_on_bg_pulse_slider_value_changed"]
+[connection signal="drag_ended" from="TabContainer/Game/VBoxContainer/bg_vid_pulse_slider" to="." method="_on_bg_vid_pulse_slider_drag_ended"]
+[connection signal="value_changed" from="TabContainer/Game/VBoxContainer/bg_vid_pulse_slider" to="." method="_on_bg_vid_pulse_slider_value_changed"]
+[connection signal="item_selected" from="TabContainer/Game/VBoxContainer/bg_img_drop" to="." method="_on_bg_img_drop_item_selected"]
+[connection signal="pressed" from="TabContainer/Game/VBoxContainer/bg_img_delete" to="." method="_on_bg_img_delete_pressed"]

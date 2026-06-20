@@ -1,6 +1,23 @@
 extends Control
 
+signal parallax_bg_toggled(toggled_on: bool)
+signal bg_parallax_toggled(toggled_on: bool)
+signal parallax_bg_matches_cover(toggled_on: bool)
+signal bg_effect_changed(effect: int)
+signal bg_fx_random_multi_min_changed(value: int)
+signal bg_fx_random_multi_max_changed(value: int)
+signal bg_parallax_speed_changed(value: float)
+
+signal bg_time_interval_changed(value: float)
+signal bg_rot_time_changed(value: float)
+
+signal note_style_changed(style: int)
+
 signal note_speed_changed(speed: float)
+
+signal note_offset_changed(new_offset: float)
+
+signal hold_note_thresh_changed(new_threshold: float)
 
 signal bg_changed(tex: ImageTexture)
 
@@ -25,26 +42,78 @@ signal editor_note_backdrop_opacity_changed(opacity: float)
 signal bg_vids_toggled(toggled_on: bool)
 signal editor_bg_vids_toggled(toggled_on: bool)
 
+signal cover_loops_toggled(toggled_on: bool)
+signal editor_cover_loops_toggled(toggled_on: bool)
+signal cover_loops_playing_bar_toggled(toggled_on: bool)
+
+signal edit_show_hold_ends_toggled(toggled_on: bool)
+
+signal show_error_notes_toggled(toggled_on: bool)
+
+signal editor_diff_graph_toggled(toggled_on: bool)
+
+signal selection_box_quality_changed(toggled_on: bool)
+
 var input_listened
 var screen: String = "stgs"
 
+func _on_epic_logged_in(user_data: Dictionary, product_data: Dictionary):
+	%eos_debug_text.text = "EOS: PUID: %s | User ID: %s" % [product_data.puid, product_data.epic_acc_id]
+	
+	%epic_display_name.text = "--- Epic Display Name: %s ---" % user_data.display_name
+	%epic_display_name.show()
+	
+	%profile_small/name_side/username.text = "[" + Settings.game.clan + "] [b]%s[/b]" % (Settings.game.username if not General.epic_user_info else General.epic_user_info["display_name"])
+
 func _ready() -> void:
-	$ScrollContainer/settings_list/slogan.text = General.SLOGAN
+	General.epic_logged_in.connect(_on_epic_logged_in)
+	
+	%slogan.text = General.SLOGAN
 	if OS.has_feature("Deluxe"):
 		print("Deluxe Edition \"SWAG GAME\"")
-		$ScrollContainer/settings_list/ver.text = "%s Deluxe Edition \"SWAG GAME\" %s" % [General.NAME, General.VERSION]
-		$ScrollContainer/settings_list/ver.tooltip_text = "%s Deluxe Edition \"SWAG GAME\" (%s) Version %s\nApplication built 11/08/2025" % [General.NAME, General.port, General.VERSION]
+		%ver.text = "%s Deluxe Edition \"SWAG GAME\" %s" % [General.NAME, General.VERSION]
+		%ver.tooltip_text = "%s Deluxe Edition \"SWAG GAME\" (%s) Version %s\nApplication built 06/11/2026" % [General.NAME, General.port, General.VERSION]
 	elif OS.has_feature("ONETHIRTYONE"):
 		print("Special Edition \"ONETHIRTYONE\"")
-		$ScrollContainer/settings_list/ver.text = "%s Special Edition \"ONETHIRTYONE\" %s" % [General.NAME, General.VERSION]
-		$ScrollContainer/settings_list/ver.tooltip_text = "%s Special Edition \"ONETHIRTYONE\" (%s) Version %s\nApplication built 10/26/2025" % [General.NAME, General.port, General.VERSION]
+		%ver.text = "%s Special Edition \"ONETHIRTYONE\" %s" % [General.NAME, General.VERSION]
+		%ver.tooltip_text = "%s Special Edition \"ONETHIRTYONE\" (%s) Version %s\nApplication built 06/11/2025" % [General.NAME, General.port, General.VERSION]
 	else:
-		$ScrollContainer/settings_list/ver.text = "%s (%s) %s" % [General.NAME, General.port, General.VERSION]
-		$ScrollContainer/settings_list/ver.tooltip_text = "%s (%s) Version %s\nApplication built 10/26/2025" % [General.NAME, General.port, General.VERSION]
+		%ver.text = "%s (%s) %s" % [General.NAME, General.port, General.VERSION]
+		%ver.tooltip_text = "%s (%s) Version %s\nApplication built 06/11/2026" % [General.NAME, General.port, General.VERSION]
+	
 	_apply_loaded_settings()
 	
+	%output_device_drop.clear()
+	%input_device_drop.clear()
+
+	for device in AudioServer.get_output_device_list():
+		%output_device_drop.add_item(device)
+
+	for device in AudioServer.get_input_device_list():
+		%input_device_drop.add_item(device)
+
+	var current_output: String = Settings.game.output_device
+	var current_input: String = Settings.game.input_device
+
+	for i in %output_device_drop.item_count:
+		if %output_device_drop.get_item_text(i) == current_output:
+			%output_device_drop.select(i)
+			break
+
+	for i in %input_device_drop.item_count:
+		if %input_device_drop.get_item_text(i) == current_input:
+			%input_device_drop.select(i)
+			break
+	
 	if get_parent().name in ["main_menu", "selected_song"]:
-		$ScrollContainer/settings_list/end_space.hide()
+		%end_space.hide()
+	
+	Gamepad_Cursor.mouse_sens = Settings.game.joy_sens
+	
+	%max_threads_spin.max_value = OS.get_processor_count()
+	
+	@warning_ignore("integer_division")
+	%max_threads_spin.tooltip_text = "The more threads the song list uses to load covers, the faster all visible covers will load/unload.\nIf you have a high number of threads set, it might cause the game to lag if you scroll the song list too fast.\nRecommended to use half of your CPU's thread count. (Which is %d)" % int(OS.get_processor_count() / 2)
 
 func _input(event: InputEvent) -> void:
 	if screen == "binds" and event.is_action_pressed("pause-back"):
@@ -55,16 +124,18 @@ func _input(event: InputEvent) -> void:
 		input_listened = event
 
 func _apply_loaded_settings():
-	$ScrollContainer/settings_list/lifetime_points.text = "Lifetime Points: " + General.format_number_with_commas(Beatz.lifetime_points) + " Points"
+	if General.epic_user_info: _on_epic_logged_in(General.epic_user_info, General.epic_product_info)
 	
-	$ScrollContainer/settings_list/master_vol_slider.set_value_no_signal(Settings.game.master_vol)
-	$ScrollContainer/settings_list/song_vol_slider.set_value_no_signal(Settings.game.song_vol)
-	$ScrollContainer/settings_list/menu_song_vol_slider.set_value_no_signal(Settings.game.menu_song_vol)
-	$ScrollContainer/settings_list/sfx_vol_slider.set_value_no_signal(Settings.game.sfx_vol)
-	$ScrollContainer/settings_list/master_vol_label.text = "Master Volume: " + str(Settings.game.master_vol)
-	$ScrollContainer/settings_list/song_vol_label.text = "Song Volume: " + str(Settings.game.song_vol)
-	$ScrollContainer/settings_list/menu_song_vol_label.text = "Menu Song Volume: " + str(Settings.game.menu_song_vol)
-	$ScrollContainer/settings_list/sfx_vol_label.text = "SFX Volume: " + str(Settings.game.sfx_vol)
+	%lifetime_points.text = "Lifetime Points: " + General.format_number_with_commas(Beatz.lifetime_points) + " Points"
+	
+	%master_vol_slider.set_value_no_signal(Settings.game.master_vol)
+	%song_vol_slider.set_value_no_signal(Settings.game.song_vol)
+	%menu_song_vol_slider.set_value_no_signal(Settings.game.menu_song_vol)
+	%sfx_vol_slider.set_value_no_signal(Settings.game.sfx_vol)
+	%master_vol_label.text = "Master Volume: " + str(Settings.game.master_vol)
+	%song_vol_label.text = "Song Volume: " + str(Settings.game.song_vol)
+	%menu_song_vol_label.text = "Menu Song Volume: " + str(Settings.game.menu_song_vol)
+	%sfx_vol_label.text = "SFX Volume: " + str(Settings.game.sfx_vol)
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(Settings.game.master_vol / 100.0))
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Song"), linear_to_db(Settings.game.song_vol / 100.0))
@@ -73,45 +144,57 @@ func _apply_loaded_settings():
 	
 	if OS.get_name() == "Android":
 		print("android load btns")
-		$ScrollContainer/settings_list/mbl_btn_layout_label.show()
-		$ScrollContainer/settings_list/mbl_btn_layout_drop.show()
-		# Apply btn layout
-		var btn_layouts = {
-			0: 0,
-			1: 1
-		}.get(Settings.game.mbl_btn_layout, 0) # defaults to 4 btn
-		$ScrollContainer/settings_list/mbl_btn_layout_drop.select(btn_layouts)
-		$ScrollContainer/settings_list/ver.text = "Beatz! X (" + str(OS.get_name()) + " Port) 1.3.0"
+		%mbl_btn_layout_label.show()
+		%mbl_btn_layout_drop.show()
 		
-		$ScrollContainer/settings_list/res_label.hide()
-		$ScrollContainer/settings_list/display_resolutions.hide()
-		$ScrollContainer/settings_list/window_modes_label.hide()
-		$ScrollContainer/settings_list/display_options.hide()
-		$ScrollContainer/settings_list/borderless_check.hide()
-		Settings.misc.borderless = true
-		Settings.misc.window_mode = "exclusive_fullscreen"
-		Settings.misc.resolution = [1920, 1080]
-		Settings._save()
+		%ver.text = "Beatz! X (" + str(OS.get_name()) + " Port) 1.6.0"
+		
+		%res_label.hide()
+		%display_resolutions.hide()
+		%window_modes_label.hide()
+		%display_options.hide()
+		%borderless_check.hide()
+	
+	# Apply mbl btn layout
+	%mbl_btn_layout_drop.select(Settings.game.mbl_btn_layout as int)
 	
 	# Apply note anim toggle
-	$ScrollContainer/settings_list/note_anim_toggle.set_pressed_no_signal(Settings.misc.note_anims)
-	#if not Settings.misc.note_anims: $ScrollContainer/settings_list/HBoxContainer.hide()
+	%note_anim_toggle.set_pressed_no_signal(Settings.misc.note_anims)
+	#if not Settings.misc.note_anims: %HBoxContainer.hide()
 	
-	# Apply btn layout
+	# Apply note particles
 	var note_particles = {
-		0: 0,
-		1: 1,
-		3: 3,
-		4: 4
+		0.0: 0,
+		1.0: 1,
+		2.0: 2,
+		3.0: 3,
+		4.0: 4
 	}.get(Settings.misc.note_particle_fx, 1) # defaults to splash
-	$ScrollContainer/settings_list/note_particle_fx.select(note_particles)
+	%note_particle_fx.select(note_particles)
+	
+	# Apply Hold bar keeping pos
+	%hold_bar_keep_pos_toggle.set_pressed_no_signal(Settings.misc.hold_bar_keep_position)
+	
+	# Apply Unfaded hold tail
+	%hold_tail_unfaded_toggle.set_pressed_no_signal(Settings.misc.hold_bar_no_end_fade)
+	
+	# Apply Solid hold tail
+	%hold_tail_solid_toggle.set_pressed_no_signal(Settings.misc.hold_bar_solid)
 	
 	# Apply Visualizer show
-	$ScrollContainer/settings_list/visualizer_toggle.set_pressed_no_signal(Settings.misc.vis)
+	%visualizer_toggle.set_pressed_no_signal(Settings.misc.vis)
 	
 	# Apply bg videos showing
-	$ScrollContainer/settings_list/bg_vids_toggle.set_pressed_no_signal(Settings.misc.bg_videos)
-	$ScrollContainer/settings_list/bg_vids_edit_toggle.set_pressed_no_signal(Settings.misc.editor_bg_videos)
+	%bg_vids_toggle.set_pressed_no_signal(Settings.misc.bg_videos)
+	%bg_vids_edit_toggle.set_pressed_no_signal(Settings.misc.editor_bg_videos)
+	
+	%editor_seek_vid_scroll_toggle.set_pressed_no_signal(Settings.misc.editor_seek_vid_along_scroll)
+	
+	%cover_loops_toggle.set_pressed_no_signal(Settings.misc.cover_loops)
+	
+	%editor_cover_loops_toggle.set_pressed_no_signal(Settings.misc.editor_cover_loops)
+	
+	%cover_loops_playing_bar_toggle.set_pressed_no_signal(Settings.misc.cover_loops_playing_bar)
 	
 	# Apply note style 
 	var note_styles = {
@@ -120,10 +203,10 @@ func _apply_loaded_settings():
 		"para": 2,
 		"circles": 3,
 	}.get(Settings.misc.note_style, 0) # defaults to dance
-	$ScrollContainer/settings_list/note_style_drop.select(note_styles)
+	%note_style_drop.select(note_styles)
 	
-	if note_styles == 3: $ScrollContainer/settings_list/circle_note_settings.show()
-	else: $ScrollContainer/settings_list/circle_note_settings.hide()
+	if note_styles == 3: %circle_note_settings.show()
+	else: %circle_note_settings.hide()
 	
 	## Apply note speed
 	#var note_speeds = {
@@ -134,108 +217,187 @@ func _apply_loaded_settings():
 		#15.0: 4,
 		#20.0: 5,
 	#}.get(Settings.game.note_speed, 2) # defaults to 10
-	#$ScrollContainer/settings_list/note_speed_drop.select(note_speeds)
+	#%note_speed_drop.select(note_speeds)
 	
-	$ScrollContainer/settings_list/note_speed_value_lbl.text = "Note Speed: %.2f" % Settings.game.note_speed
-	$ScrollContainer/settings_list/note_speed_edit.set_value_no_signal(Settings.game.note_speed)
+	%note_speed_value_lbl.text = "---- Note Speed: %.2f -----" % Settings.game.note_speed
+	%note_speed_edit.set_value_no_signal(Settings.game.note_speed)
+	
+	%hold_thresh_to_rm_lbl.text = "---- Editor Hold Note Minimum: %.2f ----" % Settings.misc.hold_thresh_to_rm_edit
+	%hold_thresh_to_rm_edit.set_value_no_signal(Settings.misc.hold_thresh_to_rm_edit)
 	
 	# Apply note offset
-	$ScrollContainer/settings_list/note_offset_edit.text = str(Settings.misc.note_offset)
+	%note_offset_edit.text = str(Settings.misc.note_offset)
 	
 	# Apply game speed
-	$ScrollContainer/settings_list/game_speed_edit.text = str(Settings.game.speed)
+	%game_speed_edit.text = str(Settings.game.speed)
 	
 	# Apply reduced motion
-	$ScrollContainer/settings_list/reduce_motion_check.set_pressed_no_signal(Settings.misc.reduce_motion)
+	%reduce_motion_check.set_pressed_no_signal(Settings.misc.reduce_motion)
 	
-	# Apply reduced motion
-	$ScrollContainer/settings_list/animated_scrolls_check.set_pressed_no_signal(Settings.misc.smooth_scrolls)
+	# Apply smooth scrolling
+	%animated_scrolls_check.set_pressed_no_signal(Settings.misc.smooth_scrolls)
 	
-	# Get custom backgrounds and add them to $ScrollContainer/settings_list/bg_img_drop
+	# Add the custom menu song directories
+	refresh_menu_song_dirs()
+	
+	# Apply high quality parallax background
+	%parallax_bg_toggle.set_pressed_no_signal(Settings.misc.hq_background)
+	
+	# Apply parallax
+	%parallax_toggle.set_pressed_no_signal(Settings.misc.bg_parallax)
+	
+	# Apply hq bg matching cover
+	%bg_matches_song.set_pressed_no_signal(Settings.misc.bg_matches_cover)
+	
+	# Apply parallax effect
+	%bg_effect.select(Settings.misc.bg_effect)
+	
+	# Apply min and max random multi values
+	%random_multi_min_spin.set_value_no_signal(Settings.misc.bg_fx_random_multi_min)
+	%random_multi_max_spin.set_value_no_signal(Settings.misc.bg_fx_random_multi_max)
+	
+	%parallax_time_lbl.text = "---- Background Parallax Time Between: %ss ----" % str(Settings.misc.bg_time_interval_sec)
+	%parallax_time_slider.set_value_no_signal(Settings.misc.bg_time_interval_sec)
+	
+	%parallax_rot_time.text = "---- Background Parallax Rotation Time: %ss ----" % str(Settings.misc.bg_tween_time_sec)
+	%parallax_rot_time_slider.set_value_no_signal(Settings.misc.bg_tween_time_sec)
+	
+	%parallax_speed.text = "---- Background Parallax Speed: %sx ----" % str(Settings.misc.bg_parallax_speed)
+	%parallax_speed_slider.set_value_no_signal(Settings.misc.bg_parallax_speed)
+	
+	if Settings.misc.bg_effect == 5:
+		%random_multi_stgs.show()
+	else: 
+		%random_multi_stgs.hide()
+	
+	# Apply joystick sensitivity
+	%joy_sens_slider.set_value_no_signal(Settings.game.joy_sens)
+	%joy_sens_lbl.text = "---- Controller Joystick Sensitivity: %sx ----" % str(Settings.game.joy_sens / 1000.0)
+	
+	# Apply editor tools notifying
+	%edit_tools_notify_toggle.set_pressed_no_signal(Settings.misc.edit_tools_notify_modified_notes)
+	
+	# Apply editor showing note hold ends
+	%edit_show_hold_ends.set_pressed_no_signal(Settings.misc.editor_show_note_hold_ends)
+	
+	# Apply editor showing unrecognized/error notes
+	%edit_show_error_notes.set_pressed_no_signal(Settings.misc.show_error_notes)
+	
+	# Apply editor showing unrecognized/error notes
+	%edit_show_diff_graph.set_pressed_no_signal(Settings.misc.editor_show_diff_graph)
+	
+	# Apply showing hq selection
+	%edit_show_hq_selection.set_pressed_no_signal(Settings.misc.hq_selection_box)
+	
+	# Apply loading all covers
+	%load_all_covers_check.set_pressed_no_signal(Settings.game.load_all_covers)
+	
+	# Apply keeping list in ram
+	%keep_list_in_ram_check.set_pressed_no_signal(Settings.game.keep_list_in_ram)
+	
+	Settings.game.max_threads_in_list = max(1.0, Settings.game.max_threads_in_list)
+	Settings._save()
+	%max_threads_spin.set_value_no_signal(Settings.game.max_threads_in_list)
+	
+	# Get custom backgrounds and add them to %bg_img_drop
 	get_custom_backgrounds()
 	
 	# Set Bg pulse values
-	$ScrollContainer/settings_list/bg_pulse_toggle.set_pressed_no_signal(Settings.misc.menu_bg_pulse)
-	$ScrollContainer/settings_list/bg_pulse_slider.set_value_no_signal(Settings.misc.menu_bg_pulse_strength)
-	$ScrollContainer/settings_list/bg_pulse_lbl.text = "---- Background Pulse Strength: " + str(Settings.misc.menu_bg_pulse_strength) + "x ----"
+	%bg_pulse_toggle.set_pressed_no_signal(Settings.misc.menu_bg_pulse)
+	%bg_pulse_slider.set_value_no_signal(Settings.misc.menu_bg_pulse_strength)
+	%bg_pulse_lbl.text = "---- Background Pulse Strength: " + str(Settings.misc.menu_bg_pulse_strength) + "x ----"
 	
-	$ScrollContainer/settings_list/menu_bg_brightness_label.text = "---- Background Brightness (Main Menu): " + str(Settings.game.menu_bg_brightness * 100.0)  + "% ----"
-	$ScrollContainer/settings_list/menu_bg_brightness_slider.set_value_no_signal(Settings.game.menu_bg_brightness * 100.0)
+	%bg_vid_pulse_toggle.set_pressed_no_signal(Settings.misc.bg_vid_pulse)
+	%bg_vid_pulse_slider.set_value_no_signal(Settings.misc.bg_vid_pulse_strength)
+	%bg_vid_pulse_lbl.text = "---- Background Video Pulse Strength: " + str(Settings.misc.bg_vid_pulse_strength) + "x ----"
 	
-	$ScrollContainer/settings_list/bg_brightness_label.text = "---- Background Brightness (In Game): " + str(Settings.game.bg_brightness * 100.0)  + "% ----"
-	$ScrollContainer/settings_list/bg_brightness_slider.set_value_no_signal(Settings.game.bg_brightness * 100.0)
+	%menu_bg_brightness_label.text = "---- Background Brightness (Main Menu): " + str(Settings.game.menu_bg_brightness * 100.0)  + "% ----"
+	%menu_bg_brightness_slider.set_value_no_signal(Settings.game.menu_bg_brightness * 100.0)
 	
-	$ScrollContainer/settings_list/note_backdrop_brightness.text = "---- Notes Backdrop Opacity (In Game): " + str(Settings.misc.notes_backdrop_opacity * 100.0)  + "% ----"
-	$ScrollContainer/settings_list/note_backdrop_brightness_slider.set_value_no_signal(Settings.misc.notes_backdrop_opacity * 100.0)
+	%bg_brightness_label.text = "---- Background Brightness (In Game): " + str(Settings.game.bg_brightness * 100.0)  + "% ----"
+	%bg_brightness_slider.set_value_no_signal(Settings.game.bg_brightness * 100.0)
+	
+	%note_backdrop_brightness.text = "---- Notes Backdrop Opacity (In Game): " + str(Settings.misc.notes_backdrop_opacity * 100.0)  + "% ----"
+	%note_backdrop_brightness_slider.set_value_no_signal(Settings.misc.notes_backdrop_opacity * 100.0)
+	
+	%editor_bg_brightness_label.text = "---- Background Brightness (Editor): " + str(Settings.game.editor_bg_brightness * 100.0)  + "% ----"
+	%editor_bg_brightness_slider.set_value_no_signal(Settings.game.editor_bg_brightness * 100.0)
+	
+	%editor_note_backdrop_brightness.text = "---- Notes Backdrop Opacity (Editor): " + str(Settings.misc.editor_notes_backdrop_opacity * 100.0)  + "% ----"
+	%editor_note_backdrop_brightness_slider.set_value_no_signal(Settings.misc.editor_notes_backdrop_opacity * 100.0)
 	
 	
 	
-	$ScrollContainer/settings_list/editor_bg_brightness_label.text = "---- Background Brightness (Editor): " + str(Settings.game.editor_bg_brightness * 100.0)  + "% ----"
-	$ScrollContainer/settings_list/editor_bg_brightness_slider.set_value_no_signal(Settings.game.editor_bg_brightness * 100.0)
+	%bg_colour_toggle.set_pressed_no_signal(Settings.misc.colour_bg_with_cover)
 	
-	$ScrollContainer/settings_list/editor_note_backdrop_brightness.text = "---- Notes Backdrop Opacity (Editor): " + str(Settings.misc.editor_notes_backdrop_opacity * 100.0)  + "% ----"
-	$ScrollContainer/settings_list/editor_note_backdrop_brightness_slider.set_value_no_signal(Settings.misc.editor_notes_backdrop_opacity * 100.0)
+	if General.epic_user_info: %epic_display_name.text = "--- Epic Display Name: %s ---" % General.epic_user_info["display_name"]
+	else: %epic_display_name.hide()
 	
+	%username_edit.text = Settings.game.username
 	
+	%title_edit.text = Settings.game.title
+	%clan_edit.text = Settings.game.clan
+	if Settings.game.profile_path != "": %pfp_edit.icon = ImageTexture.create_from_image(Image.load_from_file(Settings.game.profile_path))
 	
-	$ScrollContainer/settings_list/bg_colour_toggle.set_pressed_no_signal(Settings.misc.colour_bg_with_cover)
-	
-	$ScrollContainer/settings_list/username_edit.text = Settings.game.username
-	$ScrollContainer/settings_list/title_edit.text = Settings.game.title
-	$ScrollContainer/settings_list/clan_edit.text = Settings.game.clan
-	if Settings.game.profile_path != "": $ScrollContainer/settings_list/pfp_edit.icon = ImageTexture.create_from_image(Image.load_from_file(Settings.game.profile_path))
-	
-	if Settings.game.banner_path != "": $ScrollContainer/settings_list/banner_edit.icon = ImageTexture.create_from_image(Image.load_from_file(Settings.game.banner_path))
+	if Settings.game.banner_path != "": %banner_edit.icon = ImageTexture.create_from_image(Image.load_from_file(Settings.game.banner_path))
 	
 	# Apply show fps label
-	$ScrollContainer/settings_list/fpsCheck.set_pressed_no_signal(Settings.misc.show_fps)
+	%fpsCheck.set_pressed_no_signal(Settings.misc.show_fps)
+	
+	%show_frame_time.set_pressed_no_signal(Settings.misc.show_frame_time)
+	%show_ram.set_pressed_no_signal(Settings.misc.show_ram)
+	%show_more_ram.set_pressed_no_signal(Settings.misc.show_more_ram)
+	%show_draw_calls.set_pressed_no_signal(Settings.misc.show_draw_calls)
+	%show_vram.set_pressed_no_signal(Settings.misc.show_vram)
+	%show_audio_latency.set_pressed_no_signal(Settings.misc.show_audio_latency)
+	%show_mix_rate.set_pressed_no_signal(Settings.misc.show_mix_rate)
 	
 	# Apply accurate fps
-	$ScrollContainer/settings_list/avrg_fps_check.set_pressed_no_signal(Settings.misc.accurate_fps)
+	%avrg_fps_check.set_pressed_no_signal(Settings.misc.accurate_fps)
 	
 	# Apply advanced fps toggle
-	$ScrollContainer/settings_list/advanced_fps_check.set_pressed_no_signal(Settings.misc.advanced_fps)
+	%advanced_fps_check.set_pressed_no_signal(Settings.misc.advanced_fps)
 	
 	if Settings.misc.advanced_fps:
 		# Show advanced UI
-		$ScrollContainer/settings_list/fps_main_menu_lbl.show()
-		$ScrollContainer/settings_list/fps_main_menu_options.show()
-		$ScrollContainer/settings_list/fps_main_lbl.show()
-		$ScrollContainer/settings_list/fps_main_options.show()
-		$ScrollContainer/settings_list/fps_unfocused.show()
-		$ScrollContainer/settings_list/fps_unfocused_options.show()
+		%fps_main_menu_lbl.show()
+		%fps_main_menu_options.show()
+		%fps_main_lbl.show()
+		%fps_main_options.show()
+		%fps_unfocused.show()
+		%fps_unfocused_options.show()
 	
 		# Hide general UI
-		$ScrollContainer/settings_list/fps_label.hide()
-		$ScrollContainer/settings_list/fps_options.hide()
+		%fps_label.hide()
+		%fps_options.hide()
 	else:
 		# Hide advanced UI
-		$ScrollContainer/settings_list/fps_main_menu_lbl.hide()
-		$ScrollContainer/settings_list/fps_main_menu_options.hide()
-		$ScrollContainer/settings_list/fps_main_lbl.hide()
-		$ScrollContainer/settings_list/fps_main_options.hide()
-		$ScrollContainer/settings_list/fps_unfocused.hide()
-		$ScrollContainer/settings_list/fps_unfocused_options.hide()
+		%fps_main_menu_lbl.hide()
+		%fps_main_menu_options.hide()
+		%fps_main_lbl.hide()
+		%fps_main_options.hide()
+		%fps_unfocused.hide()
+		%fps_unfocused_options.hide()
 	
 		# Show general UI
-		$ScrollContainer/settings_list/fps_label.show()
-		$ScrollContainer/settings_list/fps_options.show()
+		%fps_label.show()
+		%fps_options.show()
 	
 	# Apply MAIN MENU fps value
 	_select_fps_dropdown_from_value(
-		$ScrollContainer/settings_list/fps_main_menu_options,
+		%fps_main_menu_options,
 		Settings.misc.fps_main_menu
 	)
 
 	# Apply MAIN gameplay fps value
 	_select_fps_dropdown_from_value(
-		$ScrollContainer/settings_list/fps_main_options,
+		%fps_main_options,
 		Settings.misc.fps_main
 	)
 
 	# Apply UNFOCUSED fps value (special index set)
 	_select_fps_dropdown_from_value(
-		$ScrollContainer/settings_list/fps_unfocused_options,
+		%fps_unfocused_options,
 		Settings.misc.fps_unfocused,
 		true
 	)
@@ -243,29 +405,29 @@ func _apply_loaded_settings():
 	# Apply general fps mode if not advanced fps 
 	if not Settings.misc.advanced_fps:
 		match Settings.misc.fps as int:
-			-1: $ScrollContainer/settings_list/fps_options.select(0)
-			30: $ScrollContainer/settings_list/fps_options.select(1)
-			60: $ScrollContainer/settings_list/fps_options.select(2)
-			90: $ScrollContainer/settings_list/fps_options.select(3)
-			120: $ScrollContainer/settings_list/fps_options.select(4)
-			144: $ScrollContainer/settings_list/fps_options.select(5)
-			165: $ScrollContainer/settings_list/fps_options.select(6)
-			180: $ScrollContainer/settings_list/fps_options.select(7)
-			240: $ScrollContainer/settings_list/fps_options.select(8)
-			360: $ScrollContainer/settings_list/fps_options.select(9)
-			540: $ScrollContainer/settings_list/fps_options.select(10)
-			5000: $ScrollContainer/settings_list/fps_options.select(11)
+			-1: %fps_options.select(0)
+			30: %fps_options.select(1)
+			60: %fps_options.select(2)
+			90: %fps_options.select(3)
+			120: %fps_options.select(4)
+			144: %fps_options.select(5)
+			165: %fps_options.select(6)
+			180: %fps_options.select(7)
+			240: %fps_options.select(8)
+			360: %fps_options.select(9)
+			540: %fps_options.select(10)
+			5000: %fps_options.select(11)
 			_:
-				$ScrollContainer/settings_list/fps_options.select(12)
-				$ScrollContainer/settings_list/custom_fps.text = str(int(Settings.misc.fps))
-				$ScrollContainer/settings_list/custom_fps.show()
+				%fps_options.select(12)
+				%custom_fps.text = str(int(Settings.misc.fps))
+				%custom_fps.show()
 	
-	for child in $ScrollContainer/settings_list.get_children():
+	for child in $ScrollContainer/settings_list.get_children(true):
 		if child is not OptionButton: continue
 		var option_button: OptionButton = child
 		_connect_popup(option_button)
 	
-	_connect_popup($ScrollContainer/settings_list/eq/presets)
+	_connect_popup(%eq/presets)
 	
 	
 	# Apply resolution
@@ -275,7 +437,7 @@ func _apply_loaded_settings():
 		Vector2i(1920, 1080): 2,
 		Vector2i(1280, 720): 3
 	}.get(Vector2i(Settings.misc.resolution[0], Settings.misc.resolution[1]), 2) # defaults to 1920x1080
-	$ScrollContainer/settings_list/display_resolutions.select(res_index)
+	%display_resolutions.select(res_index)
 	
 	# Apply window mode
 	var window_modes := {
@@ -285,28 +447,25 @@ func _apply_loaded_settings():
 		"windowed": 3
 	}
 	
-	$ScrollContainer/settings_list/display_options.select(window_modes.get(Settings.misc.window_mode, 4)) # defaults to windowed
+	%display_options.select(window_modes.get(Settings.misc.window_mode, 4)) # defaults to windowed
 	
 	# Apply borderless check
-	$ScrollContainer/settings_list/borderless_check.set_pressed_no_signal(Settings.misc.borderless)
+	%borderless_check.set_pressed_no_signal(Settings.misc.borderless)
 	
 	# Apply drc check
-	$ScrollContainer/settings_list/drp_toggle.set_pressed_no_signal(Settings.misc.drc)
+	%drp_toggle.set_pressed_no_signal(Settings.misc.drc)
 	
 	if get_parent().name == "main" or get_parent().name == "selected_song":
-		print("hiding cuz playing s")
-		$ScrollContainer/settings_list/space9.hide()
-		$ScrollContainer/settings_list/credits_btn.hide()
-		$ScrollContainer/settings_list/space6.hide()
-		$ScrollContainer/settings_list/redeem_btn.hide()
-		$ScrollContainer/settings_list/space12.hide()
-		$ScrollContainer/settings_list/check_for_update.hide()
+		%space9.hide()
+		%credits_btn.hide()
+		%space6.hide()
+		%redeem_btn.hide()
+		%space12.hide()
+		%check_for_update.hide()
 	
-	$ScrollContainer/settings_list/show_chart_alignment.set_pressed_no_signal(Settings.other.show_chart_alignment)
+	%show_chart_alignment.set_pressed_no_signal(Settings.other.show_chart_alignment)
 
 func _connect_popup(btn: OptionButton) -> void:
-	print("Connected ", btn.name)
-	
 	var popup: PopupMenu = btn.get_popup()
 
 	popup.about_to_popup.connect(func():
@@ -340,8 +499,8 @@ func _select_fps_dropdown_from_value(node: OptionButton, value: int, is_unfocuse
 			_: 
 				node.select(13)
 				# ONLY change the custom fps field if this dropdown uses it
-				if node == $ScrollContainer/settings_list/fps_options or node == $ScrollContainer/settings_list/fps_unfocused_options:
-					$ScrollContainer/settings_list/custom_fps.text = str(value)
+				if node == %fps_options or node == %fps_unfocused_options:
+					%custom_fps.text = str(value)
 		return
 
 	# Normal (non-unfocused)
@@ -359,10 +518,10 @@ func _select_fps_dropdown_from_value(node: OptionButton, value: int, is_unfocuse
 		5000: node.select(11)
 		_:
 			node.select(12)
-			$ScrollContainer/settings_list/custom_fps.text = str(value)
+			%custom_fps.text = str(value)
 
 func get_custom_backgrounds() -> void:
-	var option_button: OptionButton = $ScrollContainer/settings_list/bg_img_drop
+	var option_button: OptionButton = %bg_img_drop
 	option_button.clear()
 
 	# --- Add default options ---
@@ -377,7 +536,6 @@ func get_custom_backgrounds() -> void:
 	var backgrounds_dir := "user://Backgrounds"
 	var dir := DirAccess.open(backgrounds_dir)
 	if dir == null:
-		print("No Backgrounds folder found, creating one at:", backgrounds_dir)
 		DirAccess.make_dir_recursive_absolute(backgrounds_dir)
 		return
 
@@ -412,10 +570,8 @@ func get_custom_backgrounds() -> void:
 
 	dir.list_dir_end()
 	
-	print("✅ Background options loaded:", option_button.item_count)
-	
 	var new_item := -1
-	var dropdown := $ScrollContainer/settings_list/bg_img_drop
+	var dropdown := %bg_img_drop
 	var selected: String = Settings.misc.menu_bg_img_path
 	
 	if selected == "":
@@ -429,9 +585,6 @@ func get_custom_backgrounds() -> void:
 
 	if new_item != -1:
 		dropdown.select(new_item)
-		print("Selected background:", dropdown.get_item_text(new_item))
-	else:
-		print("No matching background found for:", selected)
 
 func _on_fps_check_toggled(toggled_on: bool) -> void:
 	Settings.misc.show_fps = toggled_on
@@ -442,75 +595,76 @@ func _on_fps_options_item_selected(index: int) -> void: # Instantly sets the sel
 		0:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
 			Settings.misc.fps = -1 # Setting a max fps isnt needed since v sync overrides the max fps set
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		1:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 30
 			Engine.max_fps = 30
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		2:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 60
 			Engine.max_fps = 60
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		3:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 90
 			Engine.max_fps = 90
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		4:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 120
 			Engine.max_fps = 120
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		5:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 144
 			Engine.max_fps = 144
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		6:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 165
 			Engine.max_fps = 165
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		7:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 180
 			Engine.max_fps = 180
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		8:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 240
 			Engine.max_fps = 240
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		9:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 360
 			Engine.max_fps = 360
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		10:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 540
 			Engine.max_fps = 540
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		11:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Settings.misc.fps = 5000
 			Engine.max_fps = 5000 # Set the max fps to a very high number so it overrides any other max fps
-			$ScrollContainer/settings_list/custom_fps.hide()
+			%custom_fps.hide()
 		12:
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			Engine.max_fps = Settings.misc.fps
-			$ScrollContainer/settings_list/custom_fps.show()
+			%custom_fps.show()
+	
 	save_stgs()
 
 func _on_custom_fps_text_submitted(new_text: String) -> void:
 	if !new_text.is_valid_int(): 
-		$ScrollContainer/settings_list/custom_fps.text = "Please enter a number."
+		%custom_fps.text = "Please enter a number."
 		return
 	var new_fps: int = new_text.to_int()
 	if new_fps < 15:
-		$ScrollContainer/settings_list/custom_fps.text = "Trust me you do not wanna play like this."
+		%custom_fps.text = "Trust me you do not wanna play like this."
 		return
 	
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -551,28 +705,28 @@ func _apply_general_fps() -> void:
 func _on_advanced_fps_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		# show advanced fps UI
-		$ScrollContainer/settings_list/fps_main_menu_lbl.show()
-		$ScrollContainer/settings_list/fps_main_menu_options.show()
-		$ScrollContainer/settings_list/fps_main_lbl.show()
-		$ScrollContainer/settings_list/fps_main_options.show()
-		$ScrollContainer/settings_list/fps_unfocused.show()
-		$ScrollContainer/settings_list/fps_unfocused_options.show()
+		%fps_main_menu_lbl.show()
+		%fps_main_menu_options.show()
+		%fps_main_lbl.show()
+		%fps_main_options.show()
+		%fps_unfocused.show()
+		%fps_unfocused_options.show()
 
 		# hide general fps UI
-		$ScrollContainer/settings_list/fps_label.hide()
-		$ScrollContainer/settings_list/fps_options.hide()
+		%fps_label.hide()
+		%fps_options.hide()
 	else:
 		# hide advanced fps UI
-		$ScrollContainer/settings_list/fps_main_menu_lbl.hide()
-		$ScrollContainer/settings_list/fps_main_menu_options.hide()
-		$ScrollContainer/settings_list/fps_main_lbl.hide()
-		$ScrollContainer/settings_list/fps_main_options.hide()
-		$ScrollContainer/settings_list/fps_unfocused.hide()
-		$ScrollContainer/settings_list/fps_unfocused_options.hide()
+		%fps_main_menu_lbl.hide()
+		%fps_main_menu_options.hide()
+		%fps_main_lbl.hide()
+		%fps_main_options.hide()
+		%fps_unfocused.hide()
+		%fps_unfocused_options.hide()
 
 		# show general fps UI
-		$ScrollContainer/settings_list/fps_label.show()
-		$ScrollContainer/settings_list/fps_options.show()
+		%fps_label.show()
+		%fps_options.show()
 
 	Settings.misc.advanced_fps = toggled_on
 	save_stgs()
@@ -639,31 +793,74 @@ func _fps_from_index(i: int, is_unfocused: bool = false) -> int:
 			_:
 				return 240
 
+func _update_override_cfg() -> void:
+	var cfg := ConfigFile.new()
+	var path := "res://override.cfg"
+
+	cfg.load(path)
+
+	var width := int(Settings.misc.resolution[0])
+	var height := int(Settings.misc.resolution[1])
+
+	cfg.set_value("display", "window/size/viewport_width", width)
+	cfg.set_value("display", "window/size/viewport_height", height)
+
+	var stretch_scale := float(height) / 1080.0
+	cfg.set_value("display", "window/stretch/scale", stretch_scale)
+
+	match Settings.misc.window_mode:
+		"exclusive_fullscreen", "fullscreen":
+			cfg.set_value("display", "window/window/fullscreen", true)
+		_:
+			cfg.set_value("display", "window/window/fullscreen", false)
+
+	cfg.save(path)
+
+
 func _on_display_item_selected(index: int) -> void:
+	print("item s samifasno")
 	var screen_size: Vector2i
 	match index:
 		0: screen_size = Vector2i(3840, 2160)
 		1: screen_size = Vector2i(2560, 1440)
 		2: screen_size = Vector2i(1920, 1080)
 		3: screen_size = Vector2i(1280, 720)
+
 	DisplayServer.window_set_size(screen_size)
+
 	Settings.misc.resolution = [screen_size.x, screen_size.y]
+
+	_update_override_cfg()
+
 	save_stgs()
 
+
 func _on_display_options_selected(index: int) -> void:
+	print("selected disp")
 	match index:
 		0:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 			Settings.misc.window_mode = "exclusive_fullscreen"
+
 		1:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 			Settings.misc.window_mode = "fullscreen"
+
 		2:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 			Settings.misc.window_mode = "maximized"
-		4:
+
+		3:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+			var res := Vector2i(Settings.misc.resolution[0], Settings.misc.resolution[1])
+
+			DisplayServer.window_set_size(res)
+
 			Settings.misc.window_mode = "windowed"
+
+	_update_override_cfg()
+
 	save_stgs()
 
 func _on_borderless_check_toggled(toggled_on: bool) -> void:
@@ -699,34 +896,38 @@ func _on_note_style_item_selected(index: int) -> void:
 		2: Settings.misc.note_style = "para"
 		3: Settings.misc.note_style = "circles"
 	save_stgs()
-	if index == 3: $ScrollContainer/settings_list/circle_note_settings.show()
-	else: $ScrollContainer/settings_list/circle_note_settings.hide()
+	
+	note_style_changed.emit(index)
+	
+	if index == 3: %circle_note_settings.show()
+	else: %circle_note_settings.hide()
 
 func _on_note_offset_text_submitted(new_text: String) -> void:
 	if new_text.is_valid_float():
 		Settings.misc.note_offset = new_text.to_float() # If text is a valid number, change it from a string to a number and save
 		save_stgs()
+		note_offset_changed.emit(new_text.to_float())
 	else:
-		$ScrollContainer/settings_list/note_offset_edit.text = "Please enter a number."
+		%note_offset_edit.text = "Please enter a number."
 
 func _on_game_speed_text_submitted(new_text: String) -> void:
 	if new_text.is_valid_float():
 		var value := new_text.to_float()
 		
 		if value <= 0.09:
-			$ScrollContainer/settings_list/game_speed_edit.text = "Are you sure this is fun to you"
+			%game_speed_edit.text = "Are you sure this is fun to you"
 			call_deferred("change_text_back_to_num_after_telling_user_a_higher_number", 0.3)
 		elif value <= 0.4 and value > 0.091:
-			$ScrollContainer/settings_list/game_speed_edit.text = "I would suggest a higher number."
+			%game_speed_edit.text = "I would suggest a higher number."
 			call_deferred("change_text_back_to_num_after_telling_user_a_higher_number", 1)
 		elif value >= 3.0 and value < 7.9:
-			$ScrollContainer/settings_list/game_speed_edit.text = "I would suggest a smaller number."
+			%game_speed_edit.text = "I would suggest a smaller number."
 			call_deferred("change_text_back_to_num_after_telling_user_a_higher_number", 10)
 		elif value >= 8.0 and value < 49.9:
-			$ScrollContainer/settings_list/game_speed_edit.text = "I guess this is a little fun but still"
+			%game_speed_edit.text = "I guess this is a little fun but still"
 			call_deferred("change_text_back_to_num_after_telling_user_a_higher_number", 100)
 		elif value >= 50:
-			$ScrollContainer/settings_list/game_speed_edit.text = "This will either crash your game or just destroy your ears nice one bro"
+			%game_speed_edit.text = "This will either crash your game or just destroy your ears nice one bro"
 			Settings.game.speed = 1.0
 			Engine.time_scale = 1.0
 			return  # Exit early to avoid entering speed back to the invalid number
@@ -735,62 +936,72 @@ func _on_game_speed_text_submitted(new_text: String) -> void:
 		Engine.time_scale = value
 		save_stgs()
 	else:
-		$ScrollContainer/settings_list/game_speed_edit.text = "Please enter a number."
+		%game_speed_edit.text = "Please enter a number."
 
 func change_text_back_to_num_after_telling_user_a_higher_number(time: float = 1): # Function only used for the function above to tell user to use a slower or faster speed and then reset the text to whatever number they entered after a specific time
 	await get_tree().create_timer(time).timeout
-	$ScrollContainer/settings_list/game_speed_edit.text = str(Settings.game.speed)
+	%game_speed_edit.text = str(Settings.game.speed)
 
 func _on_master_vol_slider_value_changed(value: float) -> void:
 	var new_vol: float = value
-	$ScrollContainer/settings_list/master_vol_label.text = "Master Volume: " + str(new_vol)
+	%master_vol_label.text = "Master Volume: " + str(new_vol)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(new_vol / 100.0))
 
 func _on_song_vol_slider_value_changed(value: float) -> void:
 	var new_vol: float = value
-	$ScrollContainer/settings_list/song_vol_label.text = "Song Volume: " + str(new_vol)
+	%song_vol_label.text = "Song Volume: " + str(new_vol)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Song"), linear_to_db(new_vol / 100.0))
 
 func _on_menu_song_vol_slider_value_changed(value: float) -> void:
 	var new_vol: float = value
-	$ScrollContainer/settings_list/menu_song_vol_label.text = "Menu Song Volume: " + str(new_vol)
+	%menu_song_vol_label.text = "Menu Song Volume: " + str(new_vol)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Menu Song"), linear_to_db(new_vol / 100.0))
 
 func _on_sfx_vol_slider_value_changed(value: float) -> void:
 	var new_vol: float = value
-	$ScrollContainer/settings_list/sfx_vol_label.text = "SFX Volume: " + str(new_vol)
+	%sfx_vol_label.text = "SFX Volume: " + str(new_vol)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), linear_to_db(new_vol / 100.0))
 
 func _on_master_vol_slider_drag_ended(value_changed: bool) -> void:
 	if not value_changed: return
-	Settings.game.master_vol = $ScrollContainer/settings_list/master_vol_slider.value
+	Settings.game.master_vol = %master_vol_slider.value
 	save_stgs()
 
 func _on_song_vol_slider_drag_ended(value_changed: bool) -> void:
 	if not value_changed: return
-	Settings.game.song_vol = $ScrollContainer/settings_list/song_vol_slider.value
+	Settings.game.song_vol = %song_vol_slider.value
 	save_stgs()
 
 func _on_menu_song_vol_slider_drag_ended(value_changed: bool) -> void:
 	if not value_changed: return
-	Settings.game.menu_song_vol = $ScrollContainer/settings_list/menu_song_vol_slider.value
+	Settings.game.menu_song_vol = %menu_song_vol_slider.value
 	save_stgs()
 
 func _on_sfx_vol_slider_drag_ended(value_changed: bool) -> void:
 	if not value_changed: return
-	Settings.game.sfx_vol = $ScrollContainer/settings_list/sfx_vol_slider.value
+	Settings.game.sfx_vol = %sfx_vol_slider.value
 	save_stgs()
 
 func _on_mbl_btn_layout_drop_item_selected(index: int) -> void:
-	match index:
-		0: Settings.game.mbl_btn_layout = 0
-		1: Settings.game.mbl_btn_layout = 1
+	Settings.game.mbl_btn_layout = index
 	save_stgs()
 
 func _on_note_anim_toggled(toggled_on: bool) -> void:
 	Settings.misc.note_anims = toggled_on
-	#if toggled_on: $ScrollContainer/settings_list/HBoxContainer.show()
-	#else: $ScrollContainer/settings_list/HBoxContainer.hide()
+	#if toggled_on: %HBoxContainer.show()
+	#else: %HBoxContainer.hide()
+	save_stgs()
+
+func _on_hold_bar_keep_pos_toggled(toggled_on: bool) -> void:
+	Settings.misc.hold_bar_keep_position = toggled_on
+	save_stgs()
+
+func hold_tail_unfaded_toggled(toggled_on: bool) -> void:
+	Settings.misc.hold_bar_no_end_fade = toggled_on
+	save_stgs()
+
+func hold_tail_solid_toggled(toggled_on: bool) -> void:
+	Settings.misc.hold_bar_solid = toggled_on
 	save_stgs()
 
 func save_stgs(): # Saves settings and plays the pop up
@@ -809,11 +1020,23 @@ func _on_bg_pulse_toggle_toggled(toggled_on: bool) -> void:
 	Settings.misc.menu_bg_pulse = toggled_on
 	save_stgs()
 
+func _on_bg_vid_pulse_toggle_toggled(toggled_on: bool) -> void:
+	Settings.misc.bg_vid_pulse = toggled_on
+	save_stgs()
+
 func _on_bg_pulse_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/bg_pulse_lbl.text = "---- Background Pulse Strength: " + str(value) + "x ----"
-	Settings.misc.menu_bg_pulse_strength = $ScrollContainer/settings_list/bg_pulse_slider.value
+	%bg_pulse_lbl.text = "---- Background Pulse Strength: " + str(value) + "x ----"
+	Settings.misc.menu_bg_pulse_strength = %bg_pulse_slider.value
 
 func _on_bg_pulse_slider_drag_ended(value_changed: bool) -> void:
+	if not value_changed: return
+	save_stgs()
+
+func _on_bg_vid_pulse_slider_value_changed(value: float) -> void:
+	%bg_vid_pulse_lbl.text = "---- Background Video Pulse Strength: " + str(value) + "x ----"
+	Settings.misc.bg_vid_pulse_strength = %bg_vid_pulse_slider.value
+
+func _on_bg_vid_pulse_slider_drag_ended(value_changed: bool) -> void:
 	if not value_changed: return
 	save_stgs()
 
@@ -831,10 +1054,6 @@ func _on_bg_img_select_pressed() -> void:
 		print("Couldnt show native file dialog ", err, error_string(err))
 
 func _on_bg_img_file_selected(status, paths: PackedStringArray, _filter_idx: int) -> void:
-	print("sta", status)
-	print("paths ", paths)
-	print("filter idx", _filter_idx)
-	
 	if not status or paths.is_empty():
 		return
 	
@@ -850,7 +1069,7 @@ func _on_bg_img_file_selected(status, paths: PackedStringArray, _filter_idx: int
 
 		if err2 == OK:
 			Settings.misc.menu_bg_img_path = img_save_path
-			print("Saved banner image to %s" % img_save_path)
+			#print("Saved banner image to %s" % img_save_path)
 			save_stgs()
 		
 		# Create a texture from the image
@@ -941,6 +1160,7 @@ func _on_check_for_update_pressed() -> void:
 
 func _on_animated_scrolls_check_toggled(toggled_on: bool) -> void:
 	Settings.misc.smooth_scrolls = toggled_on
+	save_stgs()
 
 var scroll_tween: Tween
 var scroll_velocity := 0.0
@@ -992,101 +1212,101 @@ func _on_scroll_cont_gui_input(event: InputEvent) -> void:
 			)
 
 func _on_master_vol_label_focus_entered() -> void:
-	$ScrollContainer/settings_list/master_vol_label.hide()
-	$ScrollContainer/settings_list/master_vol_edit.show()
-	$ScrollContainer/settings_list/master_vol_edit.grab_focus()
-	$ScrollContainer/settings_list/master_vol_edit.text = str($ScrollContainer/settings_list/master_vol_slider.value)
-	$ScrollContainer/settings_list/master_vol_edit.caret_column = 6
+	%master_vol_label.hide()
+	%master_vol_edit.show()
+	%master_vol_edit.grab_focus()
+	%master_vol_edit.text = str(%master_vol_slider.value)
+	%master_vol_edit.caret_column = 6
 
 func _on_song_vol_label_focus_entered() -> void:
-	$ScrollContainer/settings_list/song_vol_label.hide()
-	$ScrollContainer/settings_list/song_vol_edit.show()
-	$ScrollContainer/settings_list/song_vol_edit.grab_focus()
-	$ScrollContainer/settings_list/song_vol_edit.text = str($ScrollContainer/settings_list/song_vol_slider.value)
-	$ScrollContainer/settings_list/song_vol_edit.caret_column = 6
+	%song_vol_label.hide()
+	%song_vol_edit.show()
+	%song_vol_edit.grab_focus()
+	%song_vol_edit.text = str(%song_vol_slider.value)
+	%song_vol_edit.caret_column = 6
 
 func _on_menu_song_vol_label_focus_entered() -> void:
-	$ScrollContainer/settings_list/menu_song_vol_label.hide()
-	$ScrollContainer/settings_list/menu_song_vol_edit.show()
-	$ScrollContainer/settings_list/menu_song_vol_edit.grab_focus()
-	$ScrollContainer/settings_list/menu_song_vol_edit.text = str($ScrollContainer/settings_list/menu_song_vol_slider.value)
-	$ScrollContainer/settings_list/menu_song_vol_edit.caret_column = 6
+	%menu_song_vol_label.hide()
+	%menu_song_vol_edit.show()
+	%menu_song_vol_edit.grab_focus()
+	%menu_song_vol_edit.text = str(%menu_song_vol_slider.value)
+	%menu_song_vol_edit.caret_column = 6
 
 func _on_sfx_vol_label_focus_entered() -> void:
-	$ScrollContainer/settings_list/sfx_vol_label.hide()
-	$ScrollContainer/settings_list/sfx_vol_edit.show()
-	$ScrollContainer/settings_list/sfx_vol_edit.grab_focus()
-	$ScrollContainer/settings_list/sfx_vol_edit.text = str($ScrollContainer/settings_list/sfx_vol_slider.value)
-	$ScrollContainer/settings_list/sfx_vol_edit.caret_column = 6
+	%sfx_vol_label.hide()
+	%sfx_vol_edit.show()
+	%sfx_vol_edit.grab_focus()
+	%sfx_vol_edit.text = str(%sfx_vol_slider.value)
+	%sfx_vol_edit.caret_column = 6
 
 func _on_master_vol_edit_text_submitted(new_text: String) -> void:
 	var new_vol = clampf(General._num_eval(new_text), 0.0, 100.0)
-	$ScrollContainer/settings_list/master_vol_slider.value = new_vol
-	$ScrollContainer/settings_list/master_vol_edit.release_focus()
-	$ScrollContainer/settings_list/master_vol_edit.hide()
-	$ScrollContainer/settings_list/master_vol_label.show()
+	%master_vol_slider.value = new_vol
+	%master_vol_edit.release_focus()
+	%master_vol_edit.hide()
+	%master_vol_label.show()
 	Settings.game.master_vol = new_vol
 	save_stgs()
 
 func _on_song_vol_edit_text_submitted(new_text: String) -> void:
 	var new_vol = clampf(General._num_eval(new_text), 0.0, 100.0)
-	$ScrollContainer/settings_list/song_vol_slider.value = new_vol
-	$ScrollContainer/settings_list/song_vol_edit.release_focus()
-	$ScrollContainer/settings_list/song_vol_edit.hide()
-	$ScrollContainer/settings_list/song_vol_label.show()
+	%song_vol_slider.value = new_vol
+	%song_vol_edit.release_focus()
+	%song_vol_edit.hide()
+	%song_vol_label.show()
 	Settings.game.song_vol = new_vol
 	save_stgs()
 
 func _on_menu_song_vol_edit_text_submitted(new_text: String) -> void:
 	var new_vol = clampf(General._num_eval(new_text), 0.0, 100.0)
-	$ScrollContainer/settings_list/menu_song_vol_slider.value = new_vol
-	$ScrollContainer/settings_list/menu_song_vol_edit.release_focus()
-	$ScrollContainer/settings_list/menu_song_vol_edit.hide()
-	$ScrollContainer/settings_list/menu_song_vol_label.show()
+	%menu_song_vol_slider.value = new_vol
+	%menu_song_vol_edit.release_focus()
+	%menu_song_vol_edit.hide()
+	%menu_song_vol_label.show()
 	Settings.game.menu_song_vol = new_vol
 	save_stgs()
 
 func _on_sfx_vol_edit_text_submitted(new_text: String) -> void:
 	var new_vol = clampf(General._num_eval(new_text), 0.0, 100.0)
-	$ScrollContainer/settings_list/sfx_vol_slider.value = new_vol
-	$ScrollContainer/settings_list/sfx_vol_edit.release_focus()
-	$ScrollContainer/settings_list/sfx_vol_edit.hide()
-	$ScrollContainer/settings_list/sfx_vol_label.show()
+	%sfx_vol_slider.value = new_vol
+	%sfx_vol_edit.release_focus()
+	%sfx_vol_edit.hide()
+	%sfx_vol_label.show()
 	Settings.game.sfx_vol = new_vol
 	save_stgs()
 
 func _on_master_vol_edit_focus_exited() -> void:
-	$ScrollContainer/settings_list/master_vol_edit.hide()
-	$ScrollContainer/settings_list/master_vol_label.show()
+	%master_vol_edit.hide()
+	%master_vol_label.show()
 
 func _on_song_vol_edit_focus_exited() -> void:
-	$ScrollContainer/settings_list/song_vol_edit.hide()
-	$ScrollContainer/settings_list/song_vol_label.show()
+	%song_vol_edit.hide()
+	%song_vol_label.show()
 
 func _on_menu_song_vol_edit_focus_exited() -> void:
-	$ScrollContainer/settings_list/menu_song_vol_edit.hide()
-	$ScrollContainer/settings_list/menu_song_vol_label.show()
+	%menu_song_vol_edit.hide()
+	%menu_song_vol_label.show()
 
 func _on_sfx_vol_edit_focus_exited() -> void:
-	$ScrollContainer/settings_list/sfx_vol_edit.hide()
-	$ScrollContainer/settings_list/sfx_vol_label.show()
+	%sfx_vol_edit.hide()
+	%sfx_vol_label.show()
 
 func _on_menu_bg_brightness_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/menu_bg_brightness_label.text = "---- Background Brightness (Main Menu): " + str(value) + "% ----"
+	%menu_bg_brightness_label.text = "---- Background Brightness (Main Menu): " + str(value) + "% ----"
 	menu_brightness_changed.emit(value / 100.0)
 
 func _on_menu_bg_brightness_slider_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.game.menu_bg_brightness = $ScrollContainer/settings_list/menu_bg_brightness_slider.value / 100.0
+		Settings.game.menu_bg_brightness = %menu_bg_brightness_slider.value / 100.0
 		save_stgs()
 
 func _on_bg_brightness_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/bg_brightness_label.text = "---- Background Brightness (In Game): " + str(value) + "% ----"
+	%bg_brightness_label.text = "---- Background Brightness (In Game): " + str(value) + "% ----"
 	brightness_changed.emit(value / 100.0)
 
 func _on_bg_brightness_slider_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.game.bg_brightness = $ScrollContainer/settings_list/bg_brightness_slider.value / 100.0
+		Settings.game.bg_brightness = %bg_brightness_slider.value / 100.0
 		save_stgs()
 
 func _on_username_edit_text_submitted(new_text: String) -> void:
@@ -1141,7 +1361,7 @@ func _on_pfp_img_file_selected(status, paths: PackedStringArray, _filter_idx: in
 			save_stgs()
 
 			var tex := ImageTexture.create_from_image(image)
-			$ScrollContainer/settings_list/pfp_edit.icon = tex
+			%pfp_edit.icon = tex
 			set_profile.emit(tex)
 		else:
 			print("Failed to save image at %s" % img_save_path)
@@ -1185,7 +1405,7 @@ func _on_banner_img_file_selected(status, paths: PackedStringArray, _filter_idx:
 			save_stgs()
 
 			var tex := ImageTexture.create_from_image(image)
-			$ScrollContainer/settings_list/banner_edit.icon = tex
+			%banner_edit.icon = tex
 			set_banner.emit(tex)
 		else:
 			print("Failed to save image at %s" % img_save_path)
@@ -1198,31 +1418,31 @@ func _on_bg_colour_toggle_toggled(toggled_on: bool) -> void:
 
 func _on_note_backdrop_brightness_slider_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.misc.notes_backdrop_opacity = $ScrollContainer/settings_list/note_backdrop_brightness_slider.value / 100.0
+		Settings.misc.notes_backdrop_opacity = %note_backdrop_brightness_slider.value / 100.0
 		save_stgs()
-		note_backdrop_opacity_changed.emit($ScrollContainer/settings_list/note_backdrop_brightness_slider.value / 100.0)
+		note_backdrop_opacity_changed.emit(%note_backdrop_brightness_slider.value / 100.0)
 
 func _on_note_backdrop_brightness_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/note_backdrop_brightness.text = "---- Notes Backdrop Opacity (In Game): " + str(value)  + "% ----"
-	editor_note_backdrop_opacity_changed.emit($ScrollContainer/settings_list/editor_note_backdrop_brightness_slider.value / 100.0)
+	%note_backdrop_brightness.text = "---- Notes Backdrop Opacity (In Game): " + str(value)  + "% ----"
+	editor_note_backdrop_opacity_changed.emit(%editor_note_backdrop_brightness_slider.value / 100.0)
 
 func _on_editor_note_backdrop_brightness_slider_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.misc.editor_notes_backdrop_opacity = $ScrollContainer/settings_list/editor_note_backdrop_brightness_slider.value / 100.0
+		Settings.misc.editor_notes_backdrop_opacity = %editor_note_backdrop_brightness_slider.value / 100.0
 		save_stgs()
 
 func _on_editor_note_backdrop_brightness_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/editor_note_backdrop_brightness.text = "---- Notes Backdrop Opacity (Editor): " + str(value)  + "% ----"
+	%editor_note_backdrop_brightness.text = "---- Notes Backdrop Opacity (Editor): " + str(value)  + "% ----"
 	editor_note_backdrop_opacity_changed.emit(value / 100.0)
 
 
 func _on_editor_bg_brightness_slider_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/editor_bg_brightness_label.text = "---- Background Brightness (Editor): " + str(value) + "% ----"
+	%editor_bg_brightness_label.text = "---- Background Brightness (Editor): " + str(value) + "% ----"
 	editor_brightness_changed.emit(value / 100.0)
 
 func _on_editor_bg_brightness_slider_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.game.editor_bg_brightness = $ScrollContainer/settings_list/editor_bg_brightness_slider.value / 100.0
+		Settings.game.editor_bg_brightness = %editor_bg_brightness_slider.value / 100.0
 		save_stgs()
 
 func _on_bg_img_drop_item_selected(index: int) -> void:
@@ -1234,7 +1454,7 @@ func _on_bg_img_drop_item_selected(index: int) -> void:
 		save_stgs()
 		return
 	
-	var img_file_name: String = $ScrollContainer/settings_list/bg_img_drop.get_item_text(index)
+	var img_file_name: String = %bg_img_drop.get_item_text(index)
 	var img := Image.load_from_file("user://Backgrounds/" + img_file_name)
 	if img: # make sure it loaded
 		var tex := ImageTexture.create_from_image(img)
@@ -1245,45 +1465,56 @@ func _on_bg_img_drop_item_selected(index: int) -> void:
 		print("Failed to load image at path: user://Backgrounds/" + img_file_name)
 
 func _on_bg_img_delete_pressed() -> void:
-	$ScrollContainer/settings_list/bg_img_delete.release_focus()
+	%bg_img_delete.release_focus()
 	if Settings.misc.menu_bg_img_path == "":
-		$ScrollContainer/settings_list/bg_img_delete.disabled = true
-		$ScrollContainer/settings_list/bg_img_delete.text = "Cannot delete Default BG."
-		$ScrollContainer/settings_list/bg_img_delete.mouse_default_cursor_shape = CURSOR_FORBIDDEN
+		%bg_img_delete.disabled = true
+		%bg_img_delete.text = "Cannot delete Default BG."
+		%bg_img_delete.mouse_default_cursor_shape = CURSOR_FORBIDDEN
 		await get_tree().create_timer(2.0).timeout
-		$ScrollContainer/settings_list/bg_img_delete.text = "Delete Current Background Image"
-		$ScrollContainer/settings_list/bg_img_delete.disabled = false
-		$ScrollContainer/settings_list/bg_img_delete.mouse_default_cursor_shape = CURSOR_POINTING_HAND
+		%bg_img_delete.text = "Delete Current Background Image"
+		%bg_img_delete.disabled = false
+		%bg_img_delete.mouse_default_cursor_shape = CURSOR_POINTING_HAND
 		return
-	$ScrollContainer/settings_list/bg_img_delete.hide()
-	$ScrollContainer/settings_list/bg_img_dlt_confirmation.show()
-	$ScrollContainer/settings_list/bg_img_dlt_confirmation/bg_img_delete_confirm.text = "Delete " + Settings.misc.menu_bg_img_path.get_file() + "?"
+	%bg_img_delete.hide()
+	%bg_img_dlt_confirmation.show()
+	%bg_img_dlt_confirmation/bg_img_delete_confirm.text = "Delete " + Settings.misc.menu_bg_img_path.get_file() + "?"
 
 func _on_bg_img_confirm_pressed() -> void:
 	var err = DirAccess.remove_absolute(Settings.misc.menu_bg_img_path)
-	print(err, " ", error_string(err))
+	print("removing bg err ", err, " str ", error_string(err))
 	_on_bg_img_drop_item_selected(0)
 	get_custom_backgrounds()
 	
-	$ScrollContainer/settings_list/bg_img_delete.show()
-	$ScrollContainer/settings_list/bg_img_dlt_confirmation.hide()
+	%bg_img_delete.show()
+	%bg_img_dlt_confirmation.hide()
 
 func _on_bg_img_delete_cancel_pressed() -> void:
-	$ScrollContainer/settings_list/bg_img_delete.show()
-	$ScrollContainer/settings_list/bg_img_dlt_confirmation.hide()
+	%bg_img_delete.show()
+	%bg_img_dlt_confirmation.hide()
 
 
 func _on_bg_vids_toggle_toggled(toggled_on: bool) -> void:
-	$ScrollContainer/settings_list/bg_vids_toggle.release_focus()
+	%bg_vids_toggle.release_focus()
 	Settings.misc.bg_videos = toggled_on
 	save_stgs()
 	bg_vids_toggled.emit(toggled_on)
 
-
 func _on_bg_vids_edit_toggle_toggled(toggled_on: bool) -> void:
-	$ScrollContainer/settings_list/bg_vids_edit_toggle.release_focus()
+	%bg_vids_edit_toggle.release_focus()
 	Settings.misc.editor_bg_videos = toggled_on
 	editor_bg_vids_toggled.emit(toggled_on)
+
+func _on_cover_loops_toggled(toggled_on: bool) -> void:
+	%cover_loops_toggle.release_focus()
+	Settings.misc.cover_loops = toggled_on
+	cover_loops_toggled.emit(toggled_on)
+	save_stgs()
+
+func _on_cover_loops_playing_bar_toggled(toggled_on: bool) -> void:
+	%cover_loops_playing_bar_toggle.release_focus()
+	Settings.misc.cover_loops_playing_bar = toggled_on
+	cover_loops_playing_bar_toggled.emit(toggled_on)
+	save_stgs()
 
 func _on_note_particle_fx_item_selected(index: int) -> void:
 	Settings.misc.note_particle_fx = index
@@ -1291,29 +1522,32 @@ func _on_note_particle_fx_item_selected(index: int) -> void:
 
 func _on_note_speed_edit_drag_ended(value_changed: bool) -> void:
 	if value_changed:
-		Settings.game.note_speed = $ScrollContainer/settings_list/note_speed_edit.value
-		
-		$ScrollContainer/settings_list/note_speed_value_lbl.text = "Note Speed: %.2f" % $ScrollContainer/settings_list/note_speed_edit.value
+		Settings.game.note_speed = %note_speed_edit.value
+		save_stgs()
+
+func hold_thresh_to_rm_edit_drag_ended(value_changed: bool) -> void:
+	if value_changed:
+		Settings.misc.hold_note_to_rm_hold_threshold = %hold_thresh_to_rm_edit.value
 		save_stgs()
 
 func _on_note_speed_value_lbl_focus_entered() -> void:
-	$ScrollContainer/settings_list/note_speed_value_edit.show()
-	$ScrollContainer/settings_list/note_speed_value_lbl.hide()
+	%note_speed_value_edit.show()
+	%note_speed_value_lbl.hide()
 	
-	$ScrollContainer/settings_list/note_speed_value_edit.text = str($ScrollContainer/settings_list/note_speed_edit.value)
-	$ScrollContainer/settings_list/note_speed_value_edit.caret_column = 8
+	%note_speed_value_edit.text = str(%note_speed_edit.value)
+	%note_speed_value_edit.caret_column = 8
 	
-	$ScrollContainer/settings_list/note_speed_value_edit.grab_focus()
+	%note_speed_value_edit.grab_focus()
 
 func _on_menu_song_vol_edit_2_focus_exited() -> void:
-	$ScrollContainer/settings_list/note_speed_value_lbl.show()
+	%note_speed_value_lbl.show()
 	
-	$ScrollContainer/settings_list/note_speed_value_edit.hide()
+	%note_speed_value_edit.hide()
 
 func _on_menu_song_vol_edit_2_text_submitted(new_text: String) -> void:
 	var new_speed: float = clampf(General._num_eval(new_text), 1.0, 50.0)
-	$ScrollContainer/settings_list/note_speed_edit.value = new_speed
-	$ScrollContainer/settings_list/note_speed_value_edit.release_focus()
+	%note_speed_edit.value = new_speed
+	%note_speed_value_edit.release_focus()
 	_on_menu_song_vol_edit_2_focus_exited()
 	
 	Settings.game.note_speed = new_speed
@@ -1321,11 +1555,294 @@ func _on_menu_song_vol_edit_2_text_submitted(new_text: String) -> void:
 
 
 func _on_note_speed_edit_value_changed(value: float) -> void:
-	$ScrollContainer/settings_list/note_speed_value_lbl.text = "Note Speed: %.2f" % value
+	%note_speed_value_lbl.text = "---- Note Speed: %.2f ----" % value
 	Settings.game.note_speed = value
 	note_speed_changed.emit(value)
 
+func hold_thresh_to_rm_edit_value_changed(value: float) -> void:
+	%hold_thresh_to_rm_lbl.text = "---- Editor Hold Note Minimum: %.2f ----" % value
+	Settings.misc.hold_thresh_to_rm_edit = value
+	hold_note_thresh_changed.emit(value)
 
 func _on_show_chart_alignment_toggled(toggled_on: bool) -> void:
 	Settings.other.show_chart_alignment = toggled_on
 	save_stgs()
+
+func _on_load_all_covers_check_toggled(toggled_on: bool) -> void:
+	Settings.game.load_all_covers = toggled_on
+	save_stgs()
+
+func _on_show_frame_time_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_frame_time = toggled_on
+	save_stgs()
+
+func _on_show_ram_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_ram = toggled_on
+	save_stgs()
+
+func _on_show_more_ram_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_more_ram = toggled_on
+	save_stgs()
+
+func _on_show_draw_calls_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_draw_calls = toggled_on
+	save_stgs()
+
+func _on_show_vram_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_vram = toggled_on
+	save_stgs()
+
+func _on_show_audio_latency_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_audio_latency = toggled_on
+	save_stgs()
+
+func _on_show_mix_rate_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_mix_rate = toggled_on
+	save_stgs()
+
+func _on_keep_list_in_ram_check_toggled(toggled_on: bool) -> void:
+	Settings.game.keep_list_in_ram = toggled_on
+	save_stgs()
+
+func _on_max_threads_spin_value_changed(value: float) -> void:
+	Settings.game.max_threads_in_list = int(value)
+	save_stgs()
+
+
+func _on_copyright_meta_clicked(meta: Variant) -> void:
+	OS.shell_open(meta)
+
+
+func _on_editor_cover_loops_toggled(toggled_on: bool) -> void:
+	Settings.misc.editor_cover_loops = toggled_on
+	editor_cover_loops_toggled.emit(toggled_on)
+	save_stgs()
+
+
+func _on_editor_seek_vid_scroll_toggle_toggled(toggled_on: bool) -> void:
+	Settings.misc.editor_seek_vid_along_scroll = toggled_on
+	save_stgs()
+
+
+func _on_edit_tools_notify_toggle_toggled(toggled_on: bool) -> void:
+	Settings.misc.edit_tools_notify_modified_notes = toggled_on
+	save_stgs()
+
+
+func _on_edit_show_hold_ends_toggled(toggled_on: bool) -> void:
+	Settings.misc.editor_show_note_hold_ends = toggled_on
+	save_stgs()
+	edit_show_hold_ends_toggled.emit(toggled_on)
+
+
+func _on_edit_show_error_notes_toggled(toggled_on: bool) -> void:
+	Settings.misc.show_error_notes = toggled_on
+	save_stgs()
+	show_error_notes_toggled.emit(toggled_on)
+
+
+func _on_edit_show_diff_graph_toggled(toggled_on: bool) -> void:
+	Settings.misc.editor_show_diff_graph = toggled_on
+	save_stgs()
+	editor_diff_graph_toggled.emit(toggled_on)
+
+
+func _on_edit_show_hq_selection_toggled(toggled_on: bool) -> void:
+	Settings.misc.hq_selection_box = toggled_on
+	save_stgs()
+	selection_box_quality_changed.emit(toggled_on)
+
+
+func _on_joy_sens_slider_value_changed(value: float) -> void:
+	Settings.game.joy_sens = value
+	%joy_sens_lbl.text = "---- Controller Joystick Sensitivity: %sx ----" % str(value / 1000)
+
+
+func _on_joy_sens_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed: 
+		Settings.game.joy_sens = %joy_sens_slider.value
+		save_stgs()
+		Gamepad_Cursor.mouse_sens = Settings.game.joy_sens
+
+
+func _on_parallax_bg_toggled(toggled_on: bool) -> void:
+	Settings.misc.hq_background = toggled_on
+	save_stgs()
+	parallax_bg_toggled.emit(toggled_on)
+
+
+func _on_parallax_toggled(toggled_on: bool) -> void:
+	Settings.misc.bg_parallax = toggled_on
+	save_stgs()
+	bg_parallax_toggled.emit(toggled_on)
+
+
+func _on_bg_effect_item_selected(index: int) -> void:
+	Settings.misc.bg_effect = index
+	save_stgs()
+	bg_effect_changed.emit(index)
+	
+	if index == 5:
+		%random_multi_stgs.show()
+	else:
+		%random_multi_stgs.hide()
+
+
+func _on_parallax_rot_time_slider_drag_ended(value_changed: bool) -> void:
+	if not value_changed: return
+	Settings.misc.bg_tween_time_sec = %parallax_rot_time_slider.value
+	save_stgs()
+
+func _on_parallax_time_slider_drag_ended(value_changed: bool) -> void:
+	if not value_changed: return
+	Settings.misc.bg_time_interval_sec = %parallax_time_slider.value
+	save_stgs()
+
+func _on_parallax_rot_time_slider_value_changed(value: float) -> void:
+	%parallax_rot_time.text = "---- Background Parallax Rotation Time: %ss ----" % str(value)
+	bg_rot_time_changed.emit(%parallax_rot_time_slider.value)
+
+func _on_parallax_time_slider_value_changed(value: float) -> void:
+	%parallax_time_lbl.text = "---- Background Parallax Time Between: %ss ----" % str(value)
+	bg_time_interval_changed.emit(%parallax_time_slider.value)
+
+func _on_random_multi_min_spin_value_changed(value: float) -> void:
+	Settings.misc.bg_fx_random_multi_min = int(value)
+	bg_fx_random_multi_min_changed.emit(int(value))
+	save_stgs()
+
+func _on_random_multi_max_spin_value_changed(value: float) -> void:
+	Settings.misc.bg_fx_random_multi_max = int(value)
+	bg_fx_random_multi_max_changed.emit(int(value))
+	save_stgs()
+
+func _on_parallax_speed_slider_value_changed(value: float) -> void:
+	%parallax_speed.text = "---- Background Parallax Speed: %sx ----" % str(value)
+	bg_parallax_speed_changed.emit(value)
+
+func _on_parallax_speed_slider_drag_ended(value_changed: bool) -> void:
+	if not value_changed: return
+	Settings.misc.bg_parallax_speed = %parallax_speed_slider.value
+	save_stgs()
+
+func _on_hq_bg_matches_song_toggled(toggled_on: bool) -> void:
+	Settings.misc.bg_matches_cover = toggled_on
+	save_stgs()
+
+
+func _on_check_for_epic_data_pressed() -> void:
+	EpicUserDataStore.load_file("settings.json")
+	%check_for_epic_data.release_focus()
+	
+
+func _on_manual_epic_save_pressed() -> void:
+	EpicUserDataStore.save_file("settings.json", Settings.settings)
+	%manual_epic_save.release_focus()
+
+
+func _on_output_device_drop_item_selected(index: int) -> void:
+	var device: String = %output_device_drop.get_item_text(index)
+	AudioServer.set_output_device(device)
+	#AudioServer.set_bus_layout(load("res://default_bus_layout.tres"))
+
+	Settings.game.output_device = device
+	print("Set output device to: %s" % device)
+	print("Audio server set to %s" % AudioServer.output_device)
+	save_stgs()
+
+func _on_input_device_drop_item_selected(index: int) -> void:
+	var device: String = %input_device_drop.get_item_text(index)
+	AudioServer.set_input_device(device)
+	#AudioServer.set_bus_layout(load("res://default_bus_layout.tres"))
+	
+	Settings.game.input_device = device
+	print("Set input device to: %s" % device)
+	print("Audio server set to %s" % AudioServer.input_device)
+	save_stgs()
+
+
+func _on_logout_pressed() -> void:
+	HAuth.logout_async()
+
+func _on_login_pressed() -> void:
+	HAuth.login_account_portal_async()
+	HAuth.login_persistent_auth_async()
+
+func refresh_menu_song_dirs() -> void:
+	%menu_song_dirs.clear()
+
+	for path in Settings.game.menu_song_dirs:
+		if path == "user://Custom":
+			%menu_song_dirs.add_item(path, null, false)
+			continue
+		%menu_song_dirs.add_item(path)
+
+
+func _on_menu_song_dirs_item_selected(index: int) -> void:
+	$ScrollContainer/settings_list/vbox/VBoxContainer/rm_path.disabled = index == 0
+
+
+func _on_open_dir_pressed() -> void:
+	var err := DisplayServer.file_dialog_show(
+		"Select directory for the menu to play songs from.",          # Title
+		"",
+		"",                                            # Initial path (empty means default)
+		true,
+		DisplayServer.FILE_DIALOG_MODE_OPEN_DIR,    # Mode: open directory
+		["*"],   # File filters
+		Callable(self, "_on_file_dialog_menu_song_dir_selected")
+	)
+	if err != OK:
+		print("Couldnt show native file dialog ", err, error_string(err))
+	
+	$ScrollContainer/settings_list/vbox/HBoxContainer/open_dir.release_focus()
+
+func _on_file_dialog_menu_song_dir_selected(_status, paths: PackedStringArray, _filter_idx: int) -> void:
+	$ScrollContainer/settings_list/vbox/HBoxContainer/new_path.text = paths[0]
+
+func _on_add_path_pressed() -> void:
+	var path: String = $ScrollContainer/settings_list/vbox/HBoxContainer/new_path.text.strip_edges()
+
+	if path.is_empty():
+		return
+
+	if Settings.game.menu_song_dirs.has(path):
+		return
+
+	if !DirAccess.dir_exists_absolute(path):
+		return
+
+	Settings.game.menu_song_dirs.append(path)
+	save_stgs()
+
+	refresh_menu_song_dirs()
+
+	$ScrollContainer/settings_list/vbox/HBoxContainer/new_path.clear()
+	
+	$ScrollContainer/settings_list/vbox/VBoxContainer/add_path.release_focus()
+
+
+func _on_rm_path_pressed() -> void:
+	var selected = %menu_song_dirs.get_selected_items()
+
+	if selected.is_empty():
+		return
+
+	var index = selected[0]
+
+	# Prevent deleting user://Custom
+	if index == 0:
+		return
+
+	Settings.game.menu_song_dirs.remove_at(index)
+	save_stgs()
+
+	refresh_menu_song_dirs()
+	
+	$ScrollContainer/settings_list/vbox/VBoxContainer/rm_path.release_focus()
+
+
+func _on_new_path_text_submitted(_new_text: String) -> void:
+	_on_add_path_pressed()
+	$ScrollContainer/settings_list/vbox/HBoxContainer/new_path.release_focus()
+	

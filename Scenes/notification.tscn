@@ -1,0 +1,84 @@
+[gd_scene load_steps=5 format=3 uid="uid://cf6vlq5337i7w"]
+
+[ext_resource type="Script" uid="uid://bomtsea2nmiey" path="res://Scenes/notification.gd" id="1_6kda2"]
+[ext_resource type="FontFile" uid="uid://dijbrvdklfy0p" path="res://Resources/misc/Parabolica/Parabolica Bold.otf" id="1_wohpn"]
+[ext_resource type="Texture2D" uid="uid://bjucqx1y5qt2x" path="res://Resources/favicon.png" id="2_6kda2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lk1ln"]
+bg_color = Color(0, 0, 0, 0.87100005)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[node name="noti" type="Panel"]
+custom_minimum_size = Vector2(457, 162)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -472.0
+offset_top = 15.0
+offset_right = -15.0
+offset_bottom = 177.0
+grow_horizontal = 0
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_lk1ln")
+script = ExtResource("1_6kda2")
+
+[node name="title" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -129.0
+offset_right = 129.0
+offset_bottom = 40.0
+grow_horizontal = 2
+mouse_filter = 1
+theme_override_fonts/normal_font = ExtResource("1_wohpn")
+theme_override_font_sizes/normal_font_size = 24
+text = "Achievement Unlocked!"
+fit_content = true
+autowrap_mode = 0
+
+[node name="what" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -322.0
+offset_top = -20.0
+offset_right = -44.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 1
+theme_override_fonts/normal_font = ExtResource("1_wohpn")
+theme_override_font_sizes/normal_font_size = 24
+text = "Achievement Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="achivement_tex" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 37.0
+offset_top = 37.0
+offset_right = 125.0
+offset_bottom = -37.0
+grow_vertical = 2
+texture = ExtResource("2_6kda2")
+expand_mode = 1
+stretch_mode = 5

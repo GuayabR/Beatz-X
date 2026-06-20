@@ -296,16 +296,15 @@ layout_mode = 2
 theme_override_font_sizes/normal_font_size = 35
 theme_override_font_sizes/bold_italics_font_size = 20
 bbcode_enabled = true
-text = "Included songs all made by Creo.
-Included songs artwork all made by Creo.
-Visit [url=https://creo-music.com/]Creo's Website[/url] to buy these tracks for yourself.
+text = "Included songs all made/composed by their respective artists.
+Included songs' album artwork all designed by their respective artists.
 [i]--------------------------------------------------------------------------------------------------------------------------------------------------------------------[/i]
-Included songs Charts all made by GuayabR.
+Included Charts all recorded and edited by GuayabR.
 [b][i]--------------------------------------------------------------------------------------------------------------------------------------------------------------------[/i][/b]
 Background Image (defaultBG.png // [url=https://github.com/Uproxide/Texture-Workshop/blob/main/resources/TWSSheet/TWS_Background.png/]TWS_Background.png[/url])
 by Uproxide from Geometry Dash geode mod [url=https://geode-sdk.org/mods/uproxide.textures/]\"Texture Workshop\"[/url]
 
-Note images by teejusb from [url=https://github.com/Simply-Love/Simply-Love-SM5/]\"Simply-Love-SM5\"[/url]
+Note texture images by teejusb from [url=https://github.com/Simply-Love/Simply-Love-SM5/]\"Simply-Love-SM5\"[/url]
 StepMania 5 theme. [url=https://github.com/Simply-Love/Simply-Love-SM5/]\"Simply-Love-SM5\"[/url] made for the post-ITG community."
 fit_content = true
 horizontal_alignment = 1
@@ -466,7 +465,7 @@ horizontal_alignment = 1
 z_index = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "AS^ AA AM am AR AJ aa AS aE AL AT AF
+text = "AK AA AM am AR AJ aa AS aE AL AT AF
 CMM | STW | CEB | BWJ | BTS | QZD"
 horizontal_alignment = 1
 

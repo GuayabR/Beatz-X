@@ -1,6 +1,6 @@
 extends Panel
 
-signal play_as_bg_song(path: String)
+signal play_as_bg_song(path: String, idx: int)
 
 signal play(idx: int, path: String, from_album: bool)
 
@@ -15,6 +15,25 @@ var metadata: Dictionary
 var index: int
 
 var from_album: bool = false
+
+func _ready() -> void:
+	if OS.get_name() == "Android": 
+		$buttons/open_explorer.disabled = true
+		
+		for b in $buttons.get_children():
+			if b is not Button: continue
+			
+			var btn: Button = b
+			
+			btn.custom_minimum_size.y = 29.0
+			
+		
+		for lbl: Label in $text.get_children():
+			
+			lbl.custom_minimum_size.y = 18.0
+			
+			lbl.add_theme_font_size_override("font_size", 15)
+			
 
 func appear(item_name: String, meta: Dictionary, idx: int, from_album_view: bool = false):
 	$text/item_song_name.text = item_name
@@ -41,7 +60,7 @@ func appear(item_name: String, meta: Dictionary, idx: int, from_album_view: bool
 func _on_play_as_bg_song_pressed() -> void:
 	$buttons/play_as_bg_song.release_focus()
 	var p = $buttons/play_as_bg_song.get_meta("song_path")
-	play_as_bg_song.emit(p)
+	play_as_bg_song.emit(p, index)
 	hide()
 	$buttons/play_as_bg_song.release_focus()
 
@@ -67,5 +86,5 @@ func _on_edit_pressed() -> void:
 
 func _on_go_to_album_pressed() -> void:
 	$buttons/go_to_album.release_focus()
-	go_to_album_pressed.emit(index, metadata.album, metadata.artist, metadata.year, metadata.cover_texture.get_image())
+	go_to_album_pressed.emit(index, metadata.album, metadata.artist, metadata.year, Image.load_from_file(metadata.cover_path))
 	hide()

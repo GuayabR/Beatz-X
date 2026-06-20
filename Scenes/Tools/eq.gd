@@ -20,7 +20,7 @@ const BAND_FREQS := {
 }
 
 func _ready() -> void:
-	print("EQ settings loaded for bus: ", AudioServer.get_bus_name(bus_index))
+	#print("EQ settings loaded for bus: ", AudioServer.get_bus_name(bus_index))
 	_load_current_eq_to_sliders()
 	_init_presets_list()
 	$eq_to_menu_song_toggle.set_pressed_no_signal(Settings.misc.eq_applies_to_menu_song)
@@ -105,7 +105,7 @@ func _apply_eq_preset(preset_name: String) -> void:
 			_set_eq_band(band_index, val)
 
 	Settings._save()
-	print("Applied EQ preset:", preset_name)
+	#print("Applied EQ preset:", preset_name)
 
 
 # --- SIGNALS: SLIDERS & SAVING ---
@@ -165,7 +165,6 @@ func _on_preset_name_text_submitted(new_text: String) -> void:
 
 	# ❌ Prevent overwriting built-in presets
 	if p_name in DEFAULT_PRESET_NAMES:
-		print("Cannot overwrite built-in EQ preset: ", p_name)
 		$preset_name.text = ""
 		$preset_name.placeholder_text = "Cannot overwrite built-in presets."
 		return
@@ -183,9 +182,6 @@ func _on_preset_name_text_submitted(new_text: String) -> void:
 	Settings.misc.selected_eq_preset = p_name
 	Settings._save()
 	
-	print("Saved new preset: ", p_name)
-	print("With EQs: ", JSON.stringify(new_preset, "\t", false))
-	print(JSON.stringify(Settings.eq_presets, "\t", false))
 
 	# Refresh preset list
 	_init_presets_list()
@@ -250,7 +246,6 @@ func _on_remove_preset_pressed() -> void:
 
 	# Prevent removing built-ins
 	if p_name in DEFAULT_PRESET_NAMES:
-		print("Cannot remove built in preset: ", p_name)
 		return
 	
 	$remove_preset.add_theme_font_size_override("font_size", 38)
@@ -320,7 +315,6 @@ func _on_rename_preset_pressed() -> void:
 	var p_id = $presets.get_selected_id()
 	var old_name = $presets.get_item_text(p_id)
 	if old_name in DEFAULT_PRESET_NAMES:
-		print("Cannot rename built in preset: ", old_name)
 		return
 
 	# Prepare rename UI
@@ -338,11 +332,9 @@ func _on_rename_preset_pressed() -> void:
 func _on_preset_rename_submitted(new_name: String, old_name: String) -> void:
 	var p_name := new_name.strip_edges()
 	if p_name == "" or p_name in DEFAULT_PRESET_NAMES:
-		print("Invalid or reserved preset name:", p_name)
 		return
 
 	if Settings.eq_presets.has(p_name):
-		print("A preset with that name already exists: ", p_name)
 		return
 
 	# Rename preset

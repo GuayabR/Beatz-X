@@ -22,6 +22,8 @@ var settings: Dictionary[String, Variant] = {
 		"song_vol": 80.0,
 		"menu_song_vol": 75.0,
 		"sfx_vol": 40.0,
+		"output_device": "Default",
+		"input_device": "Default",
 		"speed": 1.0,
 		"note_speed": 10.0,
 		"theme": "Default", # 1.0 max 0.0 min
@@ -30,18 +32,60 @@ var settings: Dictionary[String, Variant] = {
 		"editor_bg_brightness": 0.75,
 		"version": "-1.0",
 		"show_vpopup": true,
-		"last_editor_path": ""
+		"last_editor_path": "",
+		"joy_sens": 800.0,
+		"load_all_covers": false, # if false, only the covers that are currently visible are actually loaded in ram, if a cover is now not visible it will be unloaded
+		# if true, covers will be naturally loaded either until you scroll to the bottom of the list, or if you wait long enough
+		"keep_list_in_ram": false, # if true, the list will always stay loaded (except covers), instead of always reloading it from your file system
+		# if you create a new song, or import a new song, the new song entry will just be added onto the already loaded list.
+		# list only gets recreated when the game starts or when you press the reload list button
+		"max_threads_in_list": 2,
+		"menu_song_dirs": [
+			"user://Custom"
+		],
 	},
 	"misc_settings": {
+		"hq_background": true,
+		"bg_parallax": true,
+		"bg_matches_cover": true,
+		"bg_effect": 1,
+		"bg_fx_random_multi_min": 5,
+		"bg_fx_random_multi_max": 15,
+		"bg_multi_min": 5,
+		"bg_multi_max": 15,
+		"bg_tween_time_sec": 0.5,
+		"bg_time_interval_sec": 1.0,
+		"bg_parallax_speed": 1.0,
 		"bg_videos": true,
 		"editor_bg_videos": true,
+		"cover_loops": true,
+		"editor_cover_loops": true,
+		"cover_loops_playing_bar": true,
+		"editor_seek_vid_along_scroll": true,
+		"editor_show_note_hold_ends": true,
+		"show_error_notes": false,
+		"editor_show_diff_graph": true,
+		"hq_selection_box": true,
 		"note_style": "dance", # dance / techno / para 
 		"note_anims": true,
-		"note_particle_fx": 1, # 0 none 1 splash 2 crash 3 splash and crash 4 orbit
+		"note_particle_fx": 1.0, # 0 none 1 splash 2 crash 3 splash and crash 4 orbit
+		"hold_bar_keep_position": true,
+		"hold_bar_no_end_fade": false,
+		"hold_bar_solid": false,
+		"hold_thresh_to_rm_edit": 25.0,
 		"menu_bg_pulse": true,
+		"bg_vid_pulse": true,
 		"menu_bg_pulse_strength": 16.0,
+		"bg_vid_pulse_strength": 8.0,
 		"menu_bg_img_path": "",
 		"show_fps": true,
+		"show_frame_time": false,
+		"show_ram": false,
+		"show_more_ram": false,
+		"show_draw_calls": false,
+		"show_vram": false,
+		"show_audio_latency": false,
+		"show_mix_rate": false,
 		"accurate_fps": false,
 		"drc": true,
 		"vis": true,
@@ -60,7 +104,8 @@ var settings: Dictionary[String, Variant] = {
 		"notes_backdrop_opacity": 0.35,
 		"editor_notes_backdrop_opacity": 0.0,
 		"eq_applies_to_menu_song": false,
-		"selected_eq_preset": "Flat"
+		"selected_eq_preset": "Flat",
+		"edit_tools_notify_modified_notes": true
 	},
 	"circle_notes": {
 		"Upleft": Color(1.0, 0.0, 1.0, 1.0),
@@ -174,8 +219,6 @@ func _ready() -> void:
 	_load()
 	#_apply_keybinds()
 	_apply_display_settings()
-	
-	print(JSON.stringify(settings, "\t", false)) # Print out the settings for debug purposes
 
 func _save():
 	print("Saving settings")
@@ -191,22 +234,64 @@ func _apply_display_settings(): # On load, instantly apply any new display relat
 	else:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 		Engine.max_fps = misc.fps
-	
+
+	var args = {}
+
+	for arg in OS.get_cmdline_args():
+		if arg.contains("="):
+			var key_val = arg.split("=", false, 1)
+			args[key_val[0].trim_prefix("--").to_lower()] = key_val[1]
+		else:
+			args[arg.trim_prefix("--").to_lower()] = ""
+
+	print("Raw cmdline args: ", OS.get_cmdline_args())
+	print("Parsed cmdline args: ", args)
+
 	# Window Mode
-	match misc.window_mode:
+	var window_mode = misc.window_mode
+	if args.has("window_mode"):
+		window_mode = args["window_mode"]
+
+	match window_mode:
 		"exclusive_fullscreen":
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 		"fullscreen":
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		"maximized":
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
-		"minimized":
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 		"windowed":
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
+	# Resolution
+	var resolution = misc.resolution
+
+	if args.has("resolution"):
+		var split := str(args["resolution"]).split("x")
+
+		if split.size() == 2 and split[0].is_valid_int() and split[1].is_valid_int():
+			resolution = [
+				int(split[0]),
+				int(split[1])
+			]
+
+	elif args.has("width") and args.has("height"):
+		if str(args["width"]).is_valid_int() and str(args["height"]).is_valid_int():
+			resolution = [
+				int(args["width"]),
+				int(args["height"])
+			]
+
+	if resolution.size() >= 2:
+		var res := Vector2i(resolution[0], resolution[1])
+		DisplayServer.window_set_size(res)
+
 	# Borderless
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, misc.borderless)
+	var borderless = misc.borderless
+
+	if args.has("borderless"):
+		borderless = str(args["borderless"]).to_lower() in ["true", "1", "yes"]
+
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, borderless)
 
 func _load():
 	print("Loading settings")

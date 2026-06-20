@@ -1,0 +1,8 @@
+[configuration]
+entry_symbol = "taskbar_progress_library_init"
+compatibility_minimum = 4.5
+symbol_prefix = "taskbar_progress"
+
+[libraries]
+windows.debug.x86_64 = "res://addons/taskbar_progress/bin/taskbar_progress.dll"
+windows.release.x86_64 = "res://addons/taskbar_progress/bin/taskbar_progress.dll"

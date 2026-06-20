@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=3 uid="uid://cgqy6xk1tcy8a"]
+
+[ext_resource type="Script" uid="uid://blfxtjgppeofo" path="res://Scenes/test_mic_input.gd" id="1_vb5m5"]
+
+[sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_vb5m5"]
+
+[node name="test_mic_input" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vb5m5")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Pitch"
+fit_content = true
+autowrap_mode = 0
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = 73.0
+offset_right = 20.0
+offset_bottom = 113.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Input: input"
+fit_content = true
+autowrap_mode = 0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -26.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamMicrophone_vb5m5")
+autoplay = true
+bus = &"Record"

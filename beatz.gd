@@ -8,6 +8,8 @@ var lifetime_points := 0.0
 const SCORES_PATH := "user://.scores_data"
 const POINTS_PW := "8YouAreNOTsupposedToBeHereThisKeyIsVerySecureDoNOTeditYourScoresItsBetterWhenYouAchieveAFullPerfectOnYourOwnÑ"
 
+const LIST_CACHE_PATH := "user://song_list_cache.json"
+
 func _get_lifetime_points():
 	print("Getting points")
 
@@ -62,6 +64,15 @@ func _ready() -> void:
 	print("Beatz Global node loaded")
 	_get_lifetime_points()
 
+## The song list array, excluding covers. Used if "Keep list in memory" is toggled on.
+var LIST: Dictionary
+
+var playback_speed: float = 1.0
+
+
+
+const ARBITRARY_WEIRD_HOLD_BAR_MOVEMENT_MULTIPLIER: float = 1.5385
+
 var OFFSET: float:
 	get: return Settings.misc.note_offset
 var note_speed: float:
@@ -70,11 +81,13 @@ var note_speed: float:
 var zoom: float = 10.0
 
 ## Returns a Y position based on saved note speed and set timestamp.
-func time_to_y(time_ms: float) -> float:
+func time_to_y(time_ms: float, edit: bool = false) -> float:
 	#var displacement = OFFSET
 	var timestamp = time_ms
-	return (timestamp * zoom * note_speed / 100.0) # * -1.0
+	if not edit: return (timestamp * zoom * note_speed / 100.0) / playback_speed
+	else: return (timestamp * zoom * 15.0 / 100.0)
 
 ## Returns a time in milliseconds based on saved note speed and set Y position.
-func y_to_time(y: float) -> float:
-	return ((-y) * zoom / note_speed)# - OFFSET
+func y_to_time(y: float, edit: bool = false) -> float:
+	if not edit: return ((-y) * zoom / note_speed) * playback_speed # - OFFSET
+	else: return ((-y) * zoom / 15.0)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c710qquuxbtvy"]
+[gd_scene load_steps=25 format=3 uid="uid://c710qquuxbtvy"]
 
 [ext_resource type="Script" uid="uid://jq50e7gunadm" path="res://Scenes/album_view.gd" id="1_8vti0"]
 [ext_resource type="Texture2D" uid="uid://bru0xcwdabbp" path="res://Resources/grayDefaultBG.png" id="2_2s4qx"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://k8yi31jqksm1" path="res://Resources/Unreleased.png" id="8_kmjfj"]
 [ext_resource type="PackedScene" uid="uid://da55mf3b65c15" path="res://Scenes/Visualizer.tscn" id="9_pr7vu"]
 [ext_resource type="PackedScene" uid="uid://dsc6fkstdgxrv" path="res://Scenes/playing_bar.tscn" id="9_tv6s8"]
+[ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="10_crr1d"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pr7vu"]
 content_margin_top = 90.0
@@ -305,8 +306,7 @@ grow_horizontal = 0
 grow_vertical = 2
 
 [node name="bg" type="TextureRect" parent="charts_side"]
-visible = false
-modulate = Color(0.5527272, 0.5527273, 0.5527272, 1)
+modulate = Color(0.5526029, 0.5526029, 0.5526029, 0.51900005)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -339,7 +339,7 @@ theme_override_constants/outline_size = 8
 theme_override_constants/icon_margin = 18
 theme_override_font_sizes/font_size = 20
 theme_override_styles/panel = SubResource("StyleBoxFlat_pr7vu")
-max_text_lines = 3
+max_text_lines = 6
 item_count = 22
 fixed_icon_size = Vector2i(100, 100)
 item_0/text = "Song 1: Test Song, by Artist, otherArtist\\nChart: Hard | \"ChartName\", by GuayabR"
@@ -636,6 +636,20 @@ pivot_offset = Vector2(175, 175)
 texture = ExtResource("6_bwfns")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="VideoPlayback" type="Control" parent="album_side/cover_anim_cont/outline/mask"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_crr1d")
+enable_audio = false
+enable_auto_play = true
+loop = true
+metadata/_custom_type_script = "uid://ivx7m2bfysip"
 
 [node name="Visualizer" parent="album_side/cover_anim_cont/outline" instance=ExtResource("9_pr7vu")]
 layout_mode = 1

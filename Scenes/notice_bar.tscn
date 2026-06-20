@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3 uid="uid://cb6c6pfkfqbe8"]
+
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_cj46y"]
+[ext_resource type="Script" uid="uid://cko88q2ysi3wg" path="res://Scenes/notice_bar.gd" id="2_oinsc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mvumn"]
+bg_color = Color(0, 0, 0, 0.74509805)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="notice_bar" type="Panel"]
+custom_minimum_size = Vector2(350, 100)
+anchors_preset = -1
+anchor_top = 0.906
+anchor_right = 0.18200001
+anchor_bottom = 1.0
+offset_top = 0.5199585
+offset_right = 0.55996704
+offset_bottom = -1.0
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("1_cj46y")
+theme_override_styles/panel = SubResource("StyleBoxFlat_mvumn")
+script = ExtResource("2_oinsc")
+
+[node name="notice_title" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -173.0
+offset_top = 5.0
+offset_right = 173.0
+offset_bottom = 61.0
+grow_horizontal = 2
+focus_mode = 0
+mouse_filter = 2
+text = "{NOTICE_TITLE}	"
+autowrap_mode = 1
+horizontal_alignment = 1
+
+[node name="notice_code" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -173.0
+offset_top = 60.0
+offset_right = 173.0
+offset_bottom = 98.0
+grow_horizontal = 2
+focus_mode = 0
+mouse_filter = 2
+text = "{NOTICE_CODE}"
+autowrap_mode = 1
+horizontal_alignment = 1

@@ -1,13 +1,15 @@
-[gd_scene load_steps=46 format=3 uid="uid://4puupvbpclaw"]
+[gd_scene load_steps=48 format=3 uid="uid://4puupvbpclaw"]
 
 [ext_resource type="Script" uid="uid://dhxnpbd5g3jrm" path="res://Scenes/main_menu.gd" id="1_n45e2"]
 [ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="2_2tkn1"]
 [ext_resource type="Texture2D" uid="uid://ddhhuuavk5tn5" path="res://Resources/misc/BeatzTitle.png" id="2_16hvj"]
+[ext_resource type="PackedScene" uid="uid://utqa2rt7vj28" path="res://Scenes/achievement_container.tscn" id="2_ehtkc"]
 [ext_resource type="PackedScene" uid="uid://da55mf3b65c15" path="res://Scenes/Visualizer.tscn" id="2_jr6u5"]
 [ext_resource type="PackedScene" uid="uid://72iwv8sulrfp" path="res://Scenes/main_list.tscn" id="2_opfnp"]
 [ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="3_8dnnj"]
 [ext_resource type="Texture2D" uid="uid://cae7qvwquuw5t" path="res://Resources/Arrows/NoteUpPress.png" id="3_s4jxt"]
 [ext_resource type="Texture2D" uid="uid://dupwinbpcx21h" path="res://Resources/misc/PlayText.png" id="4_vr1f0"]
+[ext_resource type="PackedScene" uid="uid://l2cyllydgxhc" path="res://Scenes/Background.tscn" id="5_4nkqq"]
 [ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="6_16hvj"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="6_opfnp"]
 [ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="7_vr1f0"]
@@ -19,7 +21,6 @@
 [ext_resource type="PackedScene" uid="uid://q4vkl1pj3f4h" path="res://Scenes/new_ver_popup.tscn" id="19_mkpwh"]
 [ext_resource type="PackedScene" uid="uid://bmok7ob1lm7j3" path="res://Scenes/overlay.tscn" id="20_4nkqq"]
 [ext_resource type="FontFile" uid="uid://6jhh1vyac4f4" path="res://Resources/misc/helvetica-255/Helvetica.ttf" id="23_6m47u"]
-[ext_resource type="AudioStream" uid="uid://dm7n7jmoi7hpb" path="res://Resources/Songs/Reflections.mp3" id="23_84iac"]
 
 [sub_resource type="Animation" id="Animation_ne6ao"]
 length = 0.001
@@ -623,7 +624,7 @@ tracks/46/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [true]
+"values": [false]
 }
 tracks/47/type = "value"
 tracks/47/imported = false
@@ -708,6 +709,18 @@ tracks/53/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(1920, 0)]
+}
+tracks/54/type = "value"
+tracks/54/imported = false
+tracks/54/enabled = true
+tracks/54/path = NodePath("hq_background:modulate")
+tracks/54/interp = 1
+tracks/54/loop_wrap = true
+tracks/54/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_6dk6o"]
@@ -1438,108 +1451,103 @@ tracks/10/keys = {
 "update": 0,
 "values": [Vector2(0, 0), Vector2(1920, 0)]
 }
-tracks/11/type = "method"
+tracks/11/type = "value"
 tracks/11/imported = false
 tracks/11/enabled = true
-tracks/11/path = NodePath(".")
+tracks/11/path = NodePath("exit_game:mouse_filter")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
-"times": PackedFloat32Array(0, 0.7),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [&"current_menu", "loading"],
-"method": &"set"
-}, {
-"args": [&"current_menu", "main"],
-"method": &"set"
-}]
-}
-tracks/12/type = "value"
-tracks/12/imported = false
-tracks/12/enabled = true
-tracks/12/path = NodePath("exit_game:mouse_filter")
-tracks/12/interp = 1
-tracks/12/loop_wrap = true
-tracks/12/keys = {
 "times": PackedFloat32Array(0, 0.266667),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [2, 0]
 }
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("settings_button:mouse_filter")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
 tracks/13/type = "value"
 tracks/13/imported = false
 tracks/13/enabled = true
-tracks/13/path = NodePath("settings_button:mouse_filter")
+tracks/13/path = NodePath("bg_main_menu:self_modulate")
 tracks/13/interp = 1
 tracks/13/loop_wrap = true
 tracks/13/keys = {
-"times": PackedFloat32Array(0, 0.533333),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [2, 0]
-}
-tracks/14/type = "value"
-tracks/14/imported = false
-tracks/14/enabled = true
-tracks/14/path = NodePath("bg_main_menu:self_modulate")
-tracks/14/interp = 1
-tracks/14/loop_wrap = true
-tracks/14/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Color(0.647059, 0.647059, 0.647059, 1), Color(1, 1, 1, 1)]
 }
-tracks/15/type = "value"
-tracks/15/imported = false
-tracks/15/enabled = true
-tracks/15/path = NodePath("profile_small:position")
-tracks/15/interp = 1
-tracks/15/loop_wrap = true
-tracks/15/keys = {
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("profile_small:position")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
 "times": PackedFloat32Array(0.033333335, 0.53333336),
 "transitions": PackedFloat32Array(0.2332583, 1),
 "update": 0,
 "values": [Vector2(610, 1100), Vector2(610, 905)]
 }
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("playing_bar:position")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(0.1830108, 0.1830108),
+"update": 0,
+"values": [Vector2(0, 1100), Vector2(0, 1005)]
+}
 tracks/16/type = "value"
 tracks/16/imported = false
 tracks/16/enabled = true
-tracks/16/path = NodePath("playing_bar:position")
+tracks/16/path = NodePath("Visualizer:position")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
 tracks/16/keys = {
 "times": PackedFloat32Array(0, 0.7),
 "transitions": PackedFloat32Array(0.1830108, 0.1830108),
 "update": 0,
-"values": [Vector2(0, 1100), Vector2(0, 1005)]
+"values": [Vector2(2, 25), Vector2(2, -75)]
 }
-tracks/17/type = "value"
+tracks/17/type = "method"
 tracks/17/imported = false
 tracks/17/enabled = true
-tracks/17/path = NodePath("Visualizer:position")
+tracks/17/path = NodePath("playing_bar")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/keys = {
-"times": PackedFloat32Array(0, 0.7),
-"transitions": PackedFloat32Array(0.1830108, 0.1830108),
-"update": 0,
-"values": [Vector2(2, 25), Vector2(2, -75)]
-}
-tracks/18/type = "method"
-tracks/18/imported = false
-tracks/18/enabled = true
-tracks/18/path = NodePath("playing_bar")
-tracks/18/interp = 1
-tracks/18/loop_wrap = true
-tracks/18/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
 "method": &"show_cover"
 }]
+}
+tracks/18/type = "value"
+tracks/18/imported = false
+tracks/18/enabled = true
+tracks/18/path = NodePath("hq_background:modulate")
+tracks/18/interp = 1
+tracks/18/loop_wrap = true
+tracks/18/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0.647059, 0.647059, 0.647059, 1), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_m3bi6"]
@@ -1676,108 +1684,103 @@ tracks/10/keys = {
 "update": 0,
 "values": [Vector2(-1920, 0), Vector2(0, 0)]
 }
-tracks/11/type = "method"
+tracks/11/type = "value"
 tracks/11/imported = false
 tracks/11/enabled = true
-tracks/11/path = NodePath(".")
+tracks/11/path = NodePath("exit_game:mouse_filter")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
-"times": PackedFloat32Array(0, 0.5),
-"transitions": PackedFloat32Array(1, 1),
-"values": [{
-"args": [&"current_menu", "loading"],
-"method": &"set"
-}, {
-"args": [&"current_menu", "settings"],
-"method": &"set"
-}]
-}
-tracks/12/type = "value"
-tracks/12/imported = false
-tracks/12/enabled = true
-tracks/12/path = NodePath("exit_game:mouse_filter")
-tracks/12/interp = 1
-tracks/12/loop_wrap = true
-tracks/12/keys = {
 "times": PackedFloat32Array(0, 0.266667),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [2, 0]
 }
-tracks/13/type = "value"
-tracks/13/imported = false
-tracks/13/enabled = true
-tracks/13/path = NodePath("settings_button:mouse_filter")
-tracks/13/interp = 1
-tracks/13/loop_wrap = true
-tracks/13/keys = {
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("settings_button:mouse_filter")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [2]
 }
-tracks/14/type = "value"
-tracks/14/imported = false
-tracks/14/enabled = true
-tracks/14/path = NodePath("bg_main_menu:self_modulate")
-tracks/14/interp = 1
-tracks/14/loop_wrap = true
-tracks/14/keys = {
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("bg_main_menu:self_modulate")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
 "times": PackedFloat32Array(0, 0.633333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(0.543314, 0.543314, 0.543314, 1)]
 }
-tracks/15/type = "value"
-tracks/15/imported = false
-tracks/15/enabled = true
-tracks/15/path = NodePath("profile_small:position")
-tracks/15/interp = 1
-tracks/15/loop_wrap = true
-tracks/15/keys = {
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("profile_small:position")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
 "times": PackedFloat32Array(0, 0.43333334),
 "transitions": PackedFloat32Array(0.24148414, 1),
 "update": 0,
 "values": [Vector2(610, 905), Vector2(610, 1100)]
 }
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("playing_bar:position")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0, 0.43333334),
+"transitions": PackedFloat32Array(0.1830108, 0.1830108),
+"update": 0,
+"values": [Vector2(0, 1005), Vector2(0, 1080)]
+}
 tracks/16/type = "value"
 tracks/16/imported = false
 tracks/16/enabled = true
-tracks/16/path = NodePath("playing_bar:position")
+tracks/16/path = NodePath("Visualizer:position")
 tracks/16/interp = 1
 tracks/16/loop_wrap = true
 tracks/16/keys = {
 "times": PackedFloat32Array(0, 0.43333334),
 "transitions": PackedFloat32Array(0.1830108, 0.1830108),
 "update": 0,
-"values": [Vector2(0, 1005), Vector2(0, 1100)]
+"values": [Vector2(2, -75), Vector2(2, 0)]
 }
-tracks/17/type = "value"
+tracks/17/type = "method"
 tracks/17/imported = false
 tracks/17/enabled = true
-tracks/17/path = NodePath("Visualizer:position")
+tracks/17/path = NodePath("playing_bar")
 tracks/17/interp = 1
 tracks/17/loop_wrap = true
 tracks/17/keys = {
-"times": PackedFloat32Array(0, 0.43333334),
-"transitions": PackedFloat32Array(0.1830108, 0.1830108),
-"update": 0,
-"values": [Vector2(2, -75), Vector2(2, 25)]
-}
-tracks/18/type = "method"
-tracks/18/imported = false
-tracks/18/enabled = true
-tracks/18/path = NodePath("playing_bar")
-tracks/18/interp = 1
-tracks/18/loop_wrap = true
-tracks/18/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
 "method": &"hide_cover"
 }]
+}
+tracks/18/type = "value"
+tracks/18/imported = false
+tracks/18/enabled = true
+tracks/18/path = NodePath("hq_background:modulate")
+tracks/18/interp = 1
+tracks/18/loop_wrap = true
+tracks/18/keys = {
+"times": PackedFloat32Array(0, 0.633333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(0.543314, 0.543314, 0.543314, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_vr1f0"]
@@ -2069,6 +2072,18 @@ tracks/22/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(1920, 0)]
+}
+tracks/23/type = "value"
+tracks/23/imported = false
+tracks/23/enabled = true
+tracks/23/path = NodePath("hq_background:modulate")
+tracks/23/interp = 1
+tracks/23/loop_wrap = true
+tracks/23/keys = {
+"times": PackedFloat32Array(0.6166667, 1.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0.543314, 0.543314, 0.543314, 1), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_84iac"]
@@ -2866,6 +2881,18 @@ _data = {
 &"popup": SubResource("Animation_jr6u5")
 }
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4nkqq"]
+bg_color = Color(0.60038817, 0.60038817, 0.60038817, 0.14500001)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [node name="main_menu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -2874,6 +2901,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_n45e2")
+
+[node name="achievement_cont" parent="." instance=ExtResource("2_ehtkc")]
+z_index = 1
+layout_mode = 1
 
 [node name="Visualizer" parent="." instance=ExtResource("2_jr6u5")]
 self_modulate = Color(1, 1, 1, 0.3882353)
@@ -2904,7 +2935,7 @@ HEIGHT = 145
 z_index = 1
 layout_mode = 1
 offset_left = 1920.0
-offset_right = 1919.9985
+offset_right = 1919.9998
 
 [node name="logo_sprite" type="TextureRect" parent="."]
 z_index = 2
@@ -2914,7 +2945,7 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -960.0
 offset_top = -344.0
-offset_right = 960.01184
+offset_right = 960.0128
 offset_bottom = 736.0
 grow_horizontal = 2
 scale = Vector2(0.8, 0.8)
@@ -2950,7 +2981,16 @@ libraries = {
 &"": SubResource("AnimationLibrary_tt8ml")
 }
 
+[node name="hq_background" parent="." instance=ExtResource("5_4nkqq")]
+z_index = -3
+layout_mode = 1
+mouse_filter = 1
+mouse_behavior_recursive = 1
+effect_mode = 5
+multi_max = 20
+
 [node name="bg_main_menu" type="TextureRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2973,7 +3013,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -960.0
 offset_top = -500.0
-offset_right = 960.01184
+offset_right = 960.0128
 offset_bottom = 580.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -2992,7 +3032,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -82.0
 offset_top = 60.0
-offset_right = 82.00049
+offset_right = 82.00073
 offset_bottom = 224.00073
 grow_horizontal = 2
 grow_vertical = 2
@@ -3105,7 +3145,6 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="bg_song" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("23_84iac")
 bus = &"Menu Song"
 
 [node name="song_playing_popup" type="AnimationPlayer" parent="."]
@@ -3218,6 +3257,7 @@ theme_override_font_sizes/font_size = 35
 text = "Cancel"
 
 [node name="fps" parent="." instance=ExtResource("16_m3bi6")]
+modulate = Color(1, 1, 1, 0.75000006)
 z_index = 10
 layout_mode = 1
 anchors_preset = 3
@@ -3226,12 +3266,13 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -44.0
-offset_top = -42.0
+offset_top = -119.0
 offset_right = -17.0
-offset_bottom = -15.0
+offset_bottom = -92.0
 grow_horizontal = 0
 grow_vertical = 0
 pivot_offset = Vector2(13.5, 13.5)
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 2
 
 [node name="saved_settings" type="AnimationPlayer" parent="."]
@@ -3278,12 +3319,42 @@ anchor_bottom = 1.0
 offset_left = -350.0
 offset_top = -175.0
 offset_right = 350.0
-offset_bottom = -0.0040283203
+offset_bottom = -0.004760742
 grow_vertical = 0
 
 [node name="playing_bar" parent="." instance=ExtResource("17_wyh8j")]
 z_index = 3
 layout_mode = 1
+
+[node name="cover_mask2" parent="playing_bar" index="5"]
+offset_bottom = -37.097748
+
+[node name="cover_mask" parent="playing_bar" index="6"]
+offset_bottom = -37.097717
+
+[node name="go_to_artist" parent="playing_bar" index="13"]
+offset_top = -18.53012
+offset_bottom = 26.46988
+
+[node name="randomize" parent="playing_bar" index="14"]
+offset_top = -18.535187
+offset_bottom = 26.464813
+
+[node name="previous" parent="playing_bar" index="15"]
+offset_top = -18.540558
+offset_bottom = 26.459442
+
+[node name="next" parent="playing_bar" index="17"]
+offset_top = -18.539154
+offset_bottom = 26.460846
+
+[node name="go_to_song" parent="playing_bar" index="18"]
+offset_top = -18.533997
+offset_bottom = 26.466003
+
+[node name="go_to_album" parent="playing_bar" index="19"]
+offset_top = -18.53012
+offset_bottom = 26.46988
 
 [node name="song_list_context" parent="." instance=ExtResource("18_ujyyl")]
 z_index = 5
@@ -3291,7 +3362,7 @@ layout_mode = 1
 anchor_bottom = 0.28800002
 offset_left = -351.0
 offset_right = -350.40002
-offset_bottom = -0.040008545
+offset_bottom = 44.95999
 grow_horizontal = 1
 grow_vertical = 1
 
@@ -3317,9 +3388,126 @@ offset_bottom = 360.0
 scale = Vector2(1e-05, 1e-05)
 pivot_offset = Vector2(640, 360)
 
+[node name="list_loading_panel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -157.0
+offset_top = -248.0
+offset_right = 157.0
+offset_bottom = -150.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_4nkqq")
+
+[node name="loading_lbl" type="Label" parent="list_loading_panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -35.5
+offset_top = 6.0
+offset_right = 35.5
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Loading..."
+horizontal_alignment = 1
+
+[node name="x_loaded" type="Label" parent="list_loading_panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -35.5
+offset_top = -8.5
+offset_right = 35.5
+offset_bottom = 8.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "X / X"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="currently" type="Label" parent="list_loading_panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -85.5
+offset_top = -25.0
+offset_right = 85.5
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "{NAME} by {CHARTER}"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="drop_file_noti" type="Panel" parent="."]
+visible = false
+z_index = 10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="drop_file_lbl" type="RichTextLabel" parent="drop_file_noti"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 74
+text = "droip file"
+fit_content = true
+autowrap_mode = 0
+
+[node name="notice_cont" type="VBoxContainer" parent="."]
+z_index = 999
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -1080.0
+offset_right = 362.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
 [connection signal="bg_changed" from="settings" to="." method="_on_settings_bg_changed"]
+[connection signal="bg_effect_changed" from="settings" to="." method="_on_settings_bg_effect_changed"]
+[connection signal="bg_fx_random_multi_max_changed" from="settings" to="." method="_on_settings_bg_fx_random_multi_max_changed"]
+[connection signal="bg_fx_random_multi_min_changed" from="settings" to="." method="_on_settings_bg_fx_random_multi_min_changed"]
+[connection signal="bg_parallax_speed_changed" from="settings" to="." method="_on_settings_bg_parallax_speed_changed"]
+[connection signal="bg_parallax_toggled" from="settings" to="." method="_on_settings_bg_parallax_toggled"]
+[connection signal="bg_rot_time_changed" from="settings" to="." method="_on_settings_bg_rot_time_changed"]
+[connection signal="bg_time_interval_changed" from="settings" to="." method="_on_settings_bg_time_interval_changed"]
 [connection signal="check_for_upd_pressed" from="settings" to="." method="_on_settings_check_for_upd_pressed"]
+[connection signal="cover_loops_playing_bar_toggled" from="settings" to="." method="_on_settings_cover_loops_playing_bar_toggled"]
 [connection signal="menu_brightness_changed" from="settings" to="." method="_on_settings_menu_brightness_changed"]
+[connection signal="parallax_bg_toggled" from="settings" to="." method="_on_settings_parallax_bg_toggled"]
 [connection signal="set_banner" from="settings" to="." method="_on_settings_set_banner"]
 [connection signal="set_clan" from="settings" to="." method="_on_settings_set_clan"]
 [connection signal="set_profile" from="settings" to="." method="_on_settings_set_profile"]
@@ -3330,6 +3518,7 @@ pivot_offset = Vector2(640, 360)
 [connection signal="button_up" from="play_button" to="." method="_on_play_button_button_up"]
 [connection signal="button_up" from="exit_game" to="." method="_on_exit_game_button_up"]
 [connection signal="button_up" from="settings_button" to="." method="_on_settings_button_up"]
+[connection signal="error" from="main_list" to="." method="_on_main_list_error"]
 [connection signal="item_context_menu" from="main_list" to="." method="_on_main_list_item_context_menu"]
 [connection signal="item_context_menu_focus_released" from="main_list" to="." method="_on_main_list_item_context_menu_focus_released"]
 [connection signal="item_play_as_bg" from="main_list" to="." method="_on_main_list_item_play_as_bg"]
@@ -3346,7 +3535,11 @@ pivot_offset = Vector2(640, 360)
 [connection signal="pressed" from="popup_leave/Panel/Accept" to="." method="_on_accept_pressed"]
 [connection signal="pressed" from="popup_leave/Panel/Cancel" to="." method="_on_cancel_pressed"]
 [connection signal="cover_pressed" from="playing_bar" to="." method="_on_playing_bar_cover_pressed"]
+[connection signal="going_to_album" from="playing_bar" to="." method="_on_playing_bar_going_to_album"]
+[connection signal="going_to_artist" from="playing_bar" to="." method="_on_playing_bar_going_to_artist"]
+[connection signal="going_to_song" from="playing_bar" to="." method="_on_playing_bar_going_to_song"]
 [connection signal="play_toggled" from="playing_bar" to="." method="_on_playing_bar_play_toggled"]
+[connection signal="prev_next_pressed" from="playing_bar" to="." method="_on_playing_bar_prev_next"]
 [connection signal="randomized" from="playing_bar" to="." method="_on_playing_bar_randomized"]
 [connection signal="seek_ended" from="playing_bar" to="." method="_on_playing_bar_seek_ended"]
 [connection signal="volume_changed" from="playing_bar" to="." method="_on_playing_bar_volume_changed"]

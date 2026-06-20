@@ -4,7 +4,7 @@ var selected_album: String
 var selected_artist: String
 var selected_year: int
 
-var selected_cover: Image = Image.load_from_file("res://Resources/BeatzCoverX.png")
+var selected_cover = load("res://Resources/BeatzCoverX.png")
 
 var song_number: int = 1  # Counter for songs
 
@@ -15,7 +15,7 @@ signal song_sel
 signal item_context_menu(meta: String, pos: Vector2, idx: int)
 signal item_context_menu_focus_released
 
-signal item_play_as_bg(path)
+signal item_play_as_bg(path: String, index: int)
 
 signal loading_song(title: String)
 signal loaded_song_meta(title: String)
@@ -27,7 +27,7 @@ var grouped_songs := {}
 
 var song_info: Array = []
 var difficulty_order := [
-	"easy", "normal", "hard", "extreme", "insanity", "impossible"
+	"easy", "normal", "hard", "extreme", "insanity", "impossible", "deathly"
 ]
 
 var all_items: Array = []
@@ -53,15 +53,12 @@ func _process(_delta) -> void:
 	if add_queue.is_empty():
 		return
 	
-	var item = add_queue[processing_index]
-	processing_index += 1
-	
-	if item["type"] == "entry":
+	for item in add_queue:
 		var entry = item["entry"]
 		var idx = list.add_item(entry["text"], entry["cover"])
 		list.set_item_metadata(idx, entry["metadata"])
 		list.set_item_tooltip_enabled(idx, false)
-		print("Added item ", idx)
+		processing_index += 1
 	
 	if processing_index >= add_queue.size():
 		for i in range(list.get_item_count()):
@@ -88,7 +85,7 @@ func load_album():
 	$album_side/cover_anim_cont/outline/Visualizer.colors = cols as Array[Color]
 	
 	if not cols.is_empty(): 
-		$charts_side/Line2D.modulate = cols.pick_random()
+		$charts_side/Line2D.modulate = General.get_average_color(selected_cover)
 		
 		var brightest_color: Color = cols[0]
 		var max_value = cols[0].r + cols[0].g + cols[0].b
@@ -100,7 +97,7 @@ func load_album():
 				brightest_color = color
 				print("new bright ", brightest_color)
 
-		$bg.self_modulate = brightest_color
+		$bg.self_modulate = $charts_side/Line2D.modulate
 	else: 
 		$charts_side/Line2D.modulate = Color.WHITE
 		$bg.self_modulate = Color.WHITE
@@ -124,11 +121,22 @@ func emit_loaded(type: int, title: String):
 		1: loaded_song_meta.emit(title)
 		2: loaded_song.emit(title)
 
+var cover_loop_sources: Dictionary = {}
+var cover_loop_values: Array[String] = []
+var average_cover_loop: String = ""
+
 func _load_songs(album_filter: String):
 	list.clear()
 	add_queue.clear()
 	processing_index = 0
 	grouped_songs = {}
+	
+	cover_loop_values.clear()
+	cover_loop_sources.clear()
+	average_cover_loop = ""
+	
+	$album_side/cover_anim_cont/outline/mask/VideoPlayback.close()
+	$album_side/cover_anim_cont/outline/mask/VideoPlayback.hide()
 
 	print("Starting song scan", " for album: " + album_filter)
 
@@ -176,7 +184,33 @@ func _load_songs(album_filter: String):
 	for data in scan_results:
 		_finalize_custom_folder_entry(data)
 	scan_results.clear()
+	
+	# Determine most common cover_loop and resolve full path
+	if cover_loop_values.size() > 0:
+		var counts := {}
+		for loop_name in cover_loop_values:
+			counts[loop_name] = counts.get(loop_name, 0) + 1
+		
+		var max_count := 0
+		var most_common := ""
+		for key in counts.keys():
+			if counts[key] > max_count:
+				max_count = counts[key]
+				most_common = key
+		
+		if most_common != "" and cover_loop_sources.has(most_common):
+			var folder_path = cover_loop_sources[most_common][0]
+			average_cover_loop = ProjectSettings.globalize_path(folder_path.path_join(most_common))
+		else:
+			average_cover_loop = ""
+		
+		print(average_cover_loop)
+		$album_side/cover_anim_cont/outline/mask/VideoPlayback.set_video_path(average_cover_loop)
+		$album_side/cover_anim_cont/outline/mask/VideoPlayback.show()
+	else:
+		average_cover_loop = ""
 
+	
 	# Merge and sort
 	var all_entries: Array = []
 	for diff_entries in grouped_songs.values():
@@ -275,6 +309,14 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	
 	var vid_path = info.get("video", "")
 	
+	var cover_loop = info.get("cover_loop", "")
+	
+	if cover_loop != "":
+		cover_loop_values.append(cover_loop)
+		if not cover_loop_sources.has(cover_loop):
+			cover_loop_sources[cover_loop] = []
+		cover_loop_sources[cover_loop].append(folder)
+	
 	var difficulty
 	var nspeed
 	var bpm
@@ -351,7 +393,8 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 		"difficulty": difficulty,
 		"diff_texture_path": diff_texture_path,
 		"background": background,
-		"video": vid_path
+		"video": vid_path,
+		"cover_loop": cover_loop
 	}
 
 # MUST BE CALLED ON MAIN THREAD:
@@ -380,6 +423,8 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 	
 	var video = data["video"]
 	
+	var cover_loop = data["cover_loop"]
+	
 	print("scanning ", beatz_path)
 	
 	var audio_ext = audio_path.get_extension().to_lower()
@@ -401,13 +446,14 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 		var img := Image.new()
 		var err := img.load(image_path)
 		if err == OK:
+			img.resize(420, 420)
 			cover_texture = ImageTexture.create_from_image(img)
 		else:
 			print("Failed to load image at %s, using default cover." % image_path)
-			cover_texture = load("res://Resources/Covers/noCover.png")
+			cover_texture = load("res://Resources/misc/noCover.png")
 	else:
 		print("No image found for %s, using default cover." % album_name)
-		cover_texture = load("res://Resources/Covers/noCover.png")
+		cover_texture = load("res://Resources/misc/noCover.png")
 
 	var text = "%s | %s, by %s | %d\n\nChart: %s | \"%s\" by %s | Custom" % [
 		album_name,
@@ -433,11 +479,13 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 			"bpm": bpm,
 			"charter": charter,
 			"speed": speed,
-			"cover_texture": cover_texture,
+			"cover_path": image_path,
 			"stream": audio_path,
+			"date_modified": FileAccess.get_modified_time(beatz_path),
 			"local_beat_offset": beat_offset,
 			"selected_background": background,
-			"background_vid": beatz_path.get_base_dir().path_join(video) if video != "" else ""
+			"background_vid": beatz_path.get_base_dir().path_join(video) if video != "" else "",
+			"cover_loop": beatz_path.get_base_dir().path_join(cover_loop) if cover_loop != "" else ""
 		}
 	}
 	
@@ -500,6 +548,14 @@ func _on_song_selected(index: int) -> void:
 	
 	if lose_focus: list.release_focus()
 	
+	var metadata = list.get_item_metadata(index)
+	
+	print(metadata)
+	
+	if metadata == null:
+		print("No metadata to select a song. index ", index)
+		return
+	
 	if Settings.misc.reduce_motion:
 		$".."/AnimationPlayer.play("go_to_selected", -1, 100.0)
 	else:
@@ -509,14 +565,10 @@ func _on_song_selected(index: int) -> void:
 	
 	$".."/click_sfx.play()
 	
-	var metadata = list.get_item_metadata(index)
-	
-	print(metadata)
-	
 	var beatz_path = metadata["beatz_path"]
 	var song_name = metadata["song_name"]
 	var album = metadata["album"]
-	var cover_texture = metadata["cover_texture"]
+	var cover_texture = Image.load_from_file(metadata["cover_path"])
 	var diff_texture_path = metadata["diff_texture_path"]
 	var artist = metadata["artist"]
 	var year = metadata["year"]
@@ -525,9 +577,11 @@ func _on_song_selected(index: int) -> void:
 	var selected_stream = metadata["stream"]
 	var selected_beat_offset = metadata["local_beat_offset"]
 	
-	var selected_background = metadata["selected_background"]
+	var selected_background = ProjectSettings.globalize_path(metadata["selected_background"])
 	
 	var background_vid_path = metadata["background_vid"]
+	
+	var cover_loop_vid_path = metadata["cover_loop"]
 	
 	#var speed = metadata["speed"]
 	# Ignore separators (they have no metadata or missing stream)
@@ -551,7 +605,7 @@ func _on_song_selected(index: int) -> void:
 		main.set("selected_title", song_name)
 		main.set("selected_album", album)
 		
-		main.set("selected_cover", cover_texture.get_image())
+		main.set("selected_cover", cover_texture)
 		main.set("selected_artist", artist)
 		main.set("selected_year", year)
 		
@@ -569,12 +623,11 @@ func _on_song_selected(index: int) -> void:
 		main.set("selected_beat_offset", selected_beat_offset)
 		
 		main.set("background_vid_path", background_vid_path)
+		main.set("cover_loop_vid_path", cover_loop_vid_path)
 		
-		if selected_background:
+		if selected_background and selected_background != "":
 			main.set("selected_background", Image.load_from_file(selected_background))
 			main.set("selected_background_name", selected_background.get_file())
-			print(selected_background.get_file())
-			print(Image.load_from_file(selected_background))
 		
 		main.set("selected_bpm", bpm)
 		main.set("selected_charter", charter)
@@ -599,7 +652,7 @@ func _on_song_list_item_clicked(index: int, at_position: Vector2, mouse_button_i
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
 		item_context_menu.emit($charts_side/song_list.get_item_metadata(index), at_position, index)
 	elif mouse_button_index == MOUSE_BUTTON_MIDDLE:
-		item_play_as_bg.emit($charts_side/song_list.get_item_metadata(index).stream)
+		item_play_as_bg.emit($charts_side/song_list.get_item_metadata(index).stream, index)
 
 
 func _on_song_list_item_selected(index: int) -> void:

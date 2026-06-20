@@ -17,4 +17,3 @@ func back():
 
 func _on_credits_text_meta_clicked(meta: Variant) -> void:
 	OS.shell_open(meta)
-	print("clicked ", meta)

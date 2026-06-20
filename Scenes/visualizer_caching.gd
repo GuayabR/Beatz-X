@@ -230,10 +230,8 @@ func _update_spectrum_cache() -> void:
 		return
 	
 	var step = FREQ_MAX / bar_count
-	cached_fft_left.resize(bar_count)
-	cached_fft_right.resize(bar_count)
 	var prev_hz := 0.0
-
+	
 	for i in range(bar_count):
 		var hz = (i + 1) * step
 		cached_fft_left[i] = spectrum_left.get_magnitude_for_frequency_range(prev_hz, hz).length()
@@ -300,6 +298,15 @@ func _update_visualizer_logic(delta: float) -> void:
 		shake_offset = Vector2.ZERO
 
 func _process(delta: float) -> void:
+	# Stop updating if main window is not focused
+	if not DisplayServer.window_is_focused():
+		return
+	
+	if not $Song_left.playing: 
+		hide()
+		return
+	else: show()
+	
 	_update_timer += delta
 	var interval := 1.0 / visualizer_fps
 	if _update_timer < interval:
@@ -325,7 +332,6 @@ func force_fade_out(duration := 0.75) -> void:
 	if _fading or transitioning_to_zero or force_fading:
 		return
 	
-	print("Force fading out visualizer...")
 	force_fading = true
 	force_fade_timer = 0.0
 	force_fade_duration = duration
@@ -333,7 +339,6 @@ func force_fade_out(duration := 0.75) -> void:
 	force_target_right = right_max_values.duplicate()
 
 func force_fade_in():
-	print("Force fading in visualizer...")
 	_fading = false
 	force_fading = false
 	force_fade_timer = 0.0
@@ -367,3 +372,6 @@ func _ready():
 	target_values_right.resize(bar_count)
 	target_values_left.fill(0.0)
 	target_values_right.fill(0.0)
+	
+	cached_fft_left.resize(bar_count)
+	cached_fft_right.resize(bar_count)

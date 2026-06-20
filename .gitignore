@@ -1,2 +1,36 @@
 # Godot 4+ specific ignores
 .godot/
+data_Beatz X\!_windows_x86_64/
+addons/Aura - From GH.beatz
+addons/ffmpeg/
+Beatz X\!.csproj
+Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png
+Resources/Covers/DELTARUNE Chapter 1 (Original Game Soundtrack).png.import
+Resources/Covers/DELTARUNE Chapter 2 (Original Game Soundtrack).png
+Resources/Covers/DELTARUNE Chapter 2 (Original Game Soundtrack).png.import
+Resources/Covers/DELTARUNE Chapter 3+4 (Original Game Soundtrack).png
+Resources/Covers/DELTARUNE Chapter 3+4 (Original Game Soundtrack).png.import
+Resources/Covers/UNDERTALE Soundtrack.png
+Resources/Covers/UNDERTALE Soundtrack.png.import
+Resources/misc/Linkin Park 2.png
+Resources/misc/Linkin Park 2.png.import
+Resources/misc/Linkin Park Logo 2024.png
+Resources/misc/Linkin Park Logo 2024.png.import
+Resources/misc/Linkin Park.jpg
+Resources/misc/Linkin Park.jpg.import
+Resources/misc/Linkin Park.png
+Resources/misc/Linkin Park.png.import
+Resources/misc/Megadeth.png
+Resources/misc/Megadeth.png.import
+Resources/Songs/Black Knife.mp3
+Resources/Songs/Black Knife.mp3.import
+Resources/Songs/Born Survivor.mp3
+Resources/Songs/Born Survivor.mp3.import
+Resources/Songs/Calling All My Lovelies.mp3
+Resources/Songs/Calling All My Lovelies.mp3.import
+Resources/Songs/NOSTYLIST.mp3
+Resources/Songs/NOSTYLIST.mp3.import
+Resources/Songs/The Legend.mp3
+Resources/Songs/The Legend.mp3.import
+Resources/Songs/Your Girl.mp3
+Resources/Songs/Your Girl.mp3.import

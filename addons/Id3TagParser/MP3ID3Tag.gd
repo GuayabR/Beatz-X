@@ -1,6 +1,6 @@
 extends Node
 
-class_name MP3ID3Tag
+#class_name MP3ID3Tag
 const TAG_HEADER_LENGTH: int = 10
 
 const FRAME_HEADER_LENGTH: int = 10

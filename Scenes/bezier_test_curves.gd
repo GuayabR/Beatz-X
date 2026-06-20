@@ -278,7 +278,7 @@ func _on_back_pressed() -> void:
 		print("playing")
 		await $AnimationPlayer.animation_finished
 	
-	var menu := preload("res://Scenes/main_menu.tscn").instantiate()
+	var menu = load("res://Scenes/main_menu.tscn").instantiate()
 	menu.set("current_menu", "list")
 	
 	$AnimationPlayer.play("play_song")

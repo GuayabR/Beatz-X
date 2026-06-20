@@ -8,6 +8,8 @@ var spectrum: AudioEffectSpectrumAnalyzerInstance
 
 var can_random := true
 
+var notice: String = "res://Scenes/notice_bar.tscn"
+
 func _on_files_dropped(files: PackedStringArray) -> void:
 	_process_files(files)
 
@@ -40,7 +42,6 @@ func _process_files(files: PackedStringArray) -> void:
 			_:
 				unsupported.append(path)
 
-	# --- Process all at once ---
 	if beatzmaps.size() > 0:
 		print("Uploading beatzmaps:", beatzmaps)
 		$main_list._on_file_dialog_files_selected(true, beatzmaps, 0)
@@ -57,11 +58,43 @@ func _process_files(files: PackedStringArray) -> void:
 	if unsupported.size() > 0:
 		for s in unsupported:
 			print("Unsupported file dropped:", s)
+			var new_notice = load(notice).instantiate()
+			$notice_cont.add_child(new_notice)
+			new_notice.popup("Unsupported file dropped: %s" % str(s), 0)
 
 func _ready() -> void:
+	DisplayServer.window_set_title("Beatz! X.")
+	
+	if HAuth.product_user_id: General.set_presence("Main Menu", EOS.Presence.Status.Online)
+	
+	_on_settings_parallax_bg_toggled(Settings.misc.hq_background)
+	_on_settings_bg_parallax_toggled(Settings.misc.bg_parallax)
+	
+	_on_settings_bg_effect_changed(Settings.misc.bg_effect)
+	
+	_on_settings_bg_rot_time_changed(Settings.misc.bg_tween_time_sec)
+	_on_settings_bg_time_interval_changed(Settings.misc.bg_time_interval_sec)
+	
+	_on_settings_bg_fx_random_multi_min_changed(Settings.misc.bg_fx_random_multi_min)
+	_on_settings_bg_fx_random_multi_max_changed(Settings.misc.bg_fx_random_multi_max)
+	
+	_on_settings_bg_parallax_speed_changed(Settings.misc.bg_parallax_speed)
+	
+	
+	get_tree().set_auto_accept_quit(false)
+	
 	General.apply_fps_limit(name) # main_menu
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	if OS.get_name() == "Android":
+		var anim: Animation = $AnimationPlayer.get_animation("init")
+
+		# get track index (example: property track for position.x)
+		var track_idx = anim.find_track("profile_small:position", Animation.TYPE_VALUE)
+
+		# change key value (key 0 here)
+		anim.track_set_key_value(track_idx, 0, Vector2(0, 1005.0 - 75.0))
 	
 	var args = OS.get_cmdline_args()
 	if args.size() > 0:
@@ -89,6 +122,9 @@ func _ready() -> void:
 			$main_list/TransitionRect.texture = tex
 		else:
 			print("Failed to load image at path:", Settings.misc.menu_bg_img_path)
+			var new_notice = load(notice).instantiate()
+			$notice_cont.add_child(new_notice)
+			new_notice.popup("Failed to load image at path: %s" % str(Settings.misc.menu_bg_img_path), 0)
 	
 	if not Settings.misc.vis: $Visualizer.hide()
 	
@@ -110,7 +146,7 @@ func _ready() -> void:
 		$playing_bar.show_cover()
 		
 		$logo_sprite.hide()
-		$bg_main_menu.hide()
+		if not Settings.misc.hq_background: $bg_main_menu.hide()
 		$exit_game.hide()
 		$exit_text.hide()
 		
@@ -184,9 +220,9 @@ func _process(delta: float) -> void:
 
 			if $playing_bar.showing:
 				if small_cover_pulse:
-					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, 2.202 * title_target, weight, delta)
+					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, 2.202 * title_target if OS.get_name() == "Windows" else 1.7, weight, delta)
 				else:
-					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, 2.202, weight / 1.4, delta)
+					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, (2.202) * 1.0 if OS.get_name() == "Windows" else 1.0, weight / 1.4, delta)
 		else:
 			$bg_main_menu.scale = safe_scale($bg_main_menu.scale, 1.0, weight / 2.5, delta)
 			$TransitionRect.scale = safe_scale($TransitionRect.scale, 1.0, weight / 2.5, delta)
@@ -219,6 +255,8 @@ func play_random_song() -> void:
 		_song_thread = Thread.new()
 		_song_thread.start(Callable(self, "_thread_play_random_song"))
 
+var menu_song_tag: MP3ID3Tag = MP3ID3Tag.new()
+
 func _thread_play_random_song() -> void:
 	if not can_random: return
 	can_random = false
@@ -239,13 +277,13 @@ func _thread_play_random_song() -> void:
 			f = dir.get_next()
 		dir.list_dir_end()
 
-	var user_dir = DirAccess.open("user://Custom/")
+	var user_dir: DirAccess = DirAccess.open("user://Custom/") if OS.get_name() == "Windows" else DirAccess.open("storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/")
 	if user_dir:
 		user_dir.list_dir_begin()
 		var folder_name = user_dir.get_next()
 		while folder_name != "":
 			if folder_name != "." and folder_name != "..":
-				var subfolder = "user://Custom/" + folder_name
+				var subfolder = ("user://Custom/" if OS.get_name() == "Windows" else "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/") + folder_name
 				var sub_dir = DirAccess.open(subfolder)
 				if sub_dir:
 					sub_dir.list_dir_begin()
@@ -257,13 +295,36 @@ func _thread_play_random_song() -> void:
 					sub_dir.list_dir_end()
 			folder_name = user_dir.get_next()
 		user_dir.list_dir_end()
+	
+	# Scan custom menu song directories
+	for custom_dir_path in Settings.game.menu_song_dirs:
+		if custom_dir_path == "user://Custom":
+			continue
 
+		var custom_dir := DirAccess.open(custom_dir_path)
+		if !custom_dir:
+			continue
+
+		custom_dir.list_dir_begin()
+		var file_name := custom_dir.get_next()
+
+		while file_name != "":
+			if !custom_dir.current_is_dir():
+				var ext := file_name.get_extension().to_lower()
+
+				if ext == "mp3":
+					song_files.append(custom_dir_path.path_join(file_name))
+
+			file_name = custom_dir.get_next()
+
+		custom_dir.list_dir_end()
+	
 	if song_files.is_empty():
 		print("No songs found.")
 		return
 
 	var random_song = song_files[randi() % song_files.size()]
-	data["path"] = random_song
+	data["path"] = ProjectSettings.globalize_path(random_song)
 
 	# Load stream
 	if random_song.begins_with("res://"):
@@ -282,8 +343,44 @@ func _thread_play_random_song() -> void:
 	data["album"] = ""
 	data["year"] = -1
 	data["cover"] = null
+	data["cover_loop"] = ""
+	
+	var is_custom_menu_song := false
 
-	if random_song.begins_with("user://Custom/"):
+	for custom_dir_path in Settings.game.menu_song_dirs:
+		if custom_dir_path == "user://Custom":
+			continue
+
+		if random_song.begins_with(custom_dir_path):
+			is_custom_menu_song = true
+			break
+
+	if is_custom_menu_song:
+		menu_song_tag.unload_file()
+
+		if menu_song_tag.load_file(random_song):
+			data["title"] = menu_song_tag.getTrackName()
+
+			if data["title"].is_empty():
+				data["title"] = random_song.get_file().trim_suffix("." + random_song.get_extension())
+
+			data["artist"] = menu_song_tag.getArtist()
+			data["album"] = menu_song_tag.getAlbum()
+
+			var year_str := menu_song_tag.getYear()
+			if !year_str.is_empty() and year_str.is_valid_int():
+				data["year"] = int(year_str)
+
+			var cover := menu_song_tag.getAttachedPicture()
+
+			if cover:
+				if cover.get_width() > 420 or cover.get_height() > 420:
+					cover.resize(420, 420, Image.INTERPOLATE_LANCZOS)
+
+				data["cover"] = cover
+				call_thread_safe("tint_hq_bg_with", data["cover"])
+
+	if random_song.begins_with("user://Custom/") or random_song.begins_with("storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/"):
 		var folder_path = random_song.get_base_dir()
 		var info_path = folder_path.path_join("info.json")
 		if FileAccess.file_exists(info_path):
@@ -299,7 +396,16 @@ func _thread_play_random_song() -> void:
 					if FileAccess.file_exists(cover_path):
 						var img := Image.new()
 						if img.load(ProjectSettings.globalize_path(cover_path)) == OK:
-							data["cover"] = ImageTexture.create_from_image(img)
+							if img.get_width() > 420 or img.get_height() > 420:
+								img.resize(420, 420, Image.INTERPOLATE_LANCZOS)
+
+							data["cover"] = img
+							call_thread_safe("tint_hq_bg_with", data["cover"])
+				
+				if i.has("cover_loop"):
+					var cover_loop_path = folder_path.path_join(str(i["cover_loop"]))
+					if FileAccess.file_exists(cover_loop_path):
+							data["cover_loop"] = cover_loop_path
 	
 	elif random_song.begins_with("res://Resources/Songs/"): 
 		print("Internal song ", random_song) 
@@ -344,7 +450,13 @@ func apply_song_data(data: Dictionary) -> void:
 	
 	# Example of optional color extraction (do in main thread)
 	if data["cover"]:
-		var img = data["cover"].get_image()
+		var img
+
+		if data["cover"] is Image:
+			img = data["cover"]
+		else:
+			img = data["cover"].get_image()
+		
 		if img:
 			var cols: Array[Color] = General.extract_dominant_colors(img)
 			if not cols.is_empty():
@@ -353,15 +465,10 @@ func apply_song_data(data: Dictionary) -> void:
 			else:
 				$Visualizer.colors = [Color.WHITE] as Array[Color]
 	
-	$playing_bar.set_song(
-		data["title"], 
-		data["artist"], 
-		bgsong.get_length(),
-		data["year"], 
-		data["album"], 
-		data["cover"],
-		colors
-	)
+	data["colors"] = colors
+	data["length"] = bgsong.get_length()
+	
+	$playing_bar.set_song(data)
 
 func _on_play_button_button_up() -> void:
 	$play_button.release_focus()
@@ -374,7 +481,7 @@ func _on_play_button_button_up() -> void:
 		$AnimationPlayer.play("scene_load", -1, 250.0)
 		$play_sprite.hide()
 	$logo_sprite.hide()
-	$bg_main_menu.hide()
+	if not Settings.misc.hq_background: $bg_main_menu.hide()
 	$exit_game.hide()
 	$exit_text.hide()
 	
@@ -382,7 +489,8 @@ func _on_play_button_button_up() -> void:
 	
 	$main_list.show()
 	
-	General._set_rpc("A Rhythm Game by GuayabR", "Selecting a Song...", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", int(Time.get_unix_time_from_system()), 0)
+	General.set_presence("Browsing Songs...")
+	General._set_rpc("A Rhythm Game by GuayabR", "Browsing Songs...", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", int(Time.get_unix_time_from_system()), 0)
 	
 	if !Settings.misc.reduce_motion:
 		$AnimationPlayer.play("scene_finish_load")
@@ -409,7 +517,7 @@ func _on_main_list_went_back() -> void:
 		$AnimationPlayer.play("finish_back", -1, 250.0)
 		$play_sprite.show()
 	
-	$bg_main_menu.show()
+	if not Settings.misc.hq_background: $bg_main_menu.show()
 	$play_button.show()
 	$main_list.hide()
 	
@@ -417,23 +525,10 @@ func _on_main_list_went_back() -> void:
 
 func _input(event: InputEvent) -> void:
 	if Input.get_connected_joypads().size() > 0:
-		# Only process if this event came from a controller
-		if event.is_action_pressed("controller-back") and event.device in Input.get_connected_joypads():
-			print("controlo back")
-			_handle_back_pressed()
-		
 		if event.is_action_pressed("controller-pause") and event.device in Input.get_connected_joypads():
 			print("controlo pause")
 			if current_menu == "main": _on_settings_button_up()
 			elif current_menu == "settings": _handle_back_pressed()
-		
-		if event.is_action_pressed("controller-accept") and event.device in Input.get_connected_joypads():
-			print("controlo accept")
-			if current_menu == "main":
-				_on_play_button_button_up()
-			elif current_menu == "popup_leave":
-				print("popup cancel control")
-				_on_accept_pressed()
 	
 	if Input.is_action_just_pressed("pause-back"):
 		_handle_back_pressed()
@@ -472,42 +567,44 @@ func _input(event: InputEvent) -> void:
 var volume_hide_timer: SceneTreeTimer
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_handle_back_pressed()
+	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST:
+			if current_menu == "main":
+				_on_exit_game_button_up()
+		NOTIFICATION_WM_GO_BACK_REQUEST:
+			_handle_back_pressed()
 
 func _handle_back_pressed() -> void:
 	match current_menu:
-		"loading":
-			print("new menu loading cant go back")
-			print(current_menu)
 		"main":
-			print("menu back")
+			#print("menu back")
 			_on_exit_game_button_up()
 		"popup_leave":
-			print("popup cancel")
+			#print("popup cancel")
 			_on_cancel_pressed()
 		"list":
-			print("list back")
+			#print("list back")
 			$main_list/background.release_focus()
 			$main_list/center/song_list.deselect_all()
 			$main_list/center/song_list.release_focus()
 			$main_list._on_back_button_up()
 		"settings":
-			print("settings back")
 			var anim_name := "from_settings_to_main"
 			var speed := 250.0 if Settings.misc.reduce_motion else 1.0
 			$AnimationPlayer.play(anim_name, -1, speed)
+			current_menu = "main"
 		"binds":
 			print("binds back")
 			$AnimationPlayer.play("from_binds_to_stgs")
 
 func _on_settings_button_up() -> void:
 	$settings_button.release_focus()
+	current_menu = "settings"
 	if current_menu == "loading": return
 	if !Settings.misc.reduce_motion:
 		$AnimationPlayer.play("go_to_settings")
 	else:
-		$AnimationPlayer.play("go_to_settings", -1, 250.0)
+		$AnimationPlayer.play("go_to_settings", 0.35, 250.0)
 
 func _on_main_list_song_sel() -> void: # When a song is selected, fade out the background song
 	var tween := create_tween()
@@ -554,7 +651,8 @@ func _on_playing_bar_seek_ended(value_changed: bool, ending_value: float) -> voi
 		$bg_song.seek(ending_value)
 		$Visualizer/Song_left.seek(ending_value)
 		$Visualizer/Song_right.seek(ending_value)
-		print(ending_value)
+		saved_pos = ending_value
+		$playing_bar.set_time(ending_value)
 
 func _on_playing_bar_randomized() -> void:
 	play_random_song()
@@ -584,12 +682,16 @@ func _on_playing_bar_play_toggled() -> void:
 func _on_playing_bar_cover_pressed() -> void:
 	small_cover_pulse = !small_cover_pulse
 
-func _on_song_list_context_play_as_bg_song(path: String) -> void:
+func _on_song_list_context_play_as_bg_song(path: String, index: int, from_album: bool = false) -> void:
 	var data := {}
+	
+	
 	data["path"] = path
-
+	
+	print(index)
+	
 	# --- Load audio stream ---
-	if path.begins_with("res://"):
+	if path.contains("Resources/Songs"):
 		bgsong = load(path)
 	else:
 		var ext = path.get_extension().to_lower()
@@ -608,28 +710,40 @@ func _on_song_list_context_play_as_bg_song(path: String) -> void:
 	data["album"] = ""
 	data["year"] = -1
 	data["cover"] = null
+	data["cover_loop"] = ""
 
 	# --- Handle Custom songs ---
-	if path.begins_with("user://Custom/"):
+	if path.contains("AppData/Roaming/Godot/app_userdata") or path.contains("storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/"):
 		var folder_path = path.get_base_dir()
 		var info_path = folder_path.path_join("info.json")
 		if FileAccess.file_exists(info_path):
 			var info = JSON.parse_string(FileAccess.get_file_as_string(info_path))
 			if typeof(info) == TYPE_DICTIONARY and info.has("info"):
-				var i = info["info"]
+				var i: Dictionary = info["info"]
 				data["title"] = i.get("title", data["title"])
 				data["artist"] = i.get("artist", "")
 				data["album"] = i.get("album", "")
 				data["year"] = i.get("year", -1)
-				if i.has("cover"):
+				if not from_album: data["cover"] = $main_list/center/song_list.get_item_icon(index)
+				else: data["cover"] = $main_list/album_view/charts_side/song_list.get_item_icon(index)
+				
+				if data["cover"] == null:
 					var cover_path = folder_path.path_join(str(i["cover"]))
 					if FileAccess.file_exists(cover_path):
 						var img := Image.new()
 						if img.load(ProjectSettings.globalize_path(cover_path)) == OK:
+							img.resize(420, 420)
 							data["cover"] = ImageTexture.create_from_image(img)
+				
+				tint_hq_bg_with(data["cover"])
+				
+				if i.has("cover_loop"):
+					var cover_loop_path = folder_path.path_join(str(i["cover_loop"]))
+					if FileAccess.file_exists(cover_loop_path):
+						data["cover_loop"] = cover_loop_path
 
 	# --- Handle Resources/Songs ---
-	elif path.begins_with("res://Resources/Songs/"):
+	elif path.contains("Resources/Songs/"):
 		var info_path: String = "res://song_info.json"
 		if FileAccess.file_exists(info_path):
 			var info_data = JSON.parse_string(FileAccess.get_file_as_string(info_path))
@@ -641,9 +755,14 @@ func _on_song_list_context_play_as_bg_song(path: String) -> void:
 						data["artist"] = entry.get("artist", "")
 						data["album"] = entry.get("album", "")
 						data["year"] = entry.get("year", -1)
-						var cover_path = "res://Resources/Covers/" + data["album"] + ".png"
-						if ResourceLoader.exists(cover_path):
-							data["cover"] = load(cover_path)
+						if not from_album: data["cover"] = $main_list/center/song_list.get_item_icon(index)
+						else: data["cover"] = $main_list/album_view/charts_side/song_list.get_item_icon(index)
+						
+						if data["cover"] == null:
+							var cover_path = "res://Resources/Covers/" + data["album"] + ".png"
+							if ResourceLoader.exists(cover_path):
+								data["cover"] = load(cover_path)
+						
 						break
 
 	# --- Apply data safely on main thread ---
@@ -652,14 +771,27 @@ func _on_song_list_context_play_as_bg_song(path: String) -> void:
 
 func _on_main_list_item_context_menu(meta: Dictionary, pos: Vector2, idx: int) -> void:
 	$song_list_context.show()
-	$song_list_context.global_position = pos + Vector2(210, 8)
+	
+	var final_pos: Vector2 = pos + Vector2(210, 8)
+	var viewport_size := get_viewport_rect().size
+	var context_size: Vector2 = $song_list_context.size
+	
+	# check vertical overflow (downwards only)
+	if final_pos.y + context_size.y > viewport_size.y:
+		final_pos.y = viewport_size.y - (context_size.y + 10)
+	
+	# check horizontal overflow
+	if final_pos.x + context_size.x > viewport_size.x:
+		final_pos.x -= (context_size.x - 10)
+	
+	$song_list_context.global_position = final_pos
 	$song_list_context.appear(meta.song_name, meta, idx)
 
 func _on_main_list_item_context_menu_focus_released() -> void:
 	$song_list_context.hide()
 
-func _on_main_list_item_play_as_bg(path: String) -> void:
-	_on_song_list_context_play_as_bg_song(path)
+func _on_main_list_item_play_as_bg(path: String, index: int) -> void:
+	_on_song_list_context_play_as_bg_song(path, index)
 
 func _on_new_ver_popup_new_version() -> void:
 	$new_ver_popup/HBoxContainer/ok.grab_focus()
@@ -704,26 +836,47 @@ func _on_settings_set_title(title: String) -> void:
 func _on_settings_set_clan(clan: String) -> void:
 	$settings/ScrollContainer/settings_list/profile_small.set_clan(clan)
 
+@onready var loading_text: RichTextLabel = $loading_text
+
 func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> void:
 	$main_list/center/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
 	$main_list/album_view/charts_side/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
-	
+
 	print("Playing from context, ", idx, ", ", _path)
+
 	var metadata = $main_list/center/song_list.get_item_metadata(idx) if not from_album else $main_list/album_view/charts_side/song_list.get_item_metadata(idx)
-	
+
 	print(metadata)
-	
+
+	SceneLoader.load_scene(General.MAIN)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			await get_tree().process_frame
+
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
 	$main_list/AnimationPlayer.play("go_to_selected")
-	
+
 	var tween := create_tween()
 	tween.tween_property($bg_song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
-	
+
 	await tween.finished
-	
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
 	var selected_beatz_path = metadata["beatz_path"]
 	var selected_title = metadata["song_name"]
 	var selected_album = metadata["album"]
-	var selected_cover = metadata["cover_texture"]
+	var selected_cover = Image.load_from_file(metadata["cover_path"])
+
+	if not selected_cover:
+		selected_cover = load("res://Resources/misc/noCover.png")
+
 	var diff_texture_path = metadata["diff_texture_path"]
 	var selected_artist = metadata["artist"]
 	var selected_year = metadata["year"]
@@ -732,19 +885,19 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	var selected_stream = metadata["stream"]
 	var selected_beat_offset = metadata["local_beat_offset"]
 	var selected_background: String = metadata["selected_background"]
-	
+
 	var background_vid_path: String = metadata["background_vid"]
-	
-	var game = General.MAIN.instantiate()
-	
+	var cover_loop_vid_path: String = metadata["cover_loop"]
+
+	var game = SceneLoader.loaded_scene.instantiate()
+
 	var beatz_file := FileAccess.open(selected_beatz_path, FileAccess.READ)
 	var content := beatz_file.get_as_text()
 	var beatz_data := General.import_beatz_file(content)
-	
-	# Pass data to the loading scene (it will forward it to main when loaded)
+
 	game.set("chart_path", selected_beatz_path)
 	game.set("song_path", selected_stream)
-	
+
 	var stream: AudioStream
 
 	if not FileAccess.file_exists(selected_stream):
@@ -766,20 +919,20 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 
 	if stream:
 		game.set("song", stream)
-		print("✅ Loaded audio stream:", selected_stream, "(", ext, ")")
 	else:
 		push_warning("Failed to load audio stream from: " + selected_stream)
-	
+
 	game.set("song_title", selected_title)
 	game.set("BPM", selected_bpm)
 	game.set("local_beat_offset", selected_beat_offset)
 	game.set("selected_background", selected_background)
 	game.set("selected_background_name", selected_background.get_file())
 	game.set("background_vid_path", background_vid_path)
+	game.set("cover_loop_vid_path", cover_loop_vid_path)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
 	game.set("year", selected_year)
-	game.set("cover", selected_cover.get_image())
+	game.set("cover", selected_cover)
 	game.set("start_wait", beatz_data["start_wait"])
 	game.set("preview_start", beatz_data["preview_start"])
 	game.set("preview_end", beatz_data["preview_end"])
@@ -789,29 +942,58 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	game.set("customNotes", beatz_data["notes"])
 	game.set("chart_name", beatz_data["chart_name"])
 	game.set("start_wait", beatz_data["start_wait"])
-	game.set("colors", General.extract_dominant_colors(selected_cover.get_image()))
-	
+
+	if selected_cover is CompressedTexture2D:
+		game.set("colors", General.extract_dominant_colors(selected_cover.get_image()))
+	else:
+		game.set("colors", General.extract_dominant_colors(selected_cover))
+
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = game
 
 func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> void:
 	$main_list/center/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
-	
+
 	print("Editing from context, ", idx, ", ", _path)
+
 	var metadata = $main_list/center/song_list.get_item_metadata(idx) if not from_album else $main_list/album_view/charts_side/song_list.get_item_metadata(idx)
-	
+
 	print(metadata)
-	
+
+	if metadata == null or !metadata.has("stream"):
+		print("Selected item is a separator or missing data")
+		return
+
+	SceneLoader.load_scene(General.EDITOR)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
 	$main_list/AnimationPlayer.play("go_to_selected")
-	
+
 	var tween := create_tween()
 	tween.tween_property($bg_song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
-	
+
+	await tween.finished
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var edit = SceneLoader.loaded_scene.instantiate()
+
 	var beatz_path = metadata["beatz_path"]
 	var song_name = metadata["song_name"]
 	var album = metadata["album"]
-	var cover_texture = metadata["cover_texture"]
+	var cover_texture = Image.load_from_file(metadata["cover_path"])
+	if not cover_texture:
+		cover_texture = load("res://Resources/misc/noCover.png")
+
 	var diff_texture_path = metadata["diff_texture_path"]
 	var artist = metadata["artist"]
 	var year = metadata["year"]
@@ -819,127 +1001,100 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 	var charter = metadata["charter"]
 	var selected_stream = metadata["stream"]
 	var selected_beat_offset = metadata["local_beat_offset"]
-	
+
 	var selected_background: String = metadata["selected_background"]
-	
 	var background_vid_path: String = metadata["background_vid"]
-	
-	#var speed = metadata["speed"]
-	# Ignore separators (they have no metadata or missing stream)
-	if metadata == null or !metadata.has("stream"):
-		print("Selected item is a separator or missing data")
+	var cover_loop_vid_path: String = metadata["cover_loop"]
+
+	var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
+	var content := beatz_file.get_as_text()
+	var beatz_data := General.import_beatz_file(content)
+
+	edit.new_beatzmap = false
+
+	edit.set("selected_stream_path", selected_stream)
+
+	var stream: AudioStream
+
+	if not FileAccess.file_exists(selected_stream):
+		push_warning("Stream file not found: " + selected_stream)
 		return
-	
-	$main_list/center/cover_sel.texture = $main_list/center/song_list.get_item_icon(idx)
-	
-	$main_list/center/song_list.mouse_filter = MOUSE_FILTER_IGNORE
-	
-	if metadata:
-		await get_tree().create_timer(1.4).timeout
-		
-		print("Selected song: %s by %s (%d) from album %s" % [song_name, artist, year, album])
-		
-		var edit = General.EDITOR.instantiate()
-		
-		var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
-		var content := beatz_file.get_as_text()
-		var beatz_data := General.import_beatz_file(content)
-		
-		edit.new_beatzmap = false
-		
-		edit.set("selected_stream_path", selected_stream)
 
-		var stream: AudioStream
+	var ext = selected_stream.get_extension().to_lower()
 
-		if not FileAccess.file_exists(selected_stream):
-			push_warning("Stream file not found: " + selected_stream)
+	match ext:
+		"mp3":
+			stream = AudioStreamMP3.load_from_file(selected_stream)
+		"ogg":
+			stream = AudioStreamOggVorbis.load_from_file(selected_stream)
+		"wav":
+			stream = AudioStreamWAV.load_from_file(selected_stream)
+		_:
+			push_warning("Unsupported audio format: " + ext)
 			return
 
-		var ext = selected_stream.get_extension().to_lower()
-
-		match ext:
-			"mp3":
-				stream = AudioStreamMP3.load_from_file(selected_stream)
-			"ogg":
-				stream = AudioStreamOggVorbis.load_from_file(selected_stream)
-			"wav":
-				stream = AudioStreamWAV.load_from_file(selected_stream)
-			_:
-				push_warning("Unsupported audio format: " + ext)
-				return
-
-		if stream:
-			edit.set("selected_stream", stream)
-			print("✅ Loaded audio stream:", selected_stream, "(", ext, ")")
-		else:
-			push_warning("Failed to load audio stream from: " + selected_stream)
-
-		edit.set("selected_title", song_name)
-		edit.set("selected_album", album)
-		
-		var cover_img: Image = cover_texture.get_image()
-		edit.set("selected_cover", cover_img)
-		edit.set("selected_artist", artist)
-		edit.set("selected_year", year)
-		
-		edit.set("start_wait", beatz_data["start_wait"])
-		edit.set("preview_start", beatz_data["preview_start"])
-		edit.set("preview_end", beatz_data["preview_end"])
-		
-		edit.set("selected_difficulty", beatz_data["difficulty"])
-		
-		if diff_texture_path:
-			var d_img := Image.load_from_file(diff_texture_path)
-			var d_tex := ImageTexture.create_from_image(d_img)
-			
-			edit.set("selected_diff_texture", d_tex)
-		
-		edit.set("notes", beatz_data["notes"])
-		edit.set("selected_chart_name", beatz_data["chart_name"])
-		
-		edit.set("selected_beatz_path", beatz_path)
-		
-		edit.set("selected_beat_offset", selected_beat_offset)
-		
-		edit.set("background_vid_path", background_vid_path)
-		
-		if selected_background != "" and not selected_background.ends_with("/"):
-			var img_ext := selected_background.get_extension().to_lower()
-			if img_ext in General.IMG_FORMATS:
-				# ✅ It's a valid image file
-				if FileAccess.file_exists(selected_background):
-					var img := Image.load_from_file(selected_background)
-					edit.set("selected_background", img)
-					edit.set("selected_background_name", selected_background.get_file())
-					print("Loaded background:", selected_background.get_file())
-				else:
-					push_warning("Background file does not exist: " + selected_background)
-			else:
-				push_warning("Invalid background extension: " + img_ext)
-		else:
-			push_warning("Selected background is a folder or invalid path: " + selected_background)
-		
-		edit.set("selected_bpm", bpm)
-		edit.set("selected_charter", charter)
-		
-		var colors: Array[Color] = General.extract_dominant_colors(cover_img)
-		
-		edit.set("colors", colors)
-		
-		get_tree().root.add_child(edit)
-		get_tree().current_scene.queue_free()
-		get_tree().current_scene = edit
+	if stream:
+		edit.set("selected_stream", stream)
 	else:
-		print("No metadata found for song list item: ", idx) # If no metadata found, return to main menu
-		print(selected_stream)
-		print(metadata)
-		
-		if !Settings.misc.reduce_motion: await get_tree().create_timer(1.4).timeout
-		
-		var main = load("res://Scenes/main_menu.tscn").instantiate()
-		get_tree().root.add_child(main)
-		get_tree().current_scene.queue_free()
-		get_tree().current_scene = main
+		push_warning("Failed to load audio stream from: " + selected_stream)
+
+	edit.set("selected_title", song_name)
+	edit.set("selected_album", album)
+
+	edit.set("selected_cover", cover_texture)
+	edit.set("selected_artist", artist)
+	edit.set("selected_year", year)
+
+	edit.set("start_wait", beatz_data["start_wait"])
+	edit.set("preview_start", beatz_data["preview_start"])
+	edit.set("preview_end", beatz_data["preview_end"])
+
+	edit.set("selected_difficulty", beatz_data["difficulty"])
+
+	if diff_texture_path:
+		var d_img := Image.load_from_file(diff_texture_path)
+		var d_tex := ImageTexture.create_from_image(d_img)
+		edit.set("selected_diff_texture", d_tex)
+
+	edit.set("notes", beatz_data["notes"])
+	edit.set("selected_chart_name", beatz_data["chart_name"])
+
+	edit.set("selected_beatz_path", beatz_path)
+	edit.set("selected_beat_offset", selected_beat_offset)
+
+	edit.set("background_vid_path", background_vid_path)
+	edit.set("cover_loop_vid_path", cover_loop_vid_path)
+
+	if selected_background != "" and not selected_background.ends_with("/"):
+		var img_ext := selected_background.get_extension().to_lower()
+		if img_ext in General.IMG_FORMATS:
+			if FileAccess.file_exists(selected_background):
+				var img := Image.load_from_file(selected_background)
+				edit.set("selected_background", img)
+				edit.set("selected_background_name", selected_background.get_file())
+				print("Loaded background:", selected_background.get_file())
+			else:
+				push_warning("Background file does not exist: " + selected_background)
+		else:
+			push_warning("Invalid background extension: " + img_ext)
+	else:
+		push_warning("Selected background is a folder or invalid path: " + selected_background)
+
+	edit.set("selected_bpm", bpm)
+	edit.set("selected_charter", charter)
+
+	var colors: Array[Color]
+
+	if cover_texture is CompressedTexture2D:
+		colors = General.extract_dominant_colors(cover_texture.get_image())
+	else:
+		colors = General.extract_dominant_colors(cover_texture)
+
+	edit.set("colors", colors)
+
+	get_tree().root.add_child(edit)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = edit
 
 func _on_song_list_context_delete(idx: int, _path: String, from_album: bool) -> void:
 	if not from_album:
@@ -958,16 +1113,12 @@ func _on_main_list_loaded_song(title: String) -> void:
 	$loading_text.text = "Loaded " + title + "."
 
 func _on_main_list_loading_song(title: String) -> void:
-	$loading_text.text = "Loading Song: " + title
-	#print("loading ", title)
+	%currently.text = title
 
 func _on_main_list_loaded_song_meta(title: String) -> void:
-	$loading_text.text = "Loaded " + title + "'s metadata."
-	#print("meta ", title)
+	%currently.text = title
 
 func _on_song_list_context_go_to_album_pressed(idx: int, album_name: String, album_artist: String, album_year: int, album_cover: Image) -> void:
-	print(idx)
-	print(album_name)
 	$main_list.go_to_album(album_name, album_artist, album_year, album_cover)
 
 func _on_album_view_item_context_menu(meta: Dictionary, pos: Vector2, idx: int) -> void:
@@ -978,5 +1129,192 @@ func _on_album_view_item_context_menu(meta: Dictionary, pos: Vector2, idx: int) 
 func _on_album_view_item_context_menu_focus_released() -> void:
 	$song_list_context.hide()
 
-func _on_album_view_item_play_as_bg(path: Variant) -> void:
-	_on_song_list_context_play_as_bg_song(path)
+func _on_album_view_item_play_as_bg(path: String, index: int) -> void:
+	_on_song_list_context_play_as_bg_song(ProjectSettings.globalize_path(path), index, true)
+
+func _on_playing_bar_going_to_song(path: String) -> void:
+	var id: int = -1
+	var items: Array = $main_list.all_items
+
+	for i in items.size():
+		var item = items[i]
+
+		if not item.metadata:
+			continue
+
+		var item_path = item.metadata.get("stream", "")
+
+		if item_path == path:
+			id = i
+			break
+
+	$main_list._on_song_selected(id, true)
+
+func _on_playing_bar_going_to_album(path: String) -> void:
+	var id: int = -1
+	var items: Array = $main_list.all_items
+	
+	var album: String
+	var artist: String
+	var year: int
+	var cover_path: String
+
+	for i in items.size():
+		var item = items[i]
+
+		if not item.metadata:
+			continue
+
+		var item_path = item.metadata.get("stream", "")
+		album = item.metadata.get("album", "")
+		artist = item.metadata.get("artist", "")
+		year = item.metadata.get("year", "")
+		cover_path = item.metadata.get("cover_path", "")
+
+		if item_path == path:
+			id = i
+			break
+
+	$main_list.go_to_album(album, artist, year, Image.load_from_file(cover_path))
+
+## next_prev syntax: -1 = previous | 1 = next song
+func _on_playing_bar_prev_next(current_path: String, next_prev: int) -> void: 
+	var id: int = -1
+	var items: Array = $main_list.all_items
+
+	for i in items.size():
+		var item = items[i]
+
+		if not item.metadata:
+			continue
+
+		var item_path = item.metadata.get("stream", "")
+
+		if item_path == current_path:
+			id = i + next_prev
+			break
+	
+	var new_path: String = items[id % items.size()].metadata.stream
+	
+	_on_song_list_context_play_as_bg_song(new_path, id)
+
+func _on_playing_bar_going_to_artist(path: String) -> void:
+	print("to artist not implemented yet")
+	print(path)
+
+	var id: int = -1
+	var items: Array = $main_list.all_items
+	
+	var album: String
+	var artist: String
+	var year: int
+	var cover_path: String
+
+	for i in items.size():
+		var item = items[i]
+
+		if not item.metadata:
+			continue
+
+		var item_path = item.metadata.get("stream", "")
+		album = item.metadata.get("album", "")
+		artist = item.metadata.get("artist", "")
+		year = item.metadata.get("year", "")
+		cover_path = item.metadata.get("cover_path", "")
+
+		if item_path == path:
+			id = i
+			break
+
+	print(id)
+
+	$main_list.go_to_album(album, artist, year, Image.load_from_file(cover_path))
+
+
+func _on_main_list_error(title: String, code: Variant.Type) -> void:
+	var new_notice = load(notice).instantiate()
+	$notice_cont.add_child(new_notice)
+	new_notice.popup(title, code)
+
+
+func _on_settings_cover_loops_playing_bar_toggled(toggled_on: bool) -> void:
+	var cover_loop_node: VideoPlayback = $playing_bar.get_node("cover_mask/VideoPlayback")
+	if toggled_on:
+		print("on")
+		cover_loop_node.set_video_path($playing_bar.data["cover_loop"])
+		cover_loop_node.show()
+	else:
+		print("off")
+		cover_loop_node.close()
+		cover_loop_node.hide()
+
+
+func _on_settings_parallax_bg_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		$bg_main_menu.hide()
+		$main_list/background.hide()
+		
+		$hq_background.show()
+		$hq_background.start()
+	else:
+		$bg_main_menu.show()
+		$main_list/background.show()
+		
+		$hq_background.hide()
+		$hq_background.stop()
+
+
+func _on_settings_bg_parallax_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		$hq_background.play_parallax()
+	else:
+		$hq_background.stop_parallax()
+
+
+func _on_settings_bg_effect_changed(effect: int) -> void:
+	$hq_background.effect_mode = effect
+
+
+func _on_settings_bg_rot_time_changed(value: float) -> void:
+	$hq_background.tween_time = value
+
+func _on_settings_bg_time_interval_changed(value: float) -> void:
+	$hq_background.step_time = value
+
+
+func _on_settings_bg_fx_random_multi_min_changed(value: int) -> void:
+	$hq_background.multi_min = value
+
+func _on_settings_bg_fx_random_multi_max_changed(value: int) -> void:
+	$hq_background.multi_max = value
+
+func _on_settings_bg_parallax_speed_changed(value: float) -> void:
+	$hq_background/AnimationPlayer.speed_scale = value
+
+var tint_worker_id: int
+
+func tint_hq_bg_with(cover: Variant) -> void:
+	if not Settings.misc.bg_matches_cover:
+		return
+
+	var img: Image
+	if cover is Image:
+		img = cover.duplicate()
+	elif cover is ImageTexture or cover is CompressedTexture2D:
+		img = cover.get_image()
+
+	tint_worker_id = WorkerThreadPool.add_task(Callable(self, "_tint_hq_bg_worker").bind(img))
+	WorkerThreadPool.wait_for_task_completion(tint_worker_id)
+
+func _tint_hq_bg_worker(img: Image) -> void:
+	var colors: Array[Color] = [
+		General.get_average_color(img, 10),
+		General.get_dominant_color(img, 10)
+	]
+
+	call_deferred("_apply_hq_bg_tint", colors)
+
+
+func _apply_hq_bg_tint(colors: Array[Color]) -> void:
+	$hq_background.tint(colors)
+	

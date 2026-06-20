@@ -3,18 +3,16 @@ extends Control
 var page: int = 1 # 3 is max
 
 func picker_color_changed(color: Color, type: String):
-	print("args: ", color, " ", type)
+	#print("args: ", color, " ", type)
 	
 	Settings.circles[type] = color.to_html()   # saves "#ff0000ff"
-	print(Settings.circles[type])
+	#print(Settings.circles[type])
 	if not get_parent().name == "settings":
 		Settings._save()
 	else:
 		get_parent().save_stgs()
 
 func _connect_popup(btn: ColorPickerButton) -> void:
-	print("Connected ", btn.name)
-	
 	var popup: PopupPanel = btn.get_popup()
 
 	popup.about_to_popup.connect(func():
@@ -44,9 +42,9 @@ func _ready() -> void:
 		
 		_connect_popup(picker)
 		
-		print("idle ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("idle ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 		
 	
 	for node in $cols_cont/vcols/diag_idle.get_children():
@@ -58,9 +56,9 @@ func _ready() -> void:
 		picker.connect("color_changed", Callable(self, "picker_color_changed").bind(picker.name))
 		_connect_popup(picker)
 		
-		print("diag idle ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("diag idle ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 	
 	for node in $cols_cont/vcols/updl_pressed.get_children():
 		var picker: ColorPickerButton = node if node is ColorPickerButton else null
@@ -71,9 +69,9 @@ func _ready() -> void:
 		picker.connect("color_changed", Callable(self, "picker_color_changed").bind(picker.name))
 		_connect_popup(picker)
 		
-		print("pressed ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("pressed ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 	
 	for node in $cols_cont/vcols/diag_pressed.get_children():
 		var picker: ColorPickerButton = node if node is ColorPickerButton else null
@@ -84,9 +82,9 @@ func _ready() -> void:
 		picker.connect("color_changed", Callable(self, "picker_color_changed").bind(picker.name))
 		_connect_popup(picker)
 		
-		print("diag pressed ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("diag pressed ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 	
 	for node in $cols_cont/vcols/updl_chart.get_children():
 		var picker: ColorPickerButton = node if node is ColorPickerButton else null
@@ -97,9 +95,9 @@ func _ready() -> void:
 		picker.connect("color_changed", Callable(self, "picker_color_changed").bind(picker.name))
 		_connect_popup(picker)
 		
-		print("chart ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("chart ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 	
 	for node in $cols_cont/vcols/diag_chart.get_children():
 		var picker: ColorPickerButton = node if node is ColorPickerButton else null
@@ -110,9 +108,9 @@ func _ready() -> void:
 		picker.connect("color_changed", Callable(self, "picker_color_changed").bind(picker.name))
 		_connect_popup(picker)
 		
-		print("diag chart ", picker.name)
-		print("col = ", Settings.circles[picker.name])
-		print("==")
+		#print("diag chart ", picker.name)
+		#print("col = ", Settings.circles[picker.name])
+		#print("==")
 	
 	apply_page()
 
