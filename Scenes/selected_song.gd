@@ -312,7 +312,7 @@ func _on_play_button_up() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 
@@ -375,7 +375,7 @@ func _on_back_pressed() -> void:
 		
 		var progress_update := func():
 			while SceneLoader.is_loading():
-				loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+				loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 				await get_tree().process_frame
 			loading_text.text = "Loading... 100%"
 
@@ -416,7 +416,7 @@ func _on_edit_pressed() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 

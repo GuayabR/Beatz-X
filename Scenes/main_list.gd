@@ -1315,7 +1315,7 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 
@@ -1960,8 +1960,30 @@ func _on_create_req() -> void:
 	$top_left/create.release_focus()
 
 func _on_create_pressed() -> void:
-	var edit = load(General.EDITOR).instantiate()
-	
+	SceneLoader.load_scene(General.EDITOR)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.6 / anim_speed).timeout
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var edit = SceneLoader.loaded_scene.instantiate()
+
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
@@ -1991,113 +2013,120 @@ func _on_song_select_file_selected(status, paths: PackedStringArray, _filter_idx
 	print("list song select file status", status)
 	print("list song select paths ", paths)
 	print("list song select filter idx", _filter_idx)
-	
+
 	if not status or paths.is_empty():
 		return
-	
+
 	if paths[0].get_extension() not in ["mp3", "ogg", "wav"]:
 		$Control/create_map_panel/song_file_label.text = "Song has to be an mp3, ogg or wav file."
 		return
-	
+
 	var song_path = paths[0]
-	
+
 	var stream
-	
 	var song_didnt_fail := true
+
 	if song_path.ends_with(".mp3") or song_path.ends_with(".ogg") or song_path.ends_with(".wav"):
 		if song_path.ends_with(".mp3"):
 			stream = AudioStreamMP3.load_from_file(song_path)
-			print("Song created as mp3 ", stream)
 		elif song_path.ends_with(".ogg"):
 			stream = AudioStreamOggVorbis.load_from_file(song_path)
-			print("Song created as ogg ", stream)
 		elif song_path.ends_with(".wav"):
 			stream = AudioStreamWAV.load_from_file(song_path)
-			print("Song created as wav ", stream)
 		else:
 			song_didnt_fail = false
-			print("Unsupported audio format in: %s" % song_path)
 			stream = null
-			
-	if song_didnt_fail: 
-		
-		print("Song success ", stream)
-		
-		# Parse ID3 from file
-		var metaRead := MP3ID3Tag.new()
-		var loaded_ok := metaRead.load_file(song_path)
-		if not loaded_ok:
-			print("Failed to load ID3 tags for ", song_path)
-			return
-		
-		# Track name
-		var track := metaRead.getTrackName()
-		if track and track.strip_edges() != "":
-			print(track)
-		else:
-			print("Track name not in metadata")
-		
-		# Artist
-		var artist := metaRead.getArtist()
-		if artist and artist.strip_edges() != "":
-			print(artist)
-		else:
-			print("Artist not in metadata")
-		
-		# Album
-		var album := metaRead.getAlbum()
-		if album and album.strip_edges() != "":
-			print(album)
-		else:
-			print("Album not in metadata")
-		
-		# Year
-		var year := metaRead.getYear()
-		if year and year.strip_edges() != "":
-			print(year)
-		else:
-			print("Year not in metadata")
-		
-		# Cover (first attached picture)
-		var response: Array = metaRead.getAttachedPictureAndMime(0)
-		if not response.is_empty() and response[0]:
-			print("Got cover")
-		else:
-			print("Cover image not in metadata")
-		
-		var main = load("res://Scenes/main.tscn").instantiate()
-		main.set("song", stream)
-		main.set("song_path", song_path)
-		main.set("song_title", track)
-		main.set("album", album)
-		
-		if not response.is_empty() and response.get(0): main.set("cover", response[0])
-		
-		main.set("artist", artist)
-		main.set("year", year)
-		
-		#main.set("start_wait", 0.0)
-		#main.set("preview_start", beatz_data["preview_start"])
-		#main.set("preview_end", beatz_data["preview_end"])
-		
-		main.set("difficulty", "easy")
-		main.set("chart_name", track)
-		
-		main.set("charter", Settings.game.username)
-		
-		if not response.is_empty() and response.get(0): main.set("colors", General.extract_dominant_colors(response[0]))
-		
-		main.set("init_recording", true) # Initialize main with recording
-		
-		get_tree().root.add_child(main)
-		get_tree().current_scene.queue_free()
-		get_tree().current_scene = main
+
+	if not song_didnt_fail:
+		return
+
+	var metaRead := MP3ID3Tag.new()
+	var loaded_ok := metaRead.load_file(song_path)
+	if not loaded_ok:
+		return
+
+	var track := metaRead.getTrackName()
+	var artist := metaRead.getArtist()
+	var album := metaRead.getAlbum()
+	var year := metaRead.getYear()
+
+	var response: Array = metaRead.getAttachedPictureAndMime(0)
+
+	SceneLoader.load_scene("res://Scenes/main.tscn")
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.8 / anim_speed).timeout
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var main = SceneLoader.loaded_scene.instantiate()
+
+	main.set("song", stream)
+	main.set("song_path", song_path)
+	main.set("song_title", track)
+	main.set("album", album)
+
+	if not response.is_empty() and response.get(0):
+		main.set("cover", response[0])
+
+	main.set("artist", artist)
+	main.set("year", year)
+
+	main.set("difficulty", "easy")
+	main.set("chart_name", track)
+	main.set("charter", Settings.game.username)
+
+	if not response.is_empty() and response.get(0):
+		main.set("colors", General.extract_dominant_colors(response[0]))
+
+	main.set("init_recording", true)
+
+	get_tree().root.add_child(main)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = main
 
 func entered_mp3_on_window(file):
-	var edit = load(General.EDITOR).instantiate()
-	
+	SceneLoader.load_scene(General.EDITOR)
+
+	var progress_update := func():
+		while SceneLoader.is_loading():
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
+			await get_tree().process_frame
+		loading_text.text = "Loading... 100%"
+
+	progress_update.call()
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.6 / anim_speed).timeout
+
+	if SceneLoader.is_loading():
+		await SceneLoader.scene_loaded
+
+	var edit = SceneLoader.loaded_scene.instantiate()
+
 	edit.create_from_dropped_file(file)
-	
+
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit

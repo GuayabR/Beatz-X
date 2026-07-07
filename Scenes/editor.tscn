@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://cobclrhdkc7ju"]
+[gd_scene load_steps=67 format=3 uid="uid://cobclrhdkc7ju"]
 
 [ext_resource type="Script" uid="uid://cqcj17e2xfik7" path="res://Scenes/editor.gd" id="1_exjlx"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_nfgmo"]
@@ -28,6 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://c6bi78jh2q002" path="res://Resources/Arrows/beatLine.png" id="14_af0oh"]
 [ext_resource type="Texture2D" uid="uid://c1lwlpk8n64v4" path="res://Resources/misc/favicon.png" id="19_af0oh"]
 [ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="22_u6te5"]
+[ext_resource type="PackedScene" uid="uid://dre1xut64ofbe" path="res://Scenes/audio_waveform.tscn" id="29_ukxwk"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_op3c8"]
 blend_mode = 1
@@ -1634,6 +1635,18 @@ offset_top = -20.0
 offset_bottom = 20.0
 grow_horizontal = 0
 grow_vertical = 2
+
+[node name="waveform" parent="Control/chart_controls" instance=ExtResource("29_ukxwk")]
+layout_mode = 1
+offset_left = -529.0
+offset_top = 415.0
+offset_right = 279.0
+offset_bottom = 499.5923
+rotation = -1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+COLOR = Color(1, 1, 1, 0.2)
+waveform_quality = 2
 
 [node name="chart_scroll" type="VSlider" parent="Control/chart_controls"]
 layout_mode = 0
@@ -5880,6 +5893,18 @@ theme_override_font_sizes/font_size = 17
 text = "Double"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="waveform" parent="." instance=ExtResource("29_ukxwk")]
+layout_mode = 1
+offset_left = 516.94836
+offset_top = 989.0
+offset_right = -323.05164
+offset_bottom = 793.0
+rotation = -1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+COLOR = Color(1, 1, 1, 0.49019608)
+waveform_quality = 2
 
 [connection signal="save" from="." to="." method="_on_save"]
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]

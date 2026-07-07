@@ -156,6 +156,17 @@ func _apply_loaded_settings():
 		%display_options.hide()
 		%borderless_check.hide()
 	
+	$ScrollContainer/settings_list/brightness_slider.set_value_no_signal(Settings.game.brightness)
+	$ScrollContainer/settings_list/contrast_slider.set_value_no_signal(Settings.game.contrast)
+	$ScrollContainer/settings_list/gamma_slider.set_value_no_signal(Settings.game.gamma)
+	$ScrollContainer/settings_list/colourblind_modes.select(Settings.game.colourblind_mode)
+	$ScrollContainer/settings_list/colourblind_strength_slider.set_value_no_signal(Settings.game.colourblind_strength)
+	
+	%brightness_lbl.text = "---- Brightness: %.2f ----" % Settings.game.brightness
+	%contrast_lbl.text = "---- Contrast: %.2f ----" % Settings.game.colourblind_strength
+	%gamma_lbl.text = "---- Gamma: %.2f ----" % Settings.game.gamma
+	%colourblind_strength.text = "---- Colourblind Mode Strength: %.2f ----" % Settings.game.colourblind_strength
+	
 	# Apply mbl btn layout
 	%mbl_btn_layout_drop.select(Settings.game.mbl_btn_layout as int)
 	
@@ -181,6 +192,13 @@ func _apply_loaded_settings():
 	
 	# Apply Solid hold tail
 	%hold_tail_solid_toggle.set_pressed_no_signal(Settings.misc.hold_bar_solid)
+	
+	# Apply pause audio effects
+	%pause_audio_fx_toggle.set_pressed_no_signal(Settings.game.pause_audio_fx)
+	
+	# Apply pause resume time
+	%pause_resume_time_slider.set_value_no_signal(Settings.game.pause_resume_time)
+	%pause_resume_time_lbl.text = "---- Pause Resume Time: %.2fs ----" % Settings.game.pause_resume_time
 	
 	# Apply Visualizer show
 	%visualizer_toggle.set_pressed_no_signal(Settings.misc.vis)
@@ -1811,7 +1829,11 @@ func _on_open_dir_pressed() -> void:
 	
 	$ScrollContainer/settings_list/vbox/HBoxContainer/open_dir.release_focus()
 
-func _on_file_dialog_menu_song_dir_selected(_status, paths: PackedStringArray, _filter_idx: int) -> void:
+func _on_file_dialog_menu_song_dir_selected(status, paths: PackedStringArray, _filter_idx: int) -> void:
+	if status != true or paths.is_empty():
+		print("User cancelled or error occurred.")
+		return
+	
 	$ScrollContainer/settings_list/vbox/HBoxContainer/new_path.text = paths[0]
 
 func _on_add_path_pressed() -> void:
@@ -1867,3 +1889,66 @@ func _on_cover_loops_in_selected_bg_toggled(toggled_on: bool) -> void:
 	Settings.misc.cover_loops_selected_song = toggled_on
 	save_stgs()
 	cover_loop_selected_song_toggled.emit(toggled_on)
+
+
+func _on_brightness_slider_value_changed(value: float) -> void:
+	Settings.game.brightness = value
+	VisualFilters.apply_settings()
+	%brightness_lbl.text = "---- Brightness: %.2f ----" % value
+
+
+func _on_brightness_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed:
+		save_stgs()
+
+
+func _on_contrast_slider_value_changed(value: float) -> void:
+	Settings.game.contrast = value
+	VisualFilters.apply_settings()
+	%contrast_lbl.text = "---- Contrast: %.2f ----" % value
+
+
+func _on_contrast_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed:
+		save_stgs()
+
+
+func _on_gamma_slider_value_changed(value: float) -> void:
+	Settings.game.gamma = value
+	VisualFilters.apply_settings()
+	%gamma_lbl.text = "---- Gamma: %.2f ----" % value
+
+
+func _on_gamma_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed:
+		save_stgs()
+
+
+func _on_colourblind_modes_item_selected(index: int) -> void:
+	Settings.game.colourblind_mode = index
+	VisualFilters.apply_settings()
+	save_stgs()
+
+
+func _on_colourblind_strength_slider_value_changed(value: float) -> void:
+	Settings.game.colourblind_strength = value
+	VisualFilters.apply_settings()
+	%colourblind_strength.text = "---- Colourblind Mode Strength: %.2f ----" % value
+
+
+func _on_colourblind_strength_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed:
+		save_stgs()
+
+func _on_pause_audio_fx_toggle_toggled(toggled_on: bool) -> void:
+	Settings.game.pause_audio_fx = toggled_on
+	save_stgs()
+
+
+func _on_pause_resume_time_slider_value_changed(value: float) -> void:
+	Settings.game.pause_resume_time = value
+	%pause_resume_time_lbl.text = "---- Pause Resume Time: %.2fs ----" % value
+
+
+func _on_pause_resume_time_slider_drag_ended(value_changed: bool) -> void:
+	if value_changed: save_stgs()

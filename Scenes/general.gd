@@ -61,6 +61,8 @@ const MAIN_MENU_MSGS: Array = [
 	"\"MAKE NIELSEN PROUD!\""
 ]
 
+var window_focused = true
+
 var port: String = "Desktop Port" if OS.get_name() == "Windows" else "%s Port" % OS.get_name()
 
 const GITHUB_REL_URL: String = "https://api.github.com/repos/GuayabR/Beatz-X/releases/latest"
@@ -96,7 +98,7 @@ func _input(_event: InputEvent) -> void:
 		get_tree().reload_current_scene()
 
 func _on_focus_in():
-	#print("focused back in")
+	window_focused = true
 	if bg_was_pulsing: Settings.misc.menu_bg_pulse = true
 	
 	if Settings.misc.advanced_fps:
@@ -109,6 +111,9 @@ func _on_focus_in():
 
 func _on_focus_out() -> void:
 	if is_popup_open: return
+	
+	window_focused = false
+	
 	bg_was_pulsing = Settings.misc.menu_bg_pulse
 	if Settings.misc.advanced_fps:
 		apply_fps_limit("unfocused")

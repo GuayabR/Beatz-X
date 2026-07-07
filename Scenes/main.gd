@@ -1053,15 +1053,15 @@ func _process(delta):
 	# Move all children of the 'notes' node 
 	# Skip movement and auto-hit while paused
 	for n in %notes.get_children():
-		if gamePaused:
+		if gamePaused and !pause_transitioning:
 			continue
 		
 		if check_fade(n, true, false) == "hit": # If the note is faded, don't move the note
 			continue
 		
 		# If the note exists but it is great faded, slow the note down to 1/3 of the note speed
-		if check_fade(n, false, true) == "great": n.global_position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta) / 3.0
-		else: n.global_position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta)
+		if check_fade(n, false, true) == "great": n.position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta) / 3.0
+		else: n.position.y += 100.0 * noteSpeed * $song.pitch_scale * (delta)
 		
 		if n.global_position.y > $stationary_notes/lines/linemiss.global_position.y:
 			if n.is_recording_hold: continue
@@ -1127,7 +1127,7 @@ func _process(delta):
 		song_progress_lbl.text = General.format_time($song.get_playback_position()) + " / " + General.format_time($song.stream.get_length())
 		song_progress.value = (pos_ms / len_ms) * 100.0
 	
-	if spectrum and Settings.misc.menu_bg_pulse:
+	if spectrum and Settings.misc.menu_bg_pulse and General.window_focused:
 		# Get energy levels
 		var overall_energy: float = spectrum.get_magnitude_for_frequency_range(20.0, 11050.0).length()
 		var overall_loudness: float = clampf((111 + linear_to_db(overall_energy)) / 111.0, 0.0, 1.0)
@@ -1167,6 +1167,11 @@ func _process(delta):
 		if Settings.misc.bg_vid_pulse: $VideoPlayback.scale = lerp($VideoPlayback.scale, Vector2.ONE * bg_target, Settings.misc.bg_vid_pulse_strength * delta)
 		$TransitionRect.scale = lerp($TransitionRect.scale, Vector2.ONE * bg_target, Settings.misc.menu_bg_pulse_strength * delta)
 		$ActualTransitionRect.scale = lerp($ActualTransitionRect.scale, Vector2.ONE * bg_target, Settings.misc.menu_bg_pulse_strength * delta)
+	else:
+		$Background.scale = Vector2.ONE
+		$TransitionRect.scale = Vector2.ONE
+		$ActualTransitionRect.scale = Vector2.ONE
+		$VideoPlayback.scale = Vector2.ONE
 	
 	var alignment_x: float
 	if Settings.other.show_chart_alignment: 
@@ -1307,6 +1312,8 @@ func miss_note(n) -> void:
 	if n.rec:
 		n.queue_free()
 		return
+	if gamePaused or pause_transitioning:
+		return
 	if n.type == "Effect":
 		print(n)
 		n.queue_free()
@@ -1385,7 +1392,7 @@ func spawn_note(direction: String = "Up", rec: bool = false, hold: float = -1.0,
 		"Left": x = $stationary_notes/noteLeftSprite.position.x
 		"Down": x = $stationary_notes/noteDownSprite.position.x
 		"Up": x = $stationary_notes/noteUpSprite.position.x
-		"Right": x = $stationary_notes/noteRightSprite.global_position.x
+		"Right": x = $stationary_notes/noteRightSprite.position.x
 		"Downright": x = $stationary_notes/noteDownrightSprite.position.x
 		"Upright": x = $stationary_notes/noteUprightSprite.position.x
 		"Effect":
@@ -1393,7 +1400,7 @@ func spawn_note(direction: String = "Up", rec: bool = false, hold: float = -1.0,
 			return
 		_: 
 			print("Unknown / Unsupported note type: ", direction)
-			x = $stationary_notes/noteUpSprite.global_position.x
+			x = $stationary_notes/noteUpSprite.position.x
 	new_note.position = Vector2(x, noteSpawnY)
 	new_note.scale = Vector2(0.65, 0.65)
 	
@@ -2141,7 +2148,7 @@ func _on_song_finished(debug: bool = false) -> void:
 		
 
 		if not debug:
-			await get_tree().create_timer(1.2).timeout
+			await get_tree().create_timer(1.431).timeout
 			$song.play(0.0)
 			play_vid(0.0)
 			if $song_cover/VideoPlayback.is_open(): $song_cover/VideoPlayback.play()
@@ -2158,121 +2165,339 @@ var pausedpos: float
 
 var unpause_timer: SceneTreeTimer
 
-func _on_pause() -> void:
-	if not has_paused: has_paused = true
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	if $end_screen_anims.is_playing():
-		$end_screen_anims.pause()
-		
-	
-	$pausebtn.release_focus()
-	$mbl_pausebtn.release_focus()
-	gamePaused = true
-	pausedpos = $song.get_playback_position()
-	if $pause_text.position.y > 250.0 and $pause_text.position.y < 1080.0: $pause.play("pause", 0.25)
-	else: $pause.play("pause")
+var pause_tween: Tween
+var unpause_tween: Tween
 
-	# Pause song
+var pause_transitioning := false
+
+
+# =========================
+# TUNABLE SETTINGS
+# =========================
+var pause_tween_time := 0.5
+var unpause_tween_time: float: # 0.5
+	get():
+		return min(0.5, Settings.game.pause_resume_time)
+
+var pause_wait_time := 0.55
+
+var smooth_resume_wait_time: float:
+	get():
+		return Settings.game.pause_resume_time + 0.25 if unpause_tween_time > 0.25 else Settings.game.pause_resume_time + (0.3 - unpause_tween_time)
+
+var instant_resume_wait_time: float:
+	get():
+		return Settings.game.pause_resume_time
+
+var rewind_time_smooth: float:
+	get():
+		return smooth_resume_wait_time * 1000.0
+
+var rewind_time_instant: float:
+	get():
+		return instant_resume_wait_time * 1000.0
+
+var resume_offset_seconds: float:
+	get():
+		return Settings.game.pause_resume_time
+
+
+func _on_pause() -> void:
+	if pause_transitioning:
+		return
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	$pause.play("pause")
+	
+	screen = "pause"
+
+	pause_transitioning = true
+	gamePaused = true
+	
+	for timer: Timer in $UI/noteTimeouts.get_children():
+		timer.paused = true
+
+	pausedpos = $song.get_playback_position()
+
+	# =========================
+	# INSTANT PAUSE MODE
+	# =========================
+	if not Settings.game.pause_audio_fx:
+		$song.stop()
+		$Visualizer/Song_left.stop()
+		$Visualizer/Song_right.stop()
+		pause_transitioning = false
+		return
+
+	# =========================
+	# SMOOTH PAUSE MODE
+	# =========================
+	if pause_tween:
+		pause_tween.kill()
+
+	pause_tween = create_tween()
+
+	pause_tween.tween_property($song, "pitch_scale", 0.001, pause_tween_time)
+	pause_tween.parallel().tween_property(
+		$Visualizer/Song_left,
+		"pitch_scale",
+		0.001,
+		pause_tween_time
+	)
+	pause_tween.parallel().tween_property(
+		$Visualizer/Song_right,
+		"pitch_scale",
+		0.001,
+		pause_tween_time
+	)
+
+	await pause_tween.finished
+
 	$song.stop()
 	$Visualizer/Song_left.stop()
 	$Visualizer/Song_right.stop()
-	
-	pause_vid()
-	
-	for timer: Timer in $UI/noteTimeouts.get_children():
-		timer.paused = true # Pause all timers
-	
-	set_discord_rpc()
+
+	pause_transitioning = false
+
+
+var resume_pos: float:
+	get():
+		return max(pausedpos - resume_offset_seconds, 0.0)
+
 
 func _on_unpause() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	$unpause_btn.release_focus()
-	if $pause_text.position.y > 200.0 and $pause_text.position.y < 249.5: $pause.play("unpause", 0.2)
-	else: $pause.play("unpause")
-	screen = "unpausing"
-
-	unpause_timer = get_tree().create_timer(0.55)
-	await unpause_timer.timeout
-	
-	if screen != "unpausing":
+	if pause_transitioning:
 		return
 
-	gamePaused = false
+	pause_transitioning = true
+
+	screen = "unpausing"
+	
+	$pause.play("unpause")
+
+	# =========================
+	# NOTE REWIND (ALWAYS RUNS)
+	# =========================
+	var rewind_pixels := Beatz.time_to_y(
+		rewind_time_smooth if Settings.game.pause_audio_fx else rewind_time_instant
+	)
+
+	var note_tween := create_tween()
+	note_tween.set_trans(Tween.TRANS_EXPO)
+	note_tween.set_ease(Tween.EASE_OUT)
+
+	for n in %notes.get_children():
+		note_tween.parallel().tween_property(
+			n,
+			"global_position:y",
+			n.global_position.y - rewind_pixels,
+			unpause_tween_time
+		)
+
+	# =========================
+	# INSTANT RESUME MODE
+	# =========================
+	await get_tree().create_timer(pause_wait_time).timeout
+	
+	if not Settings.game.pause_audio_fx:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+		screen = "game"
+		gamePaused = false
+		pause_transitioning = false
+
+		$song.play(resume_pos)
+		$Visualizer/Song_left.play(resume_pos)
+		$Visualizer/Song_right.play(resume_pos)
+		
+		$song.pitch_scale = 1.0
+		$Visualizer/Song_left.pitch_scale = 1.0
+		$Visualizer/Song_right.pitch_scale = 1.0
+		
+		beat()
+		set_discord_rpc()
+		
+		await get_tree().create_timer(instant_resume_wait_time).timeout
+		
+		for timer: Timer in $UI/noteTimeouts.get_children():
+			timer.paused = false
+		
+		return
+
+	# =========================
+	# SMOOTH RESUME MODE
+	# =========================
+	if screen != "unpausing":
+		pause_transitioning = false
+		return
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	screen = "game"
 	
-	# Resume song from paused position
-	$song.play(pausedpos)
-	$Visualizer/Song_left.play(pausedpos)
-	$Visualizer/Song_right.play(pausedpos)
-	
-	beat()
-	
+	$song.pitch_scale = 0.001
+	$Visualizer/Song_left.pitch_scale = 0.001
+	$Visualizer/Song_right.pitch_scale = 0.001
+
+	$song.play(resume_pos)
+	$Visualizer/Song_left.play(resume_pos)
+	$Visualizer/Song_right.play(resume_pos)
+
 	play_vid(-1)
-	
-	for timer: Timer in $UI/noteTimeouts.get_children():
-		timer.paused = false # Unpause all timers
-	
+
+	if unpause_tween:
+		unpause_tween.kill()
+
+	unpause_tween = create_tween()
+
+	unpause_tween.tween_property($song, "pitch_scale", 1.0, unpause_tween_time)
+	unpause_tween.parallel().tween_property($Visualizer/Song_left, "pitch_scale", 1.0, unpause_tween_time)
+	unpause_tween.parallel().tween_property($Visualizer/Song_right, "pitch_scale", 1.0, unpause_tween_time)
+
+	gamePaused = false
+	pause_transitioning = false
+
+	screen = "game"
+
+	await get_tree().create_timer(smooth_resume_wait_time).timeout
+
+	beat()
 	set_discord_rpc()
-	
-	await $pause.animation_finished
+
+	for timer: Timer in $UI/noteTimeouts.get_children():
+		timer.paused = false
 
 func stagger(n: Node, delay: float) -> void:
 	await get_tree().create_timer(delay).timeout # Await but since this is called deferred, it wont stop code
 	if !n: return # If the note doesn't exist, return
 	if !n.is_queued_for_deletion() and !check_fade(n, false, true): n.reset_game() # If the note was called queue_free() or if it isn't great_faded (it was hit), dont call reset_game on it
 
+func _on_exit_warn_exit_pressed() -> void:
+	$exit_warn/btns_cont/exit.release_focus()
+	screen = $exit_warn.get_meta("screen_before", "pause")
+	editor_saved = true
+	recorded_notes.clear()
+	
+	var t = create_tween()
+	t.tween_property($exit_warn, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_CIRC) 
+	await get_tree().create_timer(0.1).timeout
+	
+	_on_going_back()
+
+func _on_exit_warn_edit_pressed() -> void:
+	$exit_warn/btns_cont/edit.release_focus()
+	var t = create_tween()
+	t.tween_property($exit_warn, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_CIRC) 
+	await get_tree().create_timer(0.1).timeout
+	
+	_on_edit_btn_pressed()
+
+func _on_exit_warn_cancel_pressed() -> void:
+	$exit_warn/btns_cont/cancel.release_focus()
+	screen = $exit_warn.get_meta("screen_before", "pause")
+	var t = create_tween()
+	t.tween_property($exit_warn, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_CIRC) 
+
+func _show_exit_warning() -> void:
+	$exit_warn.set_meta("screen_before", screen)
+
+	screen = "exit_warn"
+
+	if recorded_notes.size() > 1:
+		$exit_warn/warn_lbl.text = "Are you sure you want to cancel recording %s?\n\nAll Recorded Notes will be lost." % song_title
+		$exit_warn/exit_lbl.text = "Cancel Recording"
+		$exit_warn/hint.text = "To save your Recorded Notes, click \"Edit\" and save your chart from there."
+	elif !editor_saved:
+		$exit_warn/exit_lbl.text = "Stop Editing"
+		$exit_warn/warn_lbl.text = "Are you sure you want to stop editing %s?\n\nAll Unsaved Changes will be lost." % song_title
+		$exit_warn/hint.text = "To save your changes, click \"Edit\" and save your chart from there."
+	else:
+		print("Idk: editor_saved is ", editor_saved, " and rec notes size is ", recorded_notes.size())
+
+	create_tween().tween_property(
+		$exit_warn,
+		"scale",
+		Vector2.ONE,
+		0.2
+	).set_trans(Tween.TRANS_CIRC)
+
 func _on_going_back() -> void:
 	$back.release_focus()
-	if screen == "pause":
-		print("pause back")
-		SceneLoader.load_scene(menu)
-		
-		if $back.position.y > -164.0 and $back.position.y < 14.0: $pause.play("back", 0.25)
-		else: $pause.play("back")
-		# Clear existing notes
-		#var delay := 0.001
-		var ns := %notes.get_children()
-		
-		for n in ns:
-			n.reset_game()
-		
-		await get_tree().create_timer(1.06).timeout
-	elif screen == "end":
-		SceneLoader.load_scene(menu)
-		
-		var pitch_t = create_tween()
-		pitch_t.tween_property($song, "pitch_scale", 0.001, 1.15)
-		
-		$end_screen_anims.play("end_screen_to_main")
-		await get_tree().create_timer(1.16).timeout
-	elif screen == "settings":
-		screen = "pause"
-		$pause.play("from_stgs_to_pause")
-		return
-	elif screen == "game":
-		print("How")
-		return
-	elif screen == "die":
-		SceneLoader.load_scene(menu)
-		
-		$pause.play("back_from_die")
-		await get_tree().create_timer(0.805).timeout
-	
-	
+
+	var note_count := recorded_notes.size()
+	var needs_warning := note_count > 1 or !editor_saved
+
+	match screen:
+		"pause":
+			if needs_warning:
+				_show_exit_warning()
+				return
+
+			print("pause back")
+
+			SceneLoader.load_scene(menu)
+
+			if $back.position.y > -164.0 and $back.position.y < 14.0:
+				$pause.play("back", 0.25)
+			else:
+				$pause.play("back")
+
+			for n in %notes.get_children():
+				n.reset_game()
+
+			await get_tree().create_timer(1.06).timeout
+
+		"end":
+			if needs_warning:
+				_show_exit_warning()
+				return
+
+			SceneLoader.load_scene(menu)
+
+			var pitch_t := create_tween()
+			pitch_t.tween_property($song, "pitch_scale", 0.001, 1.15)
+
+			$end_screen_anims.play("end_screen_to_main")
+
+			await get_tree().create_timer(1.16).timeout
+
+		"settings":
+			screen = "pause"
+			$pause.play("from_stgs_to_pause")
+			return
+
+		"game":
+			print("How")
+			return
+
+		"die":
+			if needs_warning:
+				_show_exit_warning()
+				return
+
+			SceneLoader.load_scene(menu)
+
+			$pause.play("back_from_die")
+
+			await get_tree().create_timer(0.805).timeout
+
+		_:
+			return
+
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (%d%%)" % int(SceneLoader.get_progress() * 100.0)
 			await get_tree().process_frame
+
 		loading_text.text = "Loading... 100%"
 
 	progress_update.call()
-	
+
 	if SceneLoader.is_loading():
 		await SceneLoader.scene_loaded
-	
+
 	var switch_menu = SceneLoader.loaded_scene.instantiate()
-	
+
 	get_tree().root.add_child(switch_menu)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = switch_menu
@@ -2339,7 +2564,6 @@ func _on_reset_song_btn_up(fast: bool = false) -> void:
 			pitch_t.tween_property($song, "pitch_scale", 0.001, 2.15)
 			
 			await $end_screen_anims.animation_finished
-			if $song_cover/VideoPlayback.is_open(): $song_cover/VideoPlayback.pause()
 		elif screen == "die":
 			$pause.play("reset_from_die")
 			await $pause.animation_finished
@@ -2486,7 +2710,7 @@ func _on_edit_btn_pressed() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 
 		loading_text.text = "Loading... 100%"

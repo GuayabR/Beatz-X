@@ -131,10 +131,10 @@ var new_beatzmap := true
 
 var selected_stream: AudioStream
 
-var song_len:
+var song_len: float:
 	get():
 		return $song.stream.get_length() if $song.stream else 0.0
-var song_len_ms:
+var song_len_ms: float:
 	get():
 		return $song.stream.get_length() * 1000 if $song.stream else 0.0
 
@@ -251,7 +251,6 @@ var notes: Array = []
 var local_beat_offset: float = 0
 
 var NOTE := preload("res://Scenes/note.tscn")
-var GAME := load("res://Scenes/main.tscn")
 var BEAT := preload("res://Scenes/beat_line.tscn")
 
 var preview_note: Node2D = null
@@ -608,6 +607,14 @@ func _ready() -> void:
 	apply_note_style()
 	
 	_setup_notes()
+	
+	$waveform.use_chunks = true
+	$waveform.setup(selected_stream)
+	
+	$Control/chart_controls/waveform.use_chunks = false
+	$Control/chart_controls/waveform.setup(selected_stream)
+	
+	#$waveform._draw_preview()
 	
 	if playtest_start_pos > 1.0: $Control/chart_controls/chart_scroll.value = playtest_start_pos
 	
@@ -1106,10 +1113,11 @@ func _process(delta: float) -> void:
 	if not setting_up: $Control/chart_controls/scroll_lbl.text = "D Song time: " + str(snapped($song.get_playback_position(), 0.01))
 	$Control/chart_controls/scroll_val.text = "Time: " +  General.format_time($Control/chart_controls/chart_scroll.value) + " / " + General.format_time(song_len)
 
-func move(amnt: float = 0.0, use_old_logic: bool = true):
+func move(amnt: float = 0.0, use_old_logic: bool = true) -> void:
 	if use_old_logic:
 		$notes.position.y += amnt
 		$beatlines.position.y += amnt
+		$waveform.position.y += amnt# + 1080.0
 		return
 	$cam.global_position.y -= amnt
 	$Control.global_position.y -= amnt
@@ -1117,10 +1125,11 @@ func move(amnt: float = 0.0, use_old_logic: bool = true):
 	$lanes.global_position.y -= amnt
 	$lanes2.global_position.y -= amnt
 
-func set_y(value: float = 0.0, use_old_logic: bool = true):
+func set_y(value: float = 0.0, use_old_logic: bool = true) -> void:
 	if use_old_logic:
 		$notes.position.y = value
 		$beatlines.position.y = value
+		$waveform.position.y = value + 989.0
 		return
 	$cam.global_position.y = value + 540.0
 	$Control.global_position.y = value
@@ -1128,7 +1137,7 @@ func set_y(value: float = 0.0, use_old_logic: bool = true):
 	$lanes.global_position.y = value
 	$lanes2.global_position.y = value
 
-func get_y(use_old_logic: bool = true):
+func get_y(use_old_logic: bool = true) -> float:
 	if use_old_logic: return $notes.global_position.y 
 	else: return -$cam.global_position.y
 
@@ -2023,7 +2032,7 @@ func update_difficulty_graph() -> void:
 		scroll.add_child(rect)
 
 var highest_note_y := 0.0
-var highest_timestamp := 0.0
+var highest_timestamp: float = 0.0
 
 var rendered_notes := {}
 
@@ -2039,7 +2048,7 @@ func _setup_notes():
 	rendered_notes.clear()
 
 	var highest_y: float = ((song_len_ms) * note_speed / zoom)
-	var highest_time: float = song_len
+	#var highest_time: float = song_len
 
 	for n: Dictionary in notes:
 		var timestamp = n.timestamp + OFFSET + BASE_TIME
@@ -2048,11 +2057,11 @@ func _setup_notes():
 		if -y > highest_y:
 			highest_y = -y
 
-		if (n.timestamp + 1080.0) / 1000.0 > highest_time:
-			highest_time = (n.timestamp + 1080.0) / 1000.0
+		#if (n.timestamp + 1080.0) / 1000.0 > highest_time:
+			#highest_time = (n.timestamp + 1080.0) / 1000.0
 
 	highest_note_y = highest_y
-	highest_timestamp = highest_time
+	highest_timestamp = song_len
 
 	$Control/chart_controls/chart_scroll.min_value = 0
 	$Control/chart_controls/chart_scroll.max_value = highest_timestamp
@@ -2140,6 +2149,8 @@ func _update_visible_notes():
 		obj.editor_hovered.connect(_on_note_hovered)
 		obj.editor_unhovered.connect(_on_note_unhovered)
 		obj.editor_pressed.connect(_on_note_pressed)
+		
+		if menu_open: obj.get_node("editor_hitbox").mouse_filter = MOUSE_FILTER_IGNORE
 
 		$notes.add_child(obj)
 
@@ -2280,6 +2291,8 @@ func _update_visible_beatlines():
 	for k in to_remove:
 		rendered_beatlines.erase(k)
 
+
+
 func _setup_beatlines():
 	for line in $beatlines.get_children():
 		line.queue_free()
@@ -2303,7 +2316,7 @@ func _setup_beatlines():
 		main_line.process_mode = Node.PROCESS_MODE_DISABLED
 
 		$beatlines.add_child(main_line)
-
+		
 		# SUBDIVISIONS
 		for i in range(1, 4):
 			var sub_t := t + (beattime / 4.0) * i
@@ -2335,6 +2348,9 @@ func _on_reload_pressed() -> void:
 		if obj.name != "preview": obj.queue_free()
 	
 	_setup_notes()
+	
+	$waveform.regenerate()
+	#$Control/chart_controls/waveform._draw_preview()
 	
 	$Control/editor_controls/reload.release_focus()
 
@@ -2503,7 +2519,7 @@ func _on_exit_pressed() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 
@@ -2703,7 +2719,7 @@ func _on_playtest_test_pressed() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 
@@ -3353,13 +3369,13 @@ func _encode_beatz_file(decoded_notes, current_song_path: String, overwrite: boo
 	content += "Charter: %s\\" % username
 	content += "ChartName: %s\\" % user_chart_name
 	content += "noteMode: %d\\" % user_note_mode
-	content += "BPM: %s\\" % str(selected_bpm)
-	content += "noteSpeed: %s\\" % str(5)
-	content += "noteSpawnY: %s\\" % str(360)
+	content += "BPM: %f.3\\" % selected_bpm
+	content += "noteSpeed: %d\\" % 5
+	content += "noteSpawnY: %d\\" % 360
 	content += "Difficulty: %s\\" % selected_difficulty
-	content += "StartWait: %s\\" % str(start_wait)
+	content += "StartWait: %f.2\\" % start_wait
 	content += "PrevStart: 0.0\\PrevEnd: 99999.0\\"
-	content += "BeatOffset: %s\\" % str(local_beat_offset)
+	content += "BeatOffset: %f.4\\" % local_beat_offset
 	content += "Notes:%s" % encoded_notes
 	
 	# Save info.json
@@ -4932,7 +4948,7 @@ func _on_exit_to_menu_pressed() -> void:
 
 	var progress_update := func():
 		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
+			loading_text.text = "Loading... (" + str(int(SceneLoader.get_progress() * 100.0)) + "%"
 			await get_tree().process_frame
 		loading_text.text = "Loading... 100%"
 

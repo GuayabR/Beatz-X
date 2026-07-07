@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3 uid="uid://4puupvbpclaw"]
+[gd_scene load_steps=49 format=3 uid="uid://4puupvbpclaw"]
 
 [ext_resource type="Script" uid="uid://dhxnpbd5g3jrm" path="res://Scenes/main_menu.gd" id="1_n45e2"]
 [ext_resource type="Texture2D" uid="uid://cet0xhha5jhd5" path="res://Resources/Arrows/NoteUp.png" id="2_2tkn1"]
@@ -722,6 +722,18 @@ tracks/54/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
+tracks/55/type = "value"
+tracks/55/imported = false
+tracks/55/enabled = true
+tracks/55/path = NodePath("fps:modulate")
+tracks/55/interp = 1
+tracks/55/loop_wrap = true
+tracks/55/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.8901961)]
+}
 
 [sub_resource type="Animation" id="Animation_6dk6o"]
 resource_name = "accept_popup_leave"
@@ -1004,6 +1016,46 @@ tracks/6/keys = {
 "args": [&"current_menu", "loading"],
 "method": &"set"
 }]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("fps:modulate")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.6, 0.93333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_tt8ml"]
+resource_name = "fade_in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("TransitionRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1.3660405, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("loading_text:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.23333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_16hvj"]
@@ -2085,6 +2137,18 @@ tracks/23/keys = {
 "update": 0,
 "values": [Color(0.543314, 0.543314, 0.543314, 1), Color(1, 1, 1, 1)]
 }
+tracks/24/type = "value"
+tracks/24/imported = false
+tracks/24/enabled = true
+tracks/24/path = NodePath("fps:modulate")
+tracks/24/interp = 1
+tracks/24/loop_wrap = true
+tracks/24/keys = {
+"times": PackedFloat32Array(0.76666665, 1.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_84iac"]
 resource_name = "might_yap"
@@ -2679,6 +2743,7 @@ _data = {
 &"accept_popup_leave": SubResource("Animation_6dk6o"),
 &"cancel_popup_leave": SubResource("Animation_ehtkc"),
 &"exit_game": SubResource("Animation_t1dhk"),
+&"fade_in": SubResource("Animation_tt8ml"),
 &"finish_back": SubResource("Animation_16hvj"),
 &"from_settings_to_main": SubResource("Animation_wyh8j"),
 &"go_to_settings": SubResource("Animation_m3bi6"),
@@ -3033,7 +3098,7 @@ anchor_bottom = 0.5
 offset_left = -82.0
 offset_top = 60.0
 offset_right = 82.00073
-offset_bottom = 224.00073
+offset_bottom = 224.00067
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(82, 82)
@@ -3072,6 +3137,7 @@ pivot_offset = Vector2(82, 82)
 mouse_default_cursor_shape = 2
 texture_normal = ExtResource("6_16hvj")
 texture_pressed = ExtResource("7_vr1f0")
+metadata/sfx_click_override = &"cancel_click"
 
 [node name="settings_button" type="TextureButton" parent="."]
 z_index = 1
@@ -3257,7 +3323,7 @@ theme_override_font_sizes/font_size = 35
 text = "Cancel"
 
 [node name="fps" parent="." instance=ExtResource("16_m3bi6")]
-modulate = Color(1, 1, 1, 0.75000006)
+modulate = Color(1, 1, 1, 0.8901961)
 z_index = 10
 layout_mode = 1
 anchors_preset = 3
@@ -3325,36 +3391,6 @@ grow_vertical = 0
 [node name="playing_bar" parent="." instance=ExtResource("17_wyh8j")]
 z_index = 3
 layout_mode = 1
-
-[node name="cover_mask2" parent="playing_bar" index="5"]
-offset_bottom = -37.097748
-
-[node name="cover_mask" parent="playing_bar" index="6"]
-offset_bottom = -37.097717
-
-[node name="go_to_artist" parent="playing_bar" index="13"]
-offset_top = -18.53012
-offset_bottom = 26.46988
-
-[node name="randomize" parent="playing_bar" index="14"]
-offset_top = -18.535187
-offset_bottom = 26.464813
-
-[node name="previous" parent="playing_bar" index="15"]
-offset_top = -18.540558
-offset_bottom = 26.459442
-
-[node name="next" parent="playing_bar" index="17"]
-offset_top = -18.539154
-offset_bottom = 26.460846
-
-[node name="go_to_song" parent="playing_bar" index="18"]
-offset_top = -18.533997
-offset_bottom = 26.466003
-
-[node name="go_to_album" parent="playing_bar" index="19"]
-offset_top = -18.53012
-offset_bottom = 26.46988
 
 [node name="song_list_context" parent="." instance=ExtResource("18_ujyyl")]
 z_index = 5

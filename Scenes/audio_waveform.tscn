@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://dre1xut64ofbe"]
+
+[ext_resource type="Script" uid="uid://cfthdap2r3hvb" path="res://Scenes/audio_waveform.gd" id="1_klyuh"]
+
+[node name="color_rect" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1920.0
+offset_bottom = -1080.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.09411765)
+script = ExtResource("1_klyuh")

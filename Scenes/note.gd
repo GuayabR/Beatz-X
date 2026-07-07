@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var timestamp: float
+var timestamp: float
 var spawned_at: float
 
 var type: String

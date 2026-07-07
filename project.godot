@@ -42,6 +42,7 @@ DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
 Gamepad_Cursor="*res://addons/GamepadCursor/gamepad_cursor.gd"
 General="*res://Scenes/general.gd"
 Settings="*res://Scenes/settings.gd"
+VisualFilters="*res://Scenes/visual_filters.gd"
 Beatz="*res://beatz.gd"
 SceneLoader="*res://Scenes/scene_loader.gd"
 Id3TagParser="*res://addons/Id3TagParser/improved_mp3id3_tag_parser.gd"
@@ -57,6 +58,7 @@ HLeaderboards="*res://addons/epic-online-services-godot/heos/hleaderboards.gd"
 HLobbies="*res://addons/epic-online-services-godot/heos/hlobbies.gd"
 HP2P="*res://addons/epic-online-services-godot/heos/hp2p.gd"
 HSessions="*res://addons/epic-online-services-godot/heos/hsessions.gd"
+UISFX="*res://Scenes/uisfx.gd"
 
 [debug]
 

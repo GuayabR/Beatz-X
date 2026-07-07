@@ -26,7 +26,9 @@ var settings: Dictionary[String, Variant] = {
 		"input_device": "Default",
 		"speed": 1.0,
 		"note_speed": 10.0,
-		"theme": "Default", # 1.0 max 0.0 min
+		"pause_audio_fx": true, # If true, audio will slow down on pause and speed up on unpause
+		"pause_resume_time": 1.0, # Time in seconds to give the player after unpausing
+		"theme": "Default",
 		"menu_bg_brightness": 1.0,
 		"bg_brightness": 1.0,
 		"editor_bg_brightness": 0.75,
@@ -34,6 +36,11 @@ var settings: Dictionary[String, Variant] = {
 		"show_vpopup": true,
 		"last_editor_path": "",
 		"joy_sens": 800.0,
+		"brightness": 1.0,
+		"contrast": 1.0,
+		"gamma": 1.0,
+		"colourblind_mode": 0,
+		"colourblind_strength": 1.0,
 		"load_all_covers": false, # if false, only the covers that are currently visible are actually loaded in ram, if a cover is now not visible it will be unloaded
 		# if true, covers will be naturally loaded either until you scroll to the bottom of the list, or if you wait long enough
 		"keep_list_in_ram": false, # if true, the list will always stay loaded (except covers), instead of always reloading it from your file system
@@ -64,6 +71,7 @@ var settings: Dictionary[String, Variant] = {
 		"cover_loops_playing_bar": true,
 		"editor_seek_vid_along_scroll": true,
 		"editor_show_note_hold_ends": true,
+		"editor_waveform_color": Color(1.0, 1.0, 1.0, 0.25),
 		"show_error_notes": false,
 		"editor_show_diff_graph": true,
 		"hq_selection_box": true,
