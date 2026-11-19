@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://cobclrhdkc7ju"]
+[gd_scene load_steps=67 format=3 uid="uid://cobclrhdkc7ju"]
 
 [ext_resource type="Script" uid="uid://cqcj17e2xfik7" path="res://Scenes/editor.gd" id="1_exjlx"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_nfgmo"]
@@ -28,6 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://c6bi78jh2q002" path="res://Resources/Arrows/beatLine.png" id="14_af0oh"]
 [ext_resource type="Texture2D" uid="uid://c1lwlpk8n64v4" path="res://Resources/misc/favicon.png" id="19_af0oh"]
 [ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="22_u6te5"]
+[ext_resource type="PackedScene" uid="uid://dre1xut64ofbe" path="res://Scenes/audio_waveform.tscn" id="29_ukxwk"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_op3c8"]
 blend_mode = 1
@@ -295,6 +296,19 @@ tracks/14/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0)]
 }
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("loading_progress:modulate")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
 
 [sub_resource type="Animation" id="Animation_06d57"]
 resource_name = "back_to_edit"
@@ -350,6 +364,19 @@ tracks/1/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("loading_progress:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.29730198, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
 
 [sub_resource type="Animation" id="Animation_af0oh"]
 resource_name = " go_to_settings"
@@ -549,6 +576,19 @@ tracks/13/keys = {
 "update": 0,
 "values": [Vector2(1920, 0)]
 }
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("loading_progress:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(3.0314329, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0l4bc"]
 _data = {
@@ -1634,6 +1674,18 @@ offset_top = -20.0
 offset_bottom = 20.0
 grow_horizontal = 0
 grow_vertical = 2
+
+[node name="waveform" parent="Control/chart_controls" instance=ExtResource("29_ukxwk")]
+layout_mode = 1
+offset_left = -529.0
+offset_top = 415.0
+offset_right = 279.0
+offset_bottom = 499.5923
+rotation = -1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+COLOR = Color(1, 1, 1, 0.2)
+waveform_quality = 2
 
 [node name="chart_scroll" type="VSlider" parent="Control/chart_controls"]
 layout_mode = 0
@@ -5268,6 +5320,26 @@ vertical_alignment = 1
 deselect_on_focus_loss_enabled = false
 drag_and_drop_selection_enabled = false
 
+[node name="loading_progress" type="ProgressBar" parent="."]
+visible = false
+top_level = true
+z_index = 12
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -110.0
+offset_top = -31.0
+offset_right = 110.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+show_percentage = false
+
 [node name="Popup" type="Popup" parent="."]
 transparent_bg = true
 oversampling_override = 1.0
@@ -5880,6 +5952,18 @@ theme_override_font_sizes/font_size = 17
 text = "Double"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="waveform" parent="." instance=ExtResource("29_ukxwk")]
+layout_mode = 1
+offset_left = 516.94836
+offset_top = 989.0
+offset_right = -323.05164
+offset_bottom = 793.0
+rotation = -1.5707964
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+COLOR = Color(1, 1, 1, 0.49019608)
+waveform_quality = 2
 
 [connection signal="save" from="." to="." method="_on_save"]
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]

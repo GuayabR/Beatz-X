@@ -308,15 +308,9 @@ func _on_play_button_up() -> void:
 		var tween := create_tween()
 		tween.tween_property($song, "volume_db", -80.0, 1.0)
 
-	SceneLoader.load_scene(General.MAIN)
+	var scene_request := SceneLoader.load_scene(General.MAIN)
 
-	var progress_update := func():
-		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-			await get_tree().process_frame
-		loading_text.text = "Loading... 100%"
-
-	progress_update.call()
+	_track_scene_loading(scene_request)
 
 	# speed up animation if it's still playing
 	if $AnimationPlayer.is_playing():
@@ -324,10 +318,11 @@ func _on_play_button_up() -> void:
 
 	await get_tree().create_timer(0.65).timeout
 
-	if SceneLoader.is_loading():
-		await SceneLoader.scene_loaded
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
 
-	var game = SceneLoader.loaded_scene.instantiate()
+	var game = packed_scene.instantiate()
 
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
@@ -357,6 +352,22 @@ func _on_play_button_up() -> void:
 	get_tree().current_scene = game
 
 @onready var loading_text: RichTextLabel = $loading_text
+@onready var loading_progress: ProgressBar = $loading_progress
+
+func _track_scene_loading(request: Variant) -> void:
+	loading_text.text = "Loading..."
+	loading_progress.value = 0.0
+	loading_progress.show()
+
+	while not request.is_completed:
+		loading_progress.value = request.progress * 100.0
+		await get_tree().process_frame
+
+	if request.scene != null:
+		loading_progress.value = 100.0
+	else:
+		loading_text.text = "Loading failed."
+		loading_progress.hide()
 
 func _on_back_pressed() -> void:
 	$back.release_focus()
@@ -367,19 +378,13 @@ func _on_back_pressed() -> void:
 		playing_anim = true
 	
 	if screen == "song":
-		SceneLoader.load_scene("res://Scenes/main_menu.tscn")
+		var scene_request := SceneLoader.load_scene("res://Scenes/main_menu.tscn")
 		
 		var tween := create_tween()
 		tween.tween_property($song, "volume_db", -80.0, 1.25).set_ease(Tween.EASE_IN)
 		tween.set_parallel().tween_property($song, "pitch_scale", 0.001, 1.2)
 		
-		var progress_update := func():
-			while SceneLoader.is_loading():
-				loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-				await get_tree().process_frame
-			loading_text.text = "Loading... 100%"
-
-		progress_update.call()
+		_track_scene_loading(scene_request)
 		
 		if Settings.misc.reduce_motion:
 			$AnimationPlayer.play("play_song", -1, 250.0)
@@ -387,7 +392,10 @@ func _on_back_pressed() -> void:
 			$AnimationPlayer.play("play_song", 0.2 if playing_anim else -1.0)
 			await get_tree().create_timer(1.0).timeout
 		
-		var menu = SceneLoader.loaded_scene.instantiate()
+		var packed_scene: PackedScene = await scene_request.wait()
+		if packed_scene == null:
+			return
+		var menu = packed_scene.instantiate()
 		menu.set("current_menu", "list")
 		
 		get_tree().root.add_child(menu)
@@ -412,15 +420,9 @@ func _on_go_to_stgs_pressed() -> void:
 	screen = "settings"
 
 func _on_edit_pressed() -> void:
-	SceneLoader.load_scene(General.EDITOR)
+	var scene_request := SceneLoader.load_scene(General.EDITOR)
 
-	var progress_update := func():
-		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-			await get_tree().process_frame
-		loading_text.text = "Loading... 100%"
-
-	progress_update.call()
+	_track_scene_loading(scene_request)
 
 	var anim_speed_multiplier := 1.0
 
@@ -436,10 +438,11 @@ func _on_edit_pressed() -> void:
 
 	await get_tree().create_timer(0.81 / anim_speed_multiplier).timeout
 
-	if SceneLoader.is_loading():
-		await SceneLoader.scene_loaded
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
 
-	var edit = SceneLoader.loaded_scene.instantiate()
+	var edit = packed_scene.instantiate()
 
 	edit.set("selected_stream", $song.stream)
 	edit.set("selected_stream_path", selected_stream_path)

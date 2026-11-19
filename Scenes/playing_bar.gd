@@ -8,7 +8,7 @@ signal going_to_artist(path: String)
 signal randomized
 signal prev_next_pressed(path: String, prev_next: int)
 signal play_toggled
-signal going_to_song(path: String)
+signal going_to_song(path: String, imported_stream: bool)
 signal going_to_album(path: String)
 
 signal volume_drag_ended(value_changed: bool, value: float)
@@ -19,7 +19,7 @@ signal cover_pressed
 ## If true, hovering the left side of the screen just above the progress bar shows a Menu Song Volume slider, changing this slider changes the audio server volume but doesn't save it to settings.
 @export var enable_volume: bool = true
 
-var data
+var data: Dictionary = {}
 
 var length: float = 0.0
 var current_pos: float = 0.0
@@ -40,6 +40,10 @@ var len_ms: float:
 
 var stream: String
 
+var not_imported_stream: bool = false
+
+@onready var btns_to_disable = [$go_to_artist, $previous, $next, $go_to_album]
+
 func _ready() -> void:
 	if OS.get_name() == "Android": $mbl.play("mbl_expand")
 	
@@ -49,69 +53,101 @@ func _ready() -> void:
 	else: $volume.hide()
 
 func set_song(data_dict: Dictionary):
-	data = data_dict
-	$title_artist_cont/title.text = "[b]%s[/b]" % data["title"]
-	$title_artist_cont/artist.text = data["artist"]
-	$length.text = "0:00 / " + General.format_time(data["length"])
-	length = data["length"]
+	if data_dict["path"]:
+		stream = ProjectSettings.globalize_path(data_dict["path"])
+	
+	if stream.contains("Beatz! X (Desktop Port)/Resources/Songs") or stream.contains("AppData/Roaming/Godot/app_userdata") or stream.contains("storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/"):
+		print("imported")
+		$go_to_song.text = ""
+		not_imported_stream = false
+		
+		$go_to_song.tooltip_text = "Play %s - %s" % [data_dict["title"], data_dict["artist"]]
+		
+		for btn in btns_to_disable:
+			btn.disabled = false
+			btn.modulate = Color.WHITE
+			btn.mouse_filter = MOUSE_FILTER_STOP
+	else:
+		print("not imported")
+		$go_to_song.text = ""
+		not_imported_stream = true
+		
+		$go_to_song.tooltip_text = "Start Recording Notes for %s - %s" % [data_dict["title"], data_dict["artist"]]
+		
+		for btn in btns_to_disable:
+			btn.disabled = true
+			btn.modulate = Color(1.0, 1.0, 1.0, 0.25)
+			btn.mouse_filter = MOUSE_FILTER_IGNORE
+	
+	$title_artist_cont/title.text = "[b]%s[/b]" % data_dict["title"]
+	$title_artist_cont/artist.text = data_dict["artist"]
+	$length.text = "0:00 / " + General.format_time(data_dict["length"])
+	length = data_dict["length"]
 	$playpause.text = ""
 	
 	playing = true
 	
-	
-	$go_to_song.tooltip_text = "Play %s!" % data["path"].get_file()
-	
-	if data["year"]:
-		$year.text = str(int(data["year"]))
+	if data_dict["year"]:
+		$year.text = str(int(data_dict["year"]))
 		$year.show()
 	else: 
 		$year.hide()
-		print("No year for ", data["title"])
+		print("No year for ", data_dict["title"])
 	
-	if data["album"] != "":
-		$album.text = "[b]%s[/b]" % data["album"]
-		$album.show()
+	var same_album: bool = data.has("album") and data["album"] == data_dict["album"]
+
+	if data_dict["album"] != "":
+		if not same_album:
+			$album.text = "[b]%s[/b]" % data_dict["album"]
+			$album.show()
+		else:
+			pass
 	else:
-		$album.hide() 
-		print("No album for ", data["title"])
+		$album.hide()
+		print("No album for ", data_dict["title"])
 	
-	if data["cover"] != null:
-		if data["cover"] is Image:
-			var tex := ImageTexture.create_from_image(data["cover"])
+	if data_dict["cover"] != null:
+		if data_dict["cover"] is Image:
+			var tex := ImageTexture.create_from_image(data_dict["cover"])
 			$cover_mask/cover.texture = tex
 			$square_cover.texture = tex
 		else:
-			$cover_mask/cover.texture = data["cover"]
-			$square_cover.texture = data["cover"]
-		if not showing: show_cover()
-		$cover_mask/VideoPlayback.close()
-		$cover_mask/VideoPlayback.hide()
-	else: 
+			$cover_mask/cover.texture = data_dict["cover"]
+			$square_cover.texture = data_dict["cover"]
+
+		if not showing:
+			show_cover()
+		
+		if not same_album:
+			$cover_mask/VideoPlayback.close()
+			$cover_mask/VideoPlayback.hide()
+	else:
+		
 		hide_cover()
-		print("No cover for ", data["title"])
+		print("No cover for ", data_dict["title"])
+
+	if data_dict["cover_loop"] != "" and Settings.misc.cover_loops_playing_bar:
+		if not same_album:
+			$cover_mask/VideoPlayback.close()
+			$cover_mask/VideoPlayback.set_video_path(data_dict["cover_loop"])
+			$cover_mask/VideoPlayback.show()
+			print(data_dict["cover_loop"], " showing")
 	
-	if data["cover_loop"] != "" and Settings.misc.cover_loops_playing_bar:
-		$cover_mask/VideoPlayback.close()
-		$cover_mask/VideoPlayback.set_video_path(data["cover_loop"])
-		$cover_mask/VideoPlayback.show()
-		print(data["cover_loop"], " showing")
-	
-	if data["colors"].is_empty():
+	if data_dict["colors"].is_empty():
 		var t = create_tween()
 		t.tween_property($bg_col, "color", Color.WHITE, 0.5)
 		t.set_parallel().tween_property($VideoPlayback2, "modulate",Color.WHITE, 0.5)
 		t.set_parallel().tween_property($bg_col_grad, "self_modukate", Color.WHITE, 0.5)
 		t.set_parallel().tween_property($VideoPlayback, "modulate", Color.WHITE, 0.5)
 	else: 
-		var col = [General.get_dominant_color(data["cover"], 12), General.get_average_color(data["cover"], 16)]
+		var col = [General.get_dominant_color(data_dict["cover"], 12), General.get_average_color(data_dict["cover"], 16)]
 		var t = create_tween()
 		t.tween_property($bg_col, "color", col[0], 0.5)
 		t.set_parallel().tween_property($VideoPlayback2, "modulate", col[1], 0.5)
 		t.set_parallel().tween_property($bg_col_grad, "self_modulate", col[0], 0.5)
 		t.set_parallel().tween_property($VideoPlayback, "modulate", col[0], 0.5)
 	
-	if data["path"]:
-		stream = ProjectSettings.globalize_path(data["path"])
+	data = data_dict
 
 func set_time(time_s: float = 1.0):
 	current_pos = time_s
@@ -170,7 +206,7 @@ func _on_next_pressed() -> void:
 
 func _on_go_to_song_pressed() -> void:
 	$go_to_song.release_focus()
-	going_to_song.emit(stream)
+	going_to_song.emit(stream, !not_imported_stream)
 
 func _on_go_to_album_pressed() -> void:
 	$go_to_album.release_focus()

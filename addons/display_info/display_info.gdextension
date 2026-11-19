@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "display_info_library_init"
+compatibility_minimum = "4.5"
+reloadable = true
+
+[libraries]
+
+windows.debug.x86_64 = "res://addons/display_info/bin/display_info.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/display_info/bin/display_info.windows.template_release.x86_64.dll"

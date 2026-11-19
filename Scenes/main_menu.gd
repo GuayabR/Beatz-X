@@ -9,6 +9,7 @@ var spectrum: AudioEffectSpectrumAnalyzerInstance
 var can_random := true
 
 var notice: String = "res://Scenes/notice_bar.tscn"
+var startup_animations: Array[Dictionary] = []
 
 func _on_files_dropped(files: PackedStringArray) -> void:
 	_process_files(files)
@@ -21,6 +22,9 @@ func _handle_file_args(args: PackedStringArray) -> void:
 func _process_files(files: PackedStringArray) -> void:
 	if files.is_empty():
 		return
+
+	if not $main_list.songs_built:
+		await $main_list.wait_until_songs_built()
 
 	var beatzmaps: PackedStringArray = []
 	var charts: PackedStringArray = []
@@ -63,6 +67,11 @@ func _process_files(files: PackedStringArray) -> void:
 			new_notice.popup("Unsupported file dropped: %s" % str(s), 0)
 
 func _ready() -> void:
+	var initial_menu := current_menu
+	current_menu = "loading"
+	_pause_startup_animations()
+	$TransitionRect.modulate = Color.WHITE
+
 	DisplayServer.window_set_title("Beatz! X.")
 	
 	if HAuth.product_user_id: General.set_presence("Main Menu", EOS.Presence.Status.Online)
@@ -97,8 +106,6 @@ func _ready() -> void:
 		anim.track_set_key_value(track_idx, 0, Vector2(0, 1005.0 - 75.0))
 	
 	var args = OS.get_cmdline_args()
-	if args.size() > 0:
-		_handle_file_args(args)
 	
 	get_window().files_dropped.connect(_on_files_dropped)
 	
@@ -128,12 +135,28 @@ func _ready() -> void:
 	
 	if not Settings.misc.vis: $Visualizer.hide()
 	
+	var show_song_loader: bool = initial_menu != "list" or not $main_list.songs_built
+	if show_song_loader:
+		await _show_song_loading_overlay()
+
+	_resume_startup_animations()
+
+	if Settings.misc.hq_background:
+		$hq_background.start()
+	if Settings.misc.bg_parallax:
+		$hq_background.play_parallax()
+
+	current_menu = initial_menu
+
 	if current_menu == "list":
 		$AnimationPlayer.pause()
 		if !Settings.misc.reduce_motion:
 			$AnimationPlayer.play("scene_finish_load", -1, 0.75)
 		else:
 			$AnimationPlayer.play("scene_finish_load", -1, 250.0) # if reduce motion is turned on, play the animation at a very high speed so items still end up where they should be
+
+		if show_song_loader:
+			_fade_song_loading_overlay()
 		
 		# all code below also happens after clicking the play button, changed it a bit so it also plays after clicking back on the selected song scene
 		$settings_button.position = Vector2(780.0, -200.0)
@@ -159,14 +182,69 @@ func _ready() -> void:
 		await get_tree().create_timer(0.5, true, true, true).timeout
 		current_menu = "list"
 	else:
+		current_menu = "loading"
 		if Settings.misc.reduce_motion:
 			$AnimationPlayer.play("init", -1, 150.0)
+		else:
+			$AnimationPlayer.play("init")
+
+		_fade_song_loading_overlay()
 	
 	$logo_sprite/message.text = General.MAIN_MENU_MSGS.pick_random()
 	
 	await get_tree().process_frame
 	
 	$logo_sprite/message.pivot_offset = $logo_sprite/message.size / 2
+
+	if args.size() > 0:
+		_handle_file_args(args)
+
+func _pause_startup_animations() -> void:
+	startup_animations.clear()
+	for node in find_children("*", "AnimationPlayer", true, false):
+		var animation_player := node as AnimationPlayer
+		if animation_player.is_playing():
+			startup_animations.append({
+				"player": animation_player,
+				"animation": animation_player.current_animation,
+			})
+			animation_player.stop()
+
+func _resume_startup_animations() -> void:
+	for animation in startup_animations:
+		var animation_player: AnimationPlayer = animation["player"]
+		if is_instance_valid(animation_player) and animation_player.is_inside_tree():
+			animation_player.play(animation["animation"])
+	startup_animations.clear()
+
+func _show_song_loading_overlay() -> void:
+	$loading_text.text = "Loading..."
+	$loading_text.modulate = Color.TRANSPARENT
+	$loading_progress.modulate = Color.TRANSPARENT
+	$loading_progress.value = 0.0
+	$loading_progress.show()
+	$main_list.song_loading_progress.connect(_on_main_list_song_loading_progress)
+
+	var tween := create_tween().set_parallel()
+	tween.tween_property($loading_text, "modulate", Color.WHITE, 0.25)
+	tween.tween_property($loading_progress, "modulate", Color.WHITE, 0.25)
+	await tween.finished
+
+	await $main_list.wait_until_songs_built()
+	$loading_progress.value = 100.0
+
+func _fade_song_loading_overlay() -> void:
+	var tween := create_tween().set_parallel()
+	tween.tween_property($loading_text, "modulate", Color.TRANSPARENT, 0.3)
+	tween.tween_property($loading_progress, "modulate", Color.TRANSPARENT, 0.3)
+	await tween.finished
+	$loading_progress.hide()
+
+func _on_main_list_song_loading_progress(loaded: int, total: int) -> void:
+	if total <= 0:
+		return
+
+	$loading_progress.value = clampf(float(loaded) / float(total) * 100.0, 0.0, 100.0)
 
 var small_cover_pulse: bool = true
 
@@ -183,7 +261,7 @@ func _process(delta: float) -> void:
 	if $bg_song.is_playing():
 		$playing_bar.set_time($bg_song.get_playback_position())
 	
-	if spectrum and Settings.misc.menu_bg_pulse:
+	if spectrum and Settings.misc.menu_bg_pulse and General.window_focused:
 		if $bg_song.is_playing():
 			var overall_energy: float = spectrum.get_magnitude_for_frequency_range(20.0, 11050.0).length()
 			var overall_loudness: float = clampf((111 + linear_to_db(overall_energy)) / 111.0, 0.0, 1.0)
@@ -193,7 +271,7 @@ func _process(delta: float) -> void:
 
 			var treble_energy: float = spectrum.get_magnitude_for_frequency_range(5000.0, 11050.0).length()
 			var treble_loudness: float = clampf((111 + linear_to_db(treble_energy)) / 111.0, 0.0, 1.0)
-
+			
 			var exp_treble := pow(treble_loudness, 1.5)
 			var exp_overall := pow(overall_loudness, 3.0)
 			var exp_bass := pow(bass_loudness, 2.5)
@@ -505,6 +583,7 @@ func _on_exit_game_button_up() -> void:
 		else:
 			$AnimationPlayer.play("popup_leave")
 	elif current_menu == "settings":
+		current_menu = "main"
 		if Settings.misc.reduce_motion:
 			$AnimationPlayer.play("from_settings_to_main", -1, 250.0)
 		else:
@@ -701,6 +780,8 @@ func _on_song_list_context_play_as_bg_song(path: String, index: int, from_album:
 			bgsong = AudioStreamMP3.load_from_file(path)
 		elif ext == "ogg":
 			bgsong = AudioStreamOggVorbis.load_from_file(path)
+		elif ext == "wav":
+			bgsong = AudioStreamWAV.load_from_file(path)
 		else:
 			print("Unsupported audio format: ", path)
 			return
@@ -839,6 +920,22 @@ func _on_settings_set_clan(clan: String) -> void:
 	$settings/ScrollContainer/settings_list/profile_small.set_clan(clan)
 
 @onready var loading_text: RichTextLabel = $loading_text
+@onready var loading_progress: ProgressBar = $loading_progress
+
+func _track_scene_loading(request: Variant) -> void:
+	loading_text.text = "Loading..."
+	loading_progress.value = 0.0
+	loading_progress.show()
+
+	while not request.is_completed:
+		loading_progress.value = request.progress * 100.0
+		await get_tree().process_frame
+
+	if request.scene != null:
+		loading_progress.value = 100.0
+	else:
+		loading_text.text = "Loading failed."
+		loading_progress.hide()
 
 func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> void:
 	$main_list/center/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
@@ -850,26 +947,19 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 
 	print(metadata)
 
-	SceneLoader.load_scene(General.MAIN)
+	var scene_request := SceneLoader.load_scene(General.MAIN)
 
-	var progress_update := func():
-		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-			await get_tree().process_frame
-
-		loading_text.text = "Loading... 100%"
-
-	progress_update.call()
+	_track_scene_loading(scene_request)
 
 	$main_list/AnimationPlayer.play("go_to_selected")
 
-	var tween := create_tween()
-	tween.tween_property($bg_song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
+	_on_main_list_song_sel()
 
-	await tween.finished
+	await get_tree().create_timer(1.0).timeout
 
-	if SceneLoader.is_loading():
-		await SceneLoader.scene_loaded
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
 
 	var selected_beatz_path = metadata["beatz_path"]
 	var selected_title = metadata["song_name"]
@@ -891,7 +981,7 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	var background_vid_path: String = metadata["background_vid"]
 	var cover_loop_vid_path: String = metadata["cover_loop"]
 
-	var game = SceneLoader.loaded_scene.instantiate()
+	var game = packed_scene.instantiate()
 
 	var beatz_file := FileAccess.open(selected_beatz_path, FileAccess.READ)
 	var content := beatz_file.get_as_text()
@@ -967,27 +1057,21 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 		print("Selected item is a separator or missing data")
 		return
 
-	SceneLoader.load_scene(General.EDITOR)
+	var scene_request := SceneLoader.load_scene(General.EDITOR)
 
-	var progress_update := func():
-		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-			await get_tree().process_frame
-		loading_text.text = "Loading... 100%"
-
-	progress_update.call()
+	_track_scene_loading(scene_request)
 
 	$main_list/AnimationPlayer.play("go_to_selected")
 
-	var tween := create_tween()
-	tween.tween_property($bg_song, "volume_db", -80.0, 0.8).set_ease(Tween.EASE_OUT)
+	_on_main_list_song_sel()
+	
+	await get_tree().create_timer(1.0).timeout
 
-	await tween.finished
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
 
-	if SceneLoader.is_loading():
-		await SceneLoader.scene_loaded
-
-	var edit = SceneLoader.loaded_scene.instantiate()
+	var edit = packed_scene.instantiate()
 
 	var beatz_path = metadata["beatz_path"]
 	var song_name = metadata["song_name"]
@@ -1134,23 +1218,199 @@ func _on_album_view_item_context_menu_focus_released() -> void:
 func _on_album_view_item_play_as_bg(path: String, index: int) -> void:
 	_on_song_list_context_play_as_bg_song(ProjectSettings.globalize_path(path), index, true)
 
-func _on_playing_bar_going_to_song(path: String) -> void:
-	var id: int = -1
-	var items: Array = $main_list.all_items
+func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
+	var metadata = null
+	
+	var open_in_main: bool = Input.is_key_pressed(KEY_CTRL)
 
-	for i in items.size():
-		var item = items[i]
+	# ONLY do lookup when using imported stream
+	if imported_stream:
+		for key in Beatz.LIST:
+			var song = Beatz.LIST[key]
 
-		if not item.metadata:
-			continue
+			if not song.has("metadata"):
+				continue
 
-		var item_path = item.metadata.get("stream", "")
+			var song_metadata = song["metadata"]
 
-		if item_path == path:
-			id = i
-			break
+			if song_metadata.get("stream", "") == path:
+				metadata = song_metadata
+				break
 
-	$main_list._on_song_selected(id, true)
+		if metadata == null:
+			print("Could not find metadata for currently playing song: " + path)
+			return
+		
+	var scene_path: String
+	if imported_stream:
+		if not open_in_main:
+			scene_path = "res://Scenes/selected_song.tscn"
+		else:
+			scene_path = General.MAIN
+	else:
+		scene_path = General.MAIN
+
+	var scene_request := SceneLoader.load_scene(scene_path)
+
+	$AnimationPlayer.play("fade_in")
+	_on_main_list_song_sel()
+
+	_track_scene_loading(scene_request)
+
+	await get_tree().create_timer(0.52).timeout
+
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
+
+	var song_scene = packed_scene.instantiate()
+
+	# =========================
+	# IMPORTED STREAM PATH
+	# =========================
+	if imported_stream:
+		var selected_beatz_path = metadata["beatz_path"]
+		var selected_title = metadata["song_name"]
+		var selected_album = metadata["album"]
+		var selected_cover = Image.load_from_file(metadata["cover_path"])
+
+		if not selected_cover:
+			selected_cover = load("res://Resources/misc/noCover.png")
+
+		var diff_texture_path = metadata["diff_texture_path"]
+		var selected_artist = metadata["artist"]
+		var selected_year = metadata["year"]
+		var selected_bpm = metadata["bpm"]
+		var selected_difficulty = metadata["difficulty"]
+		var selected_charter = metadata["charter"]
+		var selected_stream = metadata["stream"]
+		var selected_beat_offset = metadata["local_beat_offset"]
+		var selected_background: String = metadata["selected_background"]
+
+		var background_vid_path: String = metadata["background_vid"]
+		var cover_loop_vid_path: String = metadata["cover_loop"]
+
+		var beatz_file := FileAccess.open(selected_beatz_path, FileAccess.READ)
+		var content := beatz_file.get_as_text()
+		var beatz_data := General.import_beatz_file(content)
+		
+		if open_in_main:
+			song_scene.set("song_title", selected_title)
+			song_scene.set("BPM", selected_bpm)
+			song_scene.set("local_beat_offset", selected_beat_offset)
+			song_scene.set("selected_background", selected_background)
+			song_scene.set("selected_background_name", selected_background.get_file())
+			song_scene.set("background_vid_path", background_vid_path)
+			song_scene.set("cover_loop_vid_path", cover_loop_vid_path)
+			song_scene.set("album", selected_album)
+			song_scene.set("artist", selected_artist)
+			song_scene.set("year", selected_year)
+			song_scene.set("cover", selected_cover)
+			song_scene.set("start_wait", beatz_data["start_wait"])
+			song_scene.set("preview_start", beatz_data["preview_start"])
+			song_scene.set("preview_end", beatz_data["preview_end"])
+			song_scene.set("charter", selected_charter)
+			song_scene.set("difficulty", beatz_data["difficulty"])
+			song_scene.set("diff_texture_path", diff_texture_path)
+			song_scene.set("customNotes", beatz_data["notes"])
+			song_scene.set("chart_name", beatz_data["chart_name"])
+			song_scene.set("start_wait", beatz_data["start_wait"])
+			
+			var extracted_colors: Array[Color] = General.extract_dominant_colors(selected_cover)
+			
+			song_scene.set("colors", extracted_colors)
+			
+			song_scene.set("song_path", selected_stream)
+			
+			var stream: AudioStream
+
+			if not FileAccess.file_exists(selected_stream):
+				push_warning("Stream file not found: " + selected_stream)
+				return
+
+			var ext = selected_stream.get_extension().to_lower()
+
+			match ext:
+				"mp3":
+					stream = AudioStreamMP3.load_from_file(selected_stream)
+				"ogg":
+					stream = AudioStreamOggVorbis.load_from_file(selected_stream)
+				"wav":
+					stream = AudioStreamWAV.load_from_file(selected_stream)
+				_:
+					push_warning("Unsupported audio format: " + ext)
+					return
+
+			if stream:
+				song_scene.set("song", stream)
+			else:
+				push_warning("Failed to load audio stream from: " + selected_stream)
+			
+			song_scene.set("selected_beatz_path", selected_beatz_path)
+
+			get_tree().root.add_child(song_scene)
+			get_tree().current_scene.queue_free()
+			get_tree().current_scene = song_scene
+			return
+		else:
+			song_scene.set("selected_stream", selected_stream)
+			song_scene.set("selected_stream_path", selected_stream)
+			
+			song_scene.set("notes", beatz_data.notes)
+
+			song_scene.set("selected_title", selected_title)
+			song_scene.set("selected_album", selected_album)
+			song_scene.set("selected_cover", selected_cover)
+			song_scene.set("selected_artist", selected_artist)
+			song_scene.set("selected_year", selected_year)
+			song_scene.set("selected_bpm", selected_bpm)
+			song_scene.set("selected_difficulty", selected_difficulty)
+			song_scene.set("selected_chart_name", beatz_data["chart_name"])
+			song_scene.set("selected_charter", selected_charter)
+			song_scene.set("selected_beat_offset", selected_beat_offset)
+			song_scene.set("selected_background", selected_background)
+			song_scene.set("background_vid_path", background_vid_path)
+			song_scene.set("cover_loop_vid_path", cover_loop_vid_path)
+			song_scene.set("selected_beatz_path", selected_beatz_path)
+			song_scene.set("selected_diff_texture", diff_texture_path)
+	else:
+		song_scene.set("init_recording", true)
+		
+		var song_title: String = $playing_bar.data.title
+		var song_artist: String = $playing_bar.data.artist
+		var song_album: String = $playing_bar.data.album
+		var song_year: int = int($playing_bar.data.year)
+		var song_cover: Image = $playing_bar.data.cover
+		var song_colors: Array[Color] = General.extract_dominant_colors(song_cover)
+
+		song_scene.set("song_path", path)
+		
+		song_scene.set("song_title", song_title)
+		song_scene.set("album", song_album)
+		
+		song_scene.set("cover", song_cover)
+		
+		song_scene.set("artist", song_artist)
+		song_scene.set("year", song_year)
+		
+		song_scene.set("difficulty", "easy")
+		song_scene.set("chart_name", song_title)
+		
+		song_scene.set("charter", Settings.game.username)
+		
+		song_scene.set("colors", song_colors)
+
+		var stream: AudioStream = $bg_song.stream
+
+		if stream:
+			song_scene.set("song", stream)
+		else:
+			push_warning("Failed to load audio stream from: " + path)
+			return
+
+	get_tree().root.add_child(song_scene)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = song_scene
 
 func _on_playing_bar_going_to_album(path: String) -> void:
 	var id: int = -1
@@ -1257,7 +1517,8 @@ func _on_settings_parallax_bg_toggled(toggled_on: bool) -> void:
 		$main_list/background.hide()
 		
 		$hq_background.show()
-		$hq_background.start()
+		if current_menu != "loading":
+			$hq_background.start()
 	else:
 		$bg_main_menu.show()
 		$main_list/background.show()
@@ -1267,7 +1528,7 @@ func _on_settings_parallax_bg_toggled(toggled_on: bool) -> void:
 
 
 func _on_settings_bg_parallax_toggled(toggled_on: bool) -> void:
-	if toggled_on:
+	if toggled_on and current_menu != "loading":
 		$hq_background.play_parallax()
 	else:
 		$hq_background.stop_parallax()

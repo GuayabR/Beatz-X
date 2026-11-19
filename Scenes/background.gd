@@ -1,9 +1,43 @@
 extends VideoPlayback
 
+class CanvasTextureItem extends RefCounted:
+	var canvas_item: RID
+	var rect: Rect2
+	var pivot_offset: Vector2
+	var _rotation_degrees := 0.0
+
+	var rotation_degrees: float:
+		get:
+			return _rotation_degrees
+		set(value):
+			_rotation_degrees = value
+			_update_transform()
+
+	func _init(item_rid: RID, item_rect: Rect2) -> void:
+		canvas_item = item_rid
+		rect = item_rect
+		pivot_offset = item_rect.size / 2.0
+
+	func _update_transform() -> void:
+		var angle := deg_to_rad(_rotation_degrees)
+		var pivot := rect.position + pivot_offset
+		var basis := Transform2D(angle, Vector2.ZERO)
+		var origin := pivot - basis.basis_xform(pivot)
+		RenderingServer.canvas_item_set_transform(canvas_item, Transform2D(angle, origin))
+
 var grids: Array[Array] = []
 var tween: Tween
 
 const ROT_STEPS := [0, 45, 90, 135, 180, 225, 270, 315, 360, -45, -90, -135, -225, -270, -315]
+const GRID_COLUMNS := 11
+const GRID_ROWS := 6
+const ITEMS_PER_GRID := 66
+const GRID_GAP: float = 50.0
+
+@export var background_texture: Texture2D
+@export var start_on_ready := true
+
+var _canvas_material: CanvasItemMaterial
 
 enum EffectMode {
 	NONE,
@@ -88,33 +122,56 @@ var wave_index := 0
 
 
 func _ready() -> void:
-	_collect_grids()
-	if Settings.misc.hq_background: _start_loop()
+	_create_canvas_items()
+	if Settings.misc.hq_background and start_on_ready: start()
 	else: $AnimationPlayer.stop()
 
 
-func _collect_grids() -> void:
+func _create_canvas_items() -> void:
 	grids.clear()
 
-	for grid in $HBoxContainer.get_children():
-		if grid is Container:
-			var list: Array[TextureRect] = []
-			_collect_texture_rects(grid, list)
-			grids.append(list)
+	if background_texture == null:
+		push_error("HQ background texture is not assigned.")
+		return
+
+	_canvas_material = CanvasItemMaterial.new()
+	_canvas_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+
+	var texture_size := background_texture.get_size()
+	var grid_width := GRID_COLUMNS * texture_size.x + (GRID_COLUMNS - 1) * GRID_GAP
+	var grid_height := GRID_ROWS * texture_size.y + (GRID_ROWS - 1) * GRID_GAP
+	var grid_step := Vector2(grid_width + GRID_GAP, grid_height + GRID_GAP)
+	var layout_size := Vector2(grid_width * 2 + GRID_GAP, grid_height * 2 + GRID_GAP)
+	var layout_origin = ($HBoxContainer.size - layout_size) / 2.0
+	var parent_rid: RID = $HBoxContainer.get_canvas_item()
+
+	for grid_index in 4:
+		var grid: Array[CanvasTextureItem] = []
+		grids.append(grid)
+		var grid_origin = layout_origin + Vector2(grid_index % 2, floori(float(grid_index) / 2.0)) * grid_step
+
+		for item_index in ITEMS_PER_GRID:
+			var item_position = grid_origin + Vector2(
+				(item_index % GRID_COLUMNS) * (texture_size.x + GRID_GAP),
+				floori(float(item_index) / GRID_COLUMNS) * (texture_size.y + GRID_GAP)
+			)
+			var item_rid := RenderingServer.canvas_item_create()
+			RenderingServer.canvas_item_set_parent(item_rid, parent_rid)
+			RenderingServer.canvas_item_add_texture_rect(
+				item_rid,
+				Rect2(item_position, texture_size),
+				background_texture.get_rid()
+			)
+			RenderingServer.canvas_item_set_material(item_rid, _canvas_material.get_rid())
+			grid.append(CanvasTextureItem.new(item_rid, Rect2(item_position, texture_size)))
 
 
-func _collect_texture_rects(node: Node, list: Array[TextureRect]) -> void:
-	for child in node.get_children():
-		if child is TextureRect:
-			child.pivot_offset = child.size / 2.0
-			var new_material = CanvasItemMaterial.new()
-	
-			# 2. Configure properties like blend_mode or light_mode using built-in enums
-			new_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-			child.material = new_material
-			list.append(child)
-		else:
-			_collect_texture_rects(child, list)
+func _exit_tree() -> void:
+	for grid in grids:
+		for item: CanvasTextureItem in grid:
+			if item.canvas_item.is_valid():
+				RenderingServer.free_rid(item.canvas_item)
+	grids.clear()
 
 ## Array of colours must be size 2.
 func tint(with: Array[Color]) -> void:
@@ -142,7 +199,7 @@ func stop() -> void:
 	active_tweens.clear()
 
 	for grid in grids:
-		for item: TextureRect in grid:
+		for item: CanvasTextureItem in grid:
 			item.rotation_degrees = 0.0
 
 func start() -> void:
@@ -159,7 +216,7 @@ func start() -> void:
 
 
 func play_parallax() -> void:
-	$AnimationPlayer.play()
+	$AnimationPlayer.play("scroll")
 
 func stop_parallax() -> void:
 	$AnimationPlayer.stop()
@@ -175,7 +232,7 @@ func _start_loop() -> void:
 					var angle: float = 0.0
 
 					for item in grid:
-						if item.rotation != angle: _tween_rotate(item, angle)
+						if item.rotation_degrees != angle: _tween_rotate(item, angle)
 			EffectMode.WAVE:
 				_wave_step()
 			EffectMode.RANDOM_SINGLE:
@@ -197,7 +254,7 @@ func _wave_step() -> void:
 			continue
 
 		var idx := wave_index % grid.size()
-		var target: TextureRect = grid[idx]
+		var target: CanvasTextureItem = grid[idx]
 
 		_tween_rotate(target)
 
@@ -205,7 +262,7 @@ func _wave_step() -> void:
 
 
 func _random_step() -> void:
-	var all: Array[TextureRect] = []
+	var all: Array[CanvasTextureItem] = []
 
 	for grid in grids:
 		all.append_array(grid)
@@ -213,11 +270,11 @@ func _random_step() -> void:
 	if all.is_empty():
 		return
 
-	var target: TextureRect = all[randi() % all.size()]
+	var target: CanvasTextureItem = all[randi() % all.size()]
 	_tween_rotate(target)
 
 func _random_multi_step() -> void:
-	var all: Array[TextureRect] = []
+	var all: Array[CanvasTextureItem] = []
 
 	for grid in grids:
 		all.append_array(grid)
@@ -248,7 +305,7 @@ func _grid_burst_step() -> void:
 
 		var angle: float = ROT_STEPS[randi() % ROT_STEPS.size()]
 
-		for item in grid:
+		for item: CanvasTextureItem in grid:
 			_tween_rotate(item, angle)
 
 func _random_burst_step() -> void:
@@ -256,12 +313,12 @@ func _random_burst_step() -> void:
 		if grid.is_empty():
 			continue
 
-		for item: TextureRect in grid:
+		for item: CanvasTextureItem in grid:
 			var angle: float = ROT_STEPS[randi() % ROT_STEPS.size()]
 			_tween_rotate(item, angle)
 
 
-func _tween_rotate(target: TextureRect, force_angle: float = -999.0) -> void:
+func _tween_rotate(target: CanvasTextureItem, force_angle: float = -999.0) -> void:
 	var angle: float = force_angle
 
 	if angle == -999.0:

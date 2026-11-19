@@ -1,0 +1,174 @@
+[gd_scene load_steps=2 format=3 uid="uid://yvcvv1ivdpdo"]
+
+[ext_resource type="Script" uid="uid://wvsa5fmux57b" path="res://Scenes/ttml_editor.gd" id="1_script"]
+
+[node name="TTMLEditor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="Toolbar" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LoadAudio" type="Button" parent="VBoxContainer/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Load Audio"
+
+[node name="LoadLyrics" type="Button" parent="VBoxContainer/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Load Lyrics"
+
+[node name="SaveTTML" type="Button" parent="VBoxContainer/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Save TTML"
+
+[node name="CurrentTime" type="Label" parent="VBoxContainer/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "00:00.000"
+horizontal_alignment = 2
+
+[node name="Metadata" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SongNameContainer" type="HBoxContainer" parent="VBoxContainer/Metadata"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SongLabel" type="Label" parent="VBoxContainer/Metadata/SongNameContainer"]
+layout_mode = 2
+text = "Song:"
+
+[node name="SongName" type="LineEdit" parent="VBoxContainer/Metadata/SongNameContainer"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Song Name"
+
+[node name="ArtistContainer" type="HBoxContainer" parent="VBoxContainer/Metadata"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ArtistLabel" type="Label" parent="VBoxContainer/Metadata/ArtistContainer"]
+layout_mode = 2
+text = "Artist:"
+
+[node name="Artist" type="LineEdit" parent="VBoxContainer/Metadata/ArtistContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Artist"
+
+[node name="AlbumContainer" type="HBoxContainer" parent="VBoxContainer/Metadata"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AlbumLabel" type="Label" parent="VBoxContainer/Metadata/AlbumContainer"]
+layout_mode = 2
+text = "Album:"
+
+[node name="Album" type="LineEdit" parent="VBoxContainer/Metadata/AlbumContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Album"
+
+[node name="WritersContainer" type="HBoxContainer" parent="VBoxContainer/Metadata"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="WritersLabel" type="Label" parent="VBoxContainer/Metadata/WritersContainer"]
+layout_mode = 2
+text = "Writers:"
+
+[node name="Songwriters" type="LineEdit" parent="VBoxContainer/Metadata/WritersContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Songwriters"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="AudioProgress" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.001
+
+[node name="CurrentWordLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "---"
+horizontal_alignment = 1
+
+[node name="WordDisplay" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+bbcode_enabled = true
+text = "[center][color=gray]Load lyrics to begin[/color][/center]"
+fit_content = true
+scroll_active = false
+
+[node name="TimeLabels" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StartLabel" type="Label" parent="VBoxContainer/TimeLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start: --:--.---"
+
+[node name="EndLabel" type="Label" parent="VBoxContainer/TimeLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "End: --:--.---"
+
+[node name="ShortcutHints" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "Space=Play/Pause  |  S=Mark Start  |  D=Mark End  |  ← → =Seek  |  Ctrl+Z=Undo"
+horizontal_alignment = 1
+
+[node name="WordList" type="ItemList" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+allow_reselect = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="VBoxContainer"]
+
+[node name="FileDialogAudio" type="FileDialog" parent="."]
+title = "Open a File"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.mp3, *.ogg, *.wav, *.flac ; Audio Files", "*.mp3 ; MP3 Files", "*.ogg ; OGG Files", "*.wav ; WAV Files", "*.flac ; FLAC Files")
+
+[node name="FileDialogLyrics" type="FileDialog" parent="."]
+title = "Open a File"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.txt ; Text Files")
+
+[node name="FileDialogSave" type="FileDialog" parent="."]
+title = "Save TTML File"
+access = 2
+filters = PackedStringArray("*.ttml ; TTML Files")

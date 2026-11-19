@@ -83,7 +83,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_crr1d"]
 resource_name = "bg_spin"
-length = 150.0
+length = 60.0
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -92,7 +92,7 @@ tracks/0/path = NodePath("album_side/bg_cover_rotation_cont/bg_cover:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 150),
+"times": PackedFloat32Array(0, 60),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [0.0, 6.283185307179586]

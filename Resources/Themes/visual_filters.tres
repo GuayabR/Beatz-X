@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dgxyephrdvjc8"]
+
+[ext_resource type="Shader" uid="uid://dpi03fs73rquc" path="res://Scenes/visual_filters.gdshader" id="1_bu4ev"]
+
+[resource]
+shader = ExtResource("1_bu4ev")
+shader_parameter/brightness = 1.0
+shader_parameter/contrast = 1.0
+shader_parameter/gamma = 1.0
+shader_parameter/colourblind_mode = 0
+shader_parameter/colourblind_strength = 1.0

@@ -12,12 +12,15 @@ signal item_play_as_bg(path: String, index: int)
 signal loading_song(title: String)
 signal loaded_song_meta(title: String)
 signal loaded_song(title: String)
+signal song_loading_progress(loaded: int, total: int)
 
 signal error(title: String, code: Variant.Type)
 
 var add_queue := []
+var add_queue_index := 0
 var processing_index := 0
 var grouped_songs := {}
+var song_scan_finished := false
 
 var song_info: Array = []
 var difficulty_order := [
@@ -51,93 +54,86 @@ var total_songs: int = 0
 func _ready() -> void:
 	if OS.get_name() == "Android": 
 		$center/song_list.select_mode = ItemList.SelectMode.SELECT_MULTI
-	
+
+	connect_popup()
+	call_deferred("_start_initial_song_loading")
+
+func _start_initial_song_loading() -> void:
+	await get_tree().process_frame
+
 	if Settings.game.keep_list_in_ram and Beatz.LIST.size() > 0:
-		list.clear()
 		print("Rebuilding list from mem")
-
-		for id in Beatz.LIST.keys():
-			var data = Beatz.LIST[id]
-
-			var idx = list.add_item(data["text"], LOADING_COVER)
-			list.set_item_metadata(idx, data["metadata"])
-			list.set_item_disabled(idx, data["disabled"])
-			list.set_item_tooltip_enabled(idx, false)
-
-			all_items.append({
-				"id": idx,
-				"text": data["text"],
-				"icon": LOADING_COVER,
-				"metadata": data["metadata"],
-				"disabled": data["disabled"],
-			})
-
-		list.get_v_scroll_bar().value_changed.connect(update_visible_covers)
-
-		update_visible_covers(0)
-
-		songs_built = true
-		
-		connect_popup()
+		await _load_cached_song_list(Beatz.LIST, false)
 		return
-	
+
 	if Settings.game.keep_list_in_ram and FileAccess.file_exists(Beatz.LIST_CACHE_PATH):
 		var t := Time.get_ticks_msec()
 		var file := FileAccess.open(Beatz.LIST_CACHE_PATH, FileAccess.READ)
 		if file:
-			var text := file.get_as_text()
+			var parsed = JSON.parse_string(file.get_as_text())
 			file.close()
-
-			var parsed = JSON.parse_string(text)
 
 			if typeof(parsed) == TYPE_DICTIONARY:
 				print("Loaded song list from cache")
-
 				Beatz.LIST.clear()
-				list.clear()
-
-				for id in parsed.keys():
-					var data = parsed[id]
-
-					Beatz.LIST[id] = data
-
-					var idx = list.add_item(data["text"], LOADING_COVER)
-					list.set_item_metadata(idx, data["metadata"])
-					list.set_item_disabled(idx, data["disabled"])
-					list.set_item_tooltip_enabled(idx, false)
-
-					all_items.append({
-						"id": idx,
-						"text": data["text"],
-						"icon": LOADING_COVER,
-						"metadata": data["metadata"],
-						"disabled": data["disabled"]
-					})
-
-				list.get_v_scroll_bar().value_changed.connect(update_visible_covers)
-				update_visible_covers(0)
-
-				songs_built = true
-				connect_popup()
-				
+				await _load_cached_song_list(parsed, true)
 				print_rich(
 					"[color=green]Loading from cache took [b]%d[/b] ms[/color]"
 					% (Time.get_ticks_msec() - t)
 				)
 				return
-	
+
 	var t0 := Time.get_ticks_msec()
 	total_songs = _count_songs()
 	print("total songs ", total_songs)
 	print("count_songs took ", Time.get_ticks_msec() - t0, " ms")
+	song_loading_progress.emit(0, total_songs)
 
 	var t1 := Time.get_ticks_msec()
 	load_song_info()
 	print("load_song_info took ", Time.get_ticks_msec() - t1, " ms")
 
-	_load_songs()
-	
-	connect_popup()
+	await _load_songs()
+
+func _load_cached_song_list(cached: Dictionary, update_memory_cache: bool) -> void:
+	list.clear()
+	all_items.clear()
+	total_songs = cached.size()
+	processing_index = 0
+
+	var item_index := 0
+	for id in cached.keys():
+		var data = cached[id]
+		if update_memory_cache:
+			Beatz.LIST[id] = data
+
+		var idx = list.add_item(data["text"], LOADING_COVER)
+		list.set_item_metadata(idx, data["metadata"])
+		list.set_item_disabled(idx, data["disabled"])
+		list.set_item_tooltip_enabled(idx, false)
+
+		all_items.append({
+			"id": idx,
+			"text": data["text"],
+			"icon": LOADING_COVER,
+			"metadata": data["metadata"],
+			"disabled": data["disabled"],
+		})
+
+		processing_index += 1
+		song_loading_progress.emit(processing_index, total_songs)
+		item_index += 1
+		if item_index % 64 == 0:
+			await get_tree().process_frame
+
+	list.get_v_scroll_bar().value_changed.connect(update_visible_covers)
+	update_visible_covers(0)
+	songs_built = true
+	song_loading_progress.emit(total_songs, total_songs)
+
+func wait_until_songs_built() -> void:
+	while not songs_built:
+		await get_tree().process_frame
 
 func connect_popup():
 	var popup: PopupMenu = $top_right/sort.get_popup()
@@ -153,8 +149,12 @@ func connect_popup():
 func _count_songs() -> int:
 	var total := 0
 
-	# 1. Count .beatz files directly inside res://Charts
-	var charts_dir := DirAccess.open("res://Charts")
+	# Match _load_songs()'s exported-friendly Charts path.
+	var charts_path := OS.get_executable_path().get_base_dir().path_join("Charts")
+	var charts_dir := DirAccess.open(charts_path)
+	if charts_dir == null:
+		charts_path = "res://Charts"
+		charts_dir = DirAccess.open(charts_path)
 	if charts_dir:
 		charts_dir.list_dir_begin()
 		var file_name := charts_dir.get_next()
@@ -170,6 +170,16 @@ func _count_songs() -> int:
 		base_custom_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom"
 	else:
 		base_custom_path = "user://Custom"
+
+	var custom_charts := DirAccess.open(base_custom_path.path_join("Charts"))
+	if custom_charts:
+		custom_charts.list_dir_begin()
+		var chart_name := custom_charts.get_next()
+		while chart_name != "":
+			if chart_name.ends_with(".beatz"):
+				total += 1
+			chart_name = custom_charts.get_next()
+		custom_charts.list_dir_end()
 
 	var custom_dir := DirAccess.open(base_custom_path)
 	if custom_dir:
@@ -192,6 +202,18 @@ func _count_songs() -> int:
 		custom_dir.list_dir_end()
 
 	return total
+
+func _mark_song_loaded() -> void:
+	processing_index += 1
+
+	var tb = null
+	if OS.get_name() == "Windows" and Engine.has_singleton("TBProgress"):
+		tb = Engine.get_singleton("TBProgress")
+
+	if tb:
+		tb.set_progress(processing_index, total_songs)
+
+	song_loading_progress.emit(mini(processing_index, total_songs), total_songs)
 
 var background_cover_queue: Array[String] = []
 var background_load_timer: float = 0.0
@@ -216,10 +238,12 @@ const LOADING_COVER := preload("res://Resources/misc/loadingCover.png")
 func _process(_delta):
 	# add to list and all items array
 	if not songs_built:
-		if add_queue.is_empty():
+		if not song_scan_finished:
 			return
 
-		for item in add_queue:
+		var batch_end := mini(add_queue_index + 64, add_queue.size())
+		for queue_index in range(add_queue_index, batch_end):
+			var item = add_queue[queue_index]
 			if item["type"] == "entry":
 				var entry = item["entry"]
 
@@ -227,14 +251,18 @@ func _process(_delta):
 				list.set_item_metadata(idx, entry["metadata"])
 				list.set_item_tooltip_enabled(idx, false)
 
-		for i in range(list.get_item_count()):
-			all_items.append({
-				"id": i,
-				"text": list.get_item_text(i),
-				"icon": LOADING_COVER,
-				"metadata": list.get_item_metadata(i),
-				"disabled": list.is_item_disabled(i),
-			})
+				all_items.append({
+					"id": idx,
+					"text": entry["text"],
+					"icon": LOADING_COVER,
+					"metadata": entry["metadata"],
+					"disabled": false,
+				})
+
+		add_queue_index = batch_end
+
+		if add_queue_index < add_queue.size():
+			return
 		
 		if Settings.game.keep_list_in_ram:
 			print("adding list to mem")
@@ -272,6 +300,7 @@ func _process(_delta):
 		update_visible_covers(0)
 
 		songs_built = true
+		song_loading_progress.emit(total_songs, total_songs)
 		# so next process loop skips over this part
 	
 	if _cover_update_pending:
@@ -675,13 +704,15 @@ var scan_mutex := Mutex.new()
 var scan_finished := false
 var remaining_scan_threads := 0
 
-func _load_songs():
+func _load_songs() -> void:
 	var t_start := Time.get_ticks_msec()
 
 	list.clear()
 	add_queue.clear()
+	add_queue_index = 0
 	processing_index = 0
 	grouped_songs = {}
+	song_scan_finished = false
 
 	scan_results.clear()
 	scan_threads.clear()
@@ -693,8 +724,10 @@ func _load_songs():
 
 	var exe_dir := OS.get_executable_path().get_base_dir()
 	var charts_path := exe_dir.path_join("Charts")
-
 	var charts_dir := DirAccess.open(charts_path)
+	if charts_dir == null:
+		charts_path = "res://Charts"
+		charts_dir = DirAccess.open(charts_path)
 
 	if charts_dir:
 		charts_dir.list_dir_begin()
@@ -707,6 +740,7 @@ func _load_songs():
 					charts_path.path_join(file_name),
 					grouped_songs
 				)
+				await get_tree().process_frame
 
 			file_name = charts_dir.get_next()
 
@@ -758,6 +792,7 @@ func _load_songs():
 						"storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/Charts/" + file_name,
 						grouped_songs
 					)
+				await get_tree().process_frame
 
 			file_name = custom_dir.get_next()
 
@@ -846,10 +881,12 @@ func _thread_scan_folder(folder_path: String) -> void:
 		scan_results.append(data)
 		scan_mutex.unlock()
 
-	call_deferred("_on_scan_thread_finished")
+	call_deferred("_on_scan_thread_finished", not data.is_empty())
 
-func _on_scan_thread_finished() -> void:
+func _on_scan_thread_finished(song_loaded: bool) -> void:
 	remaining_scan_threads -= 1
+	if song_loaded:
+		_mark_song_loaded()
 
 	if remaining_scan_threads <= 0 and not scan_finished:
 		scan_finished = true
@@ -898,6 +935,7 @@ func _finish_song_loading(t_start: int) -> void:
 		})
 
 	print("Queued %d songs" % add_queue.size())
+	song_scan_finished = true
 
 	print(
 		"TOTAL _load_songs took ",
@@ -1198,15 +1236,7 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped: Dictionary) -> voi
 		}
 	}
 	
-	processing_index += 1
-	
-	var tb = null
-
-	if OS.get_name() == "Windows" and Engine.has_singleton("TBProgress"):
-		tb = Engine.get_singleton("TBProgress")
-
-	if tb:
-		tb.set_progress(processing_index, total_songs)
+	_mark_song_loaded()
 
 	if not grouped.has(difficulty):
 		grouped_songs[difficulty] = []
@@ -1234,6 +1264,22 @@ func _on_images_loaded():
 	_img_done = true
 
 @onready var loading_text: RichTextLabel = $center_bottom/loading_text
+@onready var loading_progress: ProgressBar = $center_bottom/loading_progress
+
+func _track_scene_loading(request: Variant) -> void:
+	loading_text.text = "Loading..."
+	loading_progress.value = 0.0
+	loading_progress.show()
+
+	while not request.is_completed:
+		loading_progress.value = request.progress * 100.0
+		await get_tree().process_frame
+
+	if request.scene != null:
+		loading_progress.value = 100.0
+	else:
+		loading_text.text = "Loading failed."
+		loading_progress.hide()
 
 func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 	if dragging:
@@ -1311,19 +1357,15 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 	var selected_video = metadata["background_vid"]
 	var selected_cover_loop_video = metadata["cover_loop"]
 
-	SceneLoader.load_scene("res://Scenes/selected_song.tscn")
-
-	var progress_update := func():
-		while SceneLoader.is_loading():
-			loading_text.text = "Loading... (%d%)" % int(SceneLoader.get_progress() * 100.0)
-			await get_tree().process_frame
-		loading_text.text = "Loading... 100%"
-
-	progress_update.call()
+	var scene_request := SceneLoader.load_scene("res://Scenes/selected_song.tscn")
+	_track_scene_loading(scene_request)
 
 	await $AnimationPlayer.animation_finished
 
-	var game = SceneLoader.loaded_scene.instantiate()
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
+	var game = packed_scene.instantiate()
 
 	var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
 	var content := beatz_file.get_as_text()
@@ -1960,8 +2002,23 @@ func _on_create_req() -> void:
 	$top_left/create.release_focus()
 
 func _on_create_pressed() -> void:
-	var edit = load(General.EDITOR).instantiate()
-	
+	var scene_request := SceneLoader.load_scene(General.EDITOR)
+	_track_scene_loading(scene_request)
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.6 / anim_speed).timeout
+
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
+	var edit = packed_scene.instantiate()
+
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
@@ -1991,113 +2048,106 @@ func _on_song_select_file_selected(status, paths: PackedStringArray, _filter_idx
 	print("list song select file status", status)
 	print("list song select paths ", paths)
 	print("list song select filter idx", _filter_idx)
-	
+
 	if not status or paths.is_empty():
 		return
-	
+
 	if paths[0].get_extension() not in ["mp3", "ogg", "wav"]:
 		$Control/create_map_panel/song_file_label.text = "Song has to be an mp3, ogg or wav file."
 		return
-	
+
 	var song_path = paths[0]
-	
+
 	var stream
-	
 	var song_didnt_fail := true
+
 	if song_path.ends_with(".mp3") or song_path.ends_with(".ogg") or song_path.ends_with(".wav"):
 		if song_path.ends_with(".mp3"):
 			stream = AudioStreamMP3.load_from_file(song_path)
-			print("Song created as mp3 ", stream)
 		elif song_path.ends_with(".ogg"):
 			stream = AudioStreamOggVorbis.load_from_file(song_path)
-			print("Song created as ogg ", stream)
 		elif song_path.ends_with(".wav"):
 			stream = AudioStreamWAV.load_from_file(song_path)
-			print("Song created as wav ", stream)
 		else:
 			song_didnt_fail = false
-			print("Unsupported audio format in: %s" % song_path)
 			stream = null
-			
-	if song_didnt_fail: 
-		
-		print("Song success ", stream)
-		
-		# Parse ID3 from file
-		var metaRead := MP3ID3Tag.new()
-		var loaded_ok := metaRead.load_file(song_path)
-		if not loaded_ok:
-			print("Failed to load ID3 tags for ", song_path)
-			return
-		
-		# Track name
-		var track := metaRead.getTrackName()
-		if track and track.strip_edges() != "":
-			print(track)
-		else:
-			print("Track name not in metadata")
-		
-		# Artist
-		var artist := metaRead.getArtist()
-		if artist and artist.strip_edges() != "":
-			print(artist)
-		else:
-			print("Artist not in metadata")
-		
-		# Album
-		var album := metaRead.getAlbum()
-		if album and album.strip_edges() != "":
-			print(album)
-		else:
-			print("Album not in metadata")
-		
-		# Year
-		var year := metaRead.getYear()
-		if year and year.strip_edges() != "":
-			print(year)
-		else:
-			print("Year not in metadata")
-		
-		# Cover (first attached picture)
-		var response: Array = metaRead.getAttachedPictureAndMime(0)
-		if not response.is_empty() and response[0]:
-			print("Got cover")
-		else:
-			print("Cover image not in metadata")
-		
-		var main = load("res://Scenes/main.tscn").instantiate()
-		main.set("song", stream)
-		main.set("song_path", song_path)
-		main.set("song_title", track)
-		main.set("album", album)
-		
-		if not response.is_empty() and response.get(0): main.set("cover", response[0])
-		
-		main.set("artist", artist)
-		main.set("year", year)
-		
-		#main.set("start_wait", 0.0)
-		#main.set("preview_start", beatz_data["preview_start"])
-		#main.set("preview_end", beatz_data["preview_end"])
-		
-		main.set("difficulty", "easy")
-		main.set("chart_name", track)
-		
-		main.set("charter", Settings.game.username)
-		
-		if not response.is_empty() and response.get(0): main.set("colors", General.extract_dominant_colors(response[0]))
-		
-		main.set("init_recording", true) # Initialize main with recording
-		
-		get_tree().root.add_child(main)
-		get_tree().current_scene.queue_free()
-		get_tree().current_scene = main
+
+	if not song_didnt_fail:
+		return
+
+	var metaRead := MP3ID3Tag.new()
+	var loaded_ok := metaRead.load_file(song_path)
+	if not loaded_ok:
+		return
+
+	var track := metaRead.getTrackName()
+	var artist := metaRead.getArtist()
+	var album := metaRead.getAlbum()
+	var year := metaRead.getYear()
+
+	var response: Array = metaRead.getAttachedPictureAndMime(0)
+
+	var scene_request := SceneLoader.load_scene("res://Scenes/main.tscn")
+	_track_scene_loading(scene_request)
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.8 / anim_speed).timeout
+
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
+	var main = packed_scene.instantiate()
+
+	main.set("song", stream)
+	main.set("song_path", song_path)
+	main.set("song_title", track)
+	main.set("album", album)
+
+	if not response.is_empty() and response.get(0):
+		main.set("cover", response[0])
+
+	main.set("artist", artist)
+	main.set("year", year)
+
+	main.set("difficulty", "easy")
+	main.set("chart_name", track)
+	main.set("charter", Settings.game.username)
+
+	if not response.is_empty() and response.get(0):
+		main.set("colors", General.extract_dominant_colors(response[0]))
+
+	main.set("init_recording", true)
+
+	get_tree().root.add_child(main)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = main
 
 func entered_mp3_on_window(file):
-	var edit = load(General.EDITOR).instantiate()
-	
+	var scene_request := SceneLoader.load_scene(General.EDITOR)
+	_track_scene_loading(scene_request)
+
+	var anim_speed := 1.0
+	$AnimationPlayer.play("go_to_selected")
+
+	if $AnimationPlayer.is_playing():
+		$AnimationPlayer.speed_scale = 1.5
+		anim_speed = 1.5
+
+	await get_tree().create_timer(0.6 / anim_speed).timeout
+
+	var packed_scene: PackedScene = await scene_request.wait()
+	if packed_scene == null:
+		return
+	var edit = packed_scene.instantiate()
+
 	edit.create_from_dropped_file(file)
-	
+
 	get_tree().root.add_child(edit)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = edit
