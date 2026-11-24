@@ -1,10 +1,13 @@
 extends Control
 
+const PLAY_PARAMETERS_SCENE: PackedScene = preload("res://Scenes/play_parameters.tscn")
+
 var selected_stream: AudioStream
 var selected_stream_path: String
 
 var selected_title: String
 var selected_artist: String
+var selected_artists: Array[String] = []
 var selected_album: String
 var selected_cover: Image
 var selected_cover_path: String
@@ -107,8 +110,10 @@ func _ready() -> void:
 	else:
 		$AnimationPlayer.play("load_song")
 	
-	$Title.text = str(selected_title)
-	$Artist.text = str(selected_artist)
+	$Title/Text.text = str(selected_title)
+	$Artist/Text.text = str(selected_artist)
+	$Title.refresh()
+	$Artist.refresh()
 	
 	$CenterContainer/scores.beatz_file = selected_beatz_path
 	$CenterContainer/scores._set_items()
@@ -291,14 +296,24 @@ func _notification(what: int) -> void:
 		_on_back_pressed()
 
 func _input(event: InputEvent) -> void:
-	if not get_viewport().gui_get_focus_owner() and event.is_action_pressed("ui_cancel") or event.is_action_pressed("controller-back"):
+	if event is InputEventJoypadButton and event.is_action_pressed("pause-back"):
+		var joypad_event := event as InputEventJoypadButton
+		if joypad_event.button_index == JOY_BUTTON_B:
+			_on_back_pressed()
+		elif joypad_event.button_index == JOY_BUTTON_START:
+			_on_go_to_stgs_pressed()
+	elif not get_viewport().gui_get_focus_owner() and event.is_action_pressed("ui_cancel"):
 		_on_back_pressed()
-	elif event.is_action_pressed("controller-pause"):
-		_on_go_to_stgs_pressed()
 
 func _on_play_button_up() -> void:
 	$Play.release_focus()
 
+	var play_parameters: PlayParameters = PLAY_PARAMETERS_SCENE.instantiate()
+	play_parameters.configure(PlayParameters.PanelMode.PLAY, $song.stream.get_length())
+	add_child(play_parameters)
+	play_parameters.confirmed.connect(_on_play_parameters_confirmed)
+
+func _on_play_parameters_confirmed(start_pos: float, playback_speed: float) -> void:
 	# Optional animation before loading screen
 	if Settings.misc.reduce_motion:
 		$AnimationPlayer.play("play_song", -1, 250.0)
@@ -326,6 +341,7 @@ func _on_play_button_up() -> void:
 
 	# Pass data to the loading scene (it will forward it to main when loaded)
 	game.set("chart_path", selected_beatz_path)
+	game.set("song_path", selected_stream_path)
 	game.set("song", $song.stream)
 	game.set("song_title", selected_title)
 	game.set("BPM", selected_bpm)
@@ -336,16 +352,22 @@ func _on_play_button_up() -> void:
 	game.set("cover_loop_vid_path", cover_loop_vid_path)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
+	game.set("selected_artists", selected_artists.duplicate())
 	game.set("year", selected_year)
 	game.set("cover", selected_cover)
 	game.set("preview_start", preview_start)
 	game.set("preview_end", preview_end)
 	game.set("charter", selected_charter)
 	game.set("difficulty", selected_difficulty)
+	game.set("diff_texture_path", selected_diff_texture)
 	game.set("customNotes", notes)
 	game.set("chart_name", selected_chart_name)
 	game.set("start_wait", start_wait)
 	game.set("colors", colors)
+	game.set("fade_in", fade_in)
+	game.set("fade_out", fade_out)
+	game.set("start_pos", start_pos)
+	game.set("playback_speed", playback_speed)
 
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
@@ -450,10 +472,12 @@ func _on_edit_pressed() -> void:
 	edit.new_beatzmap = false
 
 	edit.set("selected_title", selected_title)
+	edit.set("song_path", selected_stream_path)
 	edit.set("selected_album", selected_album)
 
 	edit.set("selected_cover", selected_cover)
 	edit.set("selected_artist", selected_artist)
+	edit.set("selected_artists", selected_artists.duplicate())
 	edit.set("selected_year", selected_year)
 
 	edit.set("preview_start", preview_start)
@@ -462,6 +486,8 @@ func _on_edit_pressed() -> void:
 	edit.set("local_beat_offset", selected_beat_offset)
 
 	edit.set("start_wait", start_wait)
+	edit.set("fade_in", fade_in)
+	edit.set("fade_out", fade_out)
 
 	edit.set("selected_difficulty", selected_difficulty)
 	edit.set("selected_diff_texture", $cover_anim/circlemask/difficulty_label.texture)

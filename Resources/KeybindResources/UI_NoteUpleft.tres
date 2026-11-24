@@ -1,0 +1,10 @@
+[gd_resource type="Texture2D" script_class="ControllerIconTexture" load_steps=2 format=3 uid="uid://chaqt1w6sguse"]
+
+[ext_resource type="Script" uid="uid://c5m55kig1lrd7" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="1_fq535"]
+
+[resource]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("1_fq535")
+path = "noteUpleft"
+metadata/_custom_type_script = "uid://c5m55kig1lrd7"

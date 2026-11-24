@@ -175,12 +175,20 @@ func _exit_tree() -> void:
 
 ## Array of colours must be size 2.
 func tint(with: Array[Color]) -> void:
-	if with.size() > 2: print("HQ Background will only use the first and second index of the \"with\" property.")
+	if with.is_empty():
+		with = [Color.WHITE, Color.WHITE]
+	elif with.size() == 1:
+		var primary: Color = with[0]
+		var secondary: Color = primary.lerp(Color.WHITE, 0.22)
+		secondary = primary.lerp(Color.BLACK, 0.08) if primary == secondary else primary.lerp(Color.WHITE, 0.22)
+		with = [primary, secondary]
+	elif with.size() > 2:
+		print("HQ Background will only use the first and second index of the \"with\" property.")
 	var t = create_tween()
 	t.tween_property(self, "self_modulate", with[0], 0.5)
 	t.set_parallel().tween_property($VideoPlayback, "self_modulate", with[1], 0.5)
 
-var _running := true
+var _running: bool = false
 
 var active_tweens: Array[Tween] = []
 
@@ -209,7 +217,10 @@ func start() -> void:
 	play()
 	$VideoPlayback.play()
 	
-	$AnimationPlayer.play("scroll")
+	if Settings.misc.bg_parallax:
+		$AnimationPlayer.play("scroll")
+	else:
+		$AnimationPlayer.stop()
 	
 	_running = true
 	_start_loop()

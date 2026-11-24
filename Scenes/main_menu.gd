@@ -1,5 +1,7 @@
 extends Control
 
+const PLAY_PARAMETERS_SCENE: PackedScene = preload("res://Scenes/play_parameters.tscn")
+
 var bgsong: AudioStream # randomly selected stream
 
 var current_menu: String = "main" # main / list / settings / loading | loading is selected when an animation is playing so you dont press buttons that trigger other animations
@@ -10,6 +12,14 @@ var can_random := true
 
 var notice: String = "res://Scenes/notice_bar.tscn"
 var startup_animations: Array[Dictionary] = []
+var _external_menu_artwork_active: bool = false
+var _last_external_menu_artwork_bytes: PackedByteArray = PackedByteArray()
+var _local_menu_cover: Variant = null
+var _local_visualizer_colors: Array[Color] = [Color.WHITE]
+var _external_paused_local_song: bool = false
+var _external_cover_loop_album_key: String = ""
+var _external_cover_loop_lookup_valid: bool = false
+var _cover_loop_lookup_cache: Dictionary = {}
 
 func _on_files_dropped(files: PackedStringArray) -> void:
 	_process_files(files)
@@ -71,6 +81,15 @@ func _ready() -> void:
 	current_menu = "loading"
 	_pause_startup_animations()
 	$TransitionRect.modulate = Color.WHITE
+
+	WindowsMediaIntegration.external_media_changed.connect(_on_external_media_changed)
+	$main_list.song_list_built.connect(_on_main_list_song_list_built)
+	_on_external_media_changed(
+		WindowsMediaIntegration.media_available,
+		WindowsMediaIntegration.media_info,
+		WindowsMediaIntegration.artwork_bytes
+	)
+	$settings.parallax_bg_matches_cover.connect(_on_settings_bg_matches_cover_toggled)
 
 	DisplayServer.window_set_title("Beatz! X.")
 	
@@ -223,6 +242,7 @@ func _show_song_loading_overlay() -> void:
 	$loading_progress.modulate = Color.TRANSPARENT
 	$loading_progress.value = 0.0
 	$loading_progress.show()
+	$loading_text.show()
 	$main_list.song_loading_progress.connect(_on_main_list_song_loading_progress)
 
 	var tween := create_tween().set_parallel()
@@ -239,6 +259,7 @@ func _fade_song_loading_overlay() -> void:
 	tween.tween_property($loading_progress, "modulate", Color.TRANSPARENT, 0.3)
 	await tween.finished
 	$loading_progress.hide()
+	$loading_text.hide()
 
 func _on_main_list_song_loading_progress(loaded: int, total: int) -> void:
 	if total <= 0:
@@ -297,7 +318,7 @@ func _process(delta: float) -> void:
 			$logo_sprite/message.scale = safe_scale($logo_sprite/message.scale, bg_target, weight * 1.4, delta)
 
 			if $playing_bar.showing:
-				if small_cover_pulse:
+				if small_cover_pulse and not Settings.misc.square_playing_bar_cover:
 					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, 2.202 * title_target if OS.get_name() == "Windows" else 1.7, weight, delta)
 				else:
 					$playing_bar/cover_mask.scale = safe_scale($playing_bar/cover_mask.scale, (2.202) * 1.0 if OS.get_name() == "Windows" else 1.0, weight / 1.4, delta)
@@ -325,6 +346,8 @@ func _process(delta: float) -> void:
 var _song_thread: Thread
 
 func play_random_song() -> void:
+	if _external_media_override_active():
+		return
 	if _song_thread:
 		_song_thread.wait_to_finish()
 		_song_thread = Thread.new()
@@ -516,13 +539,10 @@ func apply_song_data(data: Dictionary) -> void:
 		print("Thread failed to load song.")
 		return
 
+	_local_menu_cover = data.get("cover")
 	$bg_song.stream = bgsong
 	$Visualizer/Song_left.stream = bgsong
 	$Visualizer/Song_right.stream = bgsong
-
-	$Visualizer/Song_left.play()
-	$Visualizer/Song_right.play()
-	$bg_song.play()
 	
 	var colors: Array[Color] = [Color.WHITE]
 	
@@ -538,13 +558,25 @@ func apply_song_data(data: Dictionary) -> void:
 		if img:
 			var cols: Array[Color] = General.extract_dominant_colors(img)
 			if not cols.is_empty():
-				$Visualizer.colors = cols
 				colors = cols
 			else:
-				$Visualizer.colors = [Color.WHITE] as Array[Color]
+				colors = [Color.WHITE] as Array[Color]
 	
 	data["colors"] = colors
 	data["length"] = bgsong.get_length()
+
+	_local_visualizer_colors = colors.duplicate()
+	if WindowsMediaIntegration.media_available:
+		_apply_external_menu_artwork(WindowsMediaIntegration.artwork_bytes)
+		saved_pos = 0.0
+		_pause_local_menu_song_for_external_media(true)
+	else:
+		$Visualizer.colors = _local_visualizer_colors
+		_tint_hq_with_local_cover()
+		_resume_local_menu_song_if_paused()
+		$Visualizer/Song_left.play()
+		$Visualizer/Song_right.play()
+		$bg_song.play()
 	
 	$playing_bar.set_song(data)
 
@@ -603,14 +635,17 @@ func _on_main_list_went_back() -> void:
 	General._set_rpc("A Rhythm Game by GuayabR", "Main Menu", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", General.play_start_time, 0)
 
 func _input(event: InputEvent) -> void:
-	if Input.get_connected_joypads().size() > 0:
-		if event.is_action_pressed("controller-pause") and event.device in Input.get_connected_joypads():
-			print("controlo pause")
-			if current_menu == "main": _on_settings_button_up()
-			elif current_menu == "settings": _handle_back_pressed()
-	
-	if Input.is_action_just_pressed("pause-back"):
-		_handle_back_pressed()
+	if event.is_action_pressed("pause-back"):
+		if event is InputEventJoypadButton:
+			var joypad_event := event as InputEventJoypadButton
+			match joypad_event.button_index:
+				JOY_BUTTON_START:
+					if current_menu == "main": _on_settings_button_up()
+					elif current_menu == "settings": _handle_back_pressed()
+				JOY_BUTTON_B:
+					_handle_back_pressed()
+		else:
+			_handle_back_pressed()
 	
 	if Input.is_action_pressed("randomize_menu_song") and can_random:
 		play_random_song()
@@ -631,9 +666,8 @@ func _input(event: InputEvent) -> void:
 			AudioServer.get_bus_index("Master"),
 			linear_to_db(Settings.game.master_vol / 100.0)
 		)
-		
-		$settings/ScrollContainer/settings_list/master_vol_slider.set_value_no_signal(Settings.game.master_vol)
-		$settings/ScrollContainer/settings_list/master_vol_label.text = "Master Volume: " + str(Settings.game.master_vol)
+		$settings/TabContainer/Audio/ScrollContainer/margin_container/settings_list/master_vol_slider.set_value_no_signal(Settings.game.master_vol)
+		$settings/TabContainer/Audio/ScrollContainer/margin_container/settings_list/master_vol_label.text = "Master Volume: " + str(Settings.game.master_vol)
 		
 		# Reset the hide timer
 		if volume_hide_timer:
@@ -667,6 +701,13 @@ func _handle_back_pressed() -> void:
 			$main_list/center/song_list.deselect_all()
 			$main_list/center/song_list.release_focus()
 			$main_list._on_back_button_up()
+			
+			await get_tree().create_timer(0.75).timeout
+			if Settings.misc.hq_background:
+				$main_list/album_view/bg.show()
+				$main_list/song_list_sprite.show()
+				for ctrl in [$main_list/center, $main_list/top_right, $main_list/top_left, $main_list/center_right, $main_list/center_bottom]:
+					ctrl.show()
 		"settings":
 			var anim_name := "from_settings_to_main"
 			var speed := 250.0 if Settings.misc.reduce_motion else 1.0
@@ -741,8 +782,8 @@ func _on_playing_bar_randomized() -> void:
 func _on_playing_bar_volume_changed(value: float) -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Menu Song"), linear_to_db(value / 100.0))
 	Settings.game.menu_song_vol = value
-	$settings/ScrollContainer/settings_list/menu_song_vol_slider.set_value_no_signal(value)
-	$settings/ScrollContainer/settings_list/menu_song_vol_label.text = "Menu Song Volume: " + str(value)
+	$settings/TabContainer/Audio/ScrollContainer/margin_container/settings_list/menu_song_vol_slider.set_value_no_signal(value)
+	$settings/TabContainer/Audio/ScrollContainer/margin_container/settings_list/menu_song_vol_label.text = "Menu Song Volume: " + str(value)
 
 func _on_playing_bar_volume_drag_ended(value_changed: bool, _value: float):
 	if value_changed: Settings._save()
@@ -760,10 +801,17 @@ func _on_playing_bar_play_toggled() -> void:
 		$Visualizer/Song_left.play(saved_pos)
 		$Visualizer/Song_right.play(saved_pos)
 
-func _on_playing_bar_cover_pressed() -> void:
-	small_cover_pulse = !small_cover_pulse
+func _on_playing_bar_cover_pressed(scale_with_audio: bool) -> void:
+	small_cover_pulse = scale_with_audio
+
+func _on_settings_square_playing_bar_cover_toggled(toggled_on: bool) -> void:
+	$playing_bar.set_square_cover_enabled(toggled_on)
+	small_cover_pulse = $playing_bar.cover_scales_with_audio()
 
 func _on_song_list_context_play_as_bg_song(path: String, index: int, from_album: bool = false) -> void:
+	if _external_media_override_active():
+		return
+
 	var data := {}
 	
 	
@@ -876,6 +924,12 @@ func _on_main_list_item_context_menu_focus_released() -> void:
 func _on_main_list_item_play_as_bg(path: String, index: int) -> void:
 	_on_song_list_context_play_as_bg_song(path, index)
 
+func _external_media_override_active() -> bool:
+	return (
+		bool(Settings.game.get("monitor_windows_media", false))
+		and WindowsMediaIntegration.media_available
+	)
+
 func _on_new_ver_popup_new_version() -> void:
 	$new_ver_popup/HBoxContainer/ok.grab_focus()
 	$overlay.show()
@@ -905,26 +959,29 @@ func _on_message_focus_entered() -> void:
 	$logo_sprite/message.pivot_offset = $logo_sprite/message.size / 2
 
 func _on_settings_set_profile(img: ImageTexture) -> void:
-	$settings/ScrollContainer/settings_list/profile_small.set_profile(img)
+	$settings/TabContainer/Profile/ScrollContainer/margin_container/settings_list/profile_small.set_profile(img)
 
 func _on_settings_set_banner(img: ImageTexture) -> void:
-	$settings/ScrollContainer/settings_list/profile_small.set_banner(img)
+	$settings/TabContainer/Profile/ScrollContainer/margin_container/settings_list/profile_small.set_banner(img)
 
 func _on_settings_set_username(user: String) -> void:
-	$settings/ScrollContainer/settings_list/profile_small.set_user(user)
+	$settings/TabContainer/Profile/ScrollContainer/margin_container/settings_list/profile_small.set_user(user)
 
 func _on_settings_set_title(title: String) -> void:
-	$settings/ScrollContainer/settings_list/profile_small.set_title(title)
+	$settings/TabContainer/Profile/ScrollContainer/margin_container/settings_list/profile_small.set_title(title)
 
 func _on_settings_set_clan(clan: String) -> void:
-	$settings/ScrollContainer/settings_list/profile_small.set_clan(clan)
+	$settings/TabContainer/Profile/ScrollContainer/margin_container/settings_list/profile_small.set_clan(clan)
 
 @onready var loading_text: RichTextLabel = $loading_text
 @onready var loading_progress: ProgressBar = $loading_progress
 
 func _track_scene_loading(request: Variant) -> void:
 	loading_text.text = "Loading..."
+	loading_text.modulate = Color.WHITE
+	loading_text.show()
 	loading_progress.value = 0.0
+	loading_progress.modulate = Color.WHITE
 	loading_progress.show()
 
 	while not request.is_completed:
@@ -938,25 +995,46 @@ func _track_scene_loading(request: Variant) -> void:
 		loading_progress.hide()
 
 func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> void:
+	var metadata = $main_list/center/song_list.get_item_metadata(idx) if not from_album else $main_list/album_view/charts_side/song_list.get_item_metadata(idx)
+	if metadata == null or not metadata.has("stream"):
+		push_warning("Selected song is missing its audio stream.")
+		return
+
+	var stream_path: String = str(metadata["stream"])
+	if not FileAccess.file_exists(stream_path):
+		push_warning("Stream file not found: " + stream_path)
+		return
+
+	var stream: AudioStream
+	match stream_path.get_extension().to_lower():
+		"mp3":
+			stream = AudioStreamMP3.load_from_file(stream_path)
+		"ogg":
+			stream = AudioStreamOggVorbis.load_from_file(stream_path)
+		"wav":
+			stream = AudioStreamWAV.load_from_file(stream_path)
+		_:
+			push_warning("Unsupported audio format: " + stream_path.get_extension())
+			return
+	if stream == null:
+		push_warning("Failed to load audio stream from: " + stream_path)
+		return
+
+	var play_parameters: PlayParameters = PLAY_PARAMETERS_SCENE.instantiate()
+	play_parameters.configure(PlayParameters.PanelMode.PLAY, stream.get_length())
+	add_child(play_parameters)
+	play_parameters.confirmed.connect(_on_context_play_parameters_confirmed.bind(metadata, stream))
+
+func _on_context_play_parameters_confirmed(start_pos: float, playback_speed: float, metadata: Dictionary, stream: AudioStream) -> void:
 	$main_list/center/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
 	$main_list/album_view/charts_side/song_list.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
 
-	print("Playing from context, ", idx, ", ", _path)
-
-	var metadata = $main_list/center/song_list.get_item_metadata(idx) if not from_album else $main_list/album_view/charts_side/song_list.get_item_metadata(idx)
-
-	print(metadata)
-
 	var scene_request := SceneLoader.load_scene(General.MAIN)
-
 	_track_scene_loading(scene_request)
-
 	$main_list/AnimationPlayer.play("go_to_selected")
-
 	_on_main_list_song_sel()
 
 	await get_tree().create_timer(1.0).timeout
-
 	var packed_scene: PackedScene = await scene_request.wait()
 	if packed_scene == null:
 		return
@@ -967,19 +1045,22 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	var selected_cover = Image.load_from_file(metadata["cover_path"])
 
 	if not selected_cover:
-		selected_cover = load("res://Resources/misc/noCover.png")
+		selected_cover = preload("res://Resources/misc/noCover.png").get_image()
 
 	var diff_texture_path = metadata["diff_texture_path"]
 	var selected_artist = metadata["artist"]
 	var selected_year = metadata["year"]
 	var selected_bpm = metadata["bpm"]
 	var selected_charter = metadata["charter"]
-	var selected_stream = metadata["stream"]
+	var selected_stream: String = str(metadata["stream"])
 	var selected_beat_offset = metadata["local_beat_offset"]
-	var selected_background: String = metadata["selected_background"]
+	var selected_background_path: String = metadata["selected_background"]
+	var selected_background := Image.new()
+	if selected_background_path != "" and FileAccess.file_exists(selected_background_path):
+		selected_background = Image.load_from_file(selected_background_path)
 
 	var background_vid_path: String = metadata["background_vid"]
-	var cover_loop_vid_path: String = metadata["cover_loop"]
+	var cover_loop_vid_path: String = str(metadata.get("cover_loop", ""))
 
 	var game = packed_scene.instantiate()
 
@@ -990,25 +1071,6 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	game.set("chart_path", selected_beatz_path)
 	game.set("song_path", selected_stream)
 
-	var stream: AudioStream
-
-	if not FileAccess.file_exists(selected_stream):
-		push_warning("Stream file not found: " + selected_stream)
-		return
-
-	var ext = selected_stream.get_extension().to_lower()
-
-	match ext:
-		"mp3":
-			stream = AudioStreamMP3.load_from_file(selected_stream)
-		"ogg":
-			stream = AudioStreamOggVorbis.load_from_file(selected_stream)
-		"wav":
-			stream = AudioStreamWAV.load_from_file(selected_stream)
-		_:
-			push_warning("Unsupported audio format: " + ext)
-			return
-
 	if stream:
 		game.set("song", stream)
 	else:
@@ -1017,17 +1079,21 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	game.set("song_title", selected_title)
 	game.set("BPM", selected_bpm)
 	game.set("local_beat_offset", selected_beat_offset)
-	game.set("selected_background", selected_background)
-	game.set("selected_background_name", selected_background.get_file())
+	if not selected_background.is_empty():
+		game.set("selected_background", selected_background)
+		game.set("selected_background_name", selected_background_path.get_file())
 	game.set("background_vid_path", background_vid_path)
 	game.set("cover_loop_vid_path", cover_loop_vid_path)
 	game.set("album", selected_album)
 	game.set("artist", selected_artist)
+	game.set("selected_artists", General.artist_names_from_info(metadata))
 	game.set("year", selected_year)
 	game.set("cover", selected_cover)
 	game.set("start_wait", beatz_data["start_wait"])
 	game.set("preview_start", beatz_data["preview_start"])
 	game.set("preview_end", beatz_data["preview_end"])
+	game.set("fade_in", beatz_data.get("fade_in", false))
+	game.set("fade_out", beatz_data.get("fade_out", false))
 	game.set("charter", selected_charter)
 	game.set("difficulty", beatz_data["difficulty"])
 	game.set("diff_texture_path", diff_texture_path)
@@ -1035,10 +1101,9 @@ func _on_song_list_context_play(idx: int, _path: String, from_album: bool) -> vo
 	game.set("chart_name", beatz_data["chart_name"])
 	game.set("start_wait", beatz_data["start_wait"])
 
-	if selected_cover is CompressedTexture2D:
-		game.set("colors", General.extract_dominant_colors(selected_cover.get_image()))
-	else:
-		game.set("colors", General.extract_dominant_colors(selected_cover))
+	game.set("colors", General.extract_dominant_colors(selected_cover))
+	game.set("start_pos", start_pos)
+	game.set("playback_speed", playback_speed)
 
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
@@ -1078,7 +1143,7 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 	var album = metadata["album"]
 	var cover_texture = Image.load_from_file(metadata["cover_path"])
 	if not cover_texture:
-		cover_texture = load("res://Resources/misc/noCover.png")
+		cover_texture = preload("res://Resources/misc/noCover.png").get_image()
 
 	var diff_texture_path = metadata["diff_texture_path"]
 	var artist = metadata["artist"]
@@ -1090,7 +1155,7 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 
 	var selected_background: String = metadata["selected_background"]
 	var background_vid_path: String = metadata["background_vid"]
-	var cover_loop_vid_path: String = metadata["cover_loop"]
+	var cover_loop_vid_path: String = str(metadata.get("cover_loop", ""))
 
 	var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
 	var content := beatz_file.get_as_text()
@@ -1099,6 +1164,7 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 	edit.new_beatzmap = false
 
 	edit.set("selected_stream_path", selected_stream)
+	edit.set("song_path", selected_stream)
 
 	var stream: AudioStream
 
@@ -1129,11 +1195,14 @@ func _on_song_list_context_edit(idx: int, _path: String, from_album: bool) -> vo
 
 	edit.set("selected_cover", cover_texture)
 	edit.set("selected_artist", artist)
+	edit.set("selected_artists", General.artist_names_from_info(metadata))
 	edit.set("selected_year", year)
 
 	edit.set("start_wait", beatz_data["start_wait"])
 	edit.set("preview_start", beatz_data["preview_start"])
 	edit.set("preview_end", beatz_data["preview_end"])
+	edit.set("fade_in", beatz_data.get("fade_in", false))
+	edit.set("fade_out", beatz_data.get("fade_out", false))
 
 	edit.set("selected_difficulty", beatz_data["difficulty"])
 
@@ -1207,6 +1276,9 @@ func _on_main_list_loaded_song_meta(title: String) -> void:
 func _on_song_list_context_go_to_album_pressed(idx: int, album_name: String, album_artist: String, album_year: int, album_cover: Image) -> void:
 	$main_list.go_to_album(album_name, album_artist, album_year, album_cover)
 
+func _on_song_list_context_go_to_artist_pressed(_idx: int, artist_name: String) -> void:
+	$main_list.go_to_artist(artist_name)
+
 func _on_album_view_item_context_menu(meta: Dictionary, pos: Vector2, idx: int) -> void:
 	$song_list_context.show()
 	$song_list_context.global_position = pos + Vector2(420, 8)
@@ -1275,7 +1347,7 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 		var selected_cover = Image.load_from_file(metadata["cover_path"])
 
 		if not selected_cover:
-			selected_cover = load("res://Resources/misc/noCover.png")
+			selected_cover = preload("res://Resources/misc/noCover.png").get_image()
 
 		var diff_texture_path = metadata["diff_texture_path"]
 		var selected_artist = metadata["artist"]
@@ -1285,21 +1357,26 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 		var selected_charter = metadata["charter"]
 		var selected_stream = metadata["stream"]
 		var selected_beat_offset = metadata["local_beat_offset"]
-		var selected_background: String = metadata["selected_background"]
+		var selected_background_path: String = metadata["selected_background"]
+		var selected_background := Image.new()
+		if selected_background_path != "" and FileAccess.file_exists(selected_background_path):
+			selected_background = Image.load_from_file(selected_background_path)
 
 		var background_vid_path: String = metadata["background_vid"]
-		var cover_loop_vid_path: String = metadata["cover_loop"]
+		var cover_loop_vid_path: String = str(metadata.get("cover_loop", ""))
 
 		var beatz_file := FileAccess.open(selected_beatz_path, FileAccess.READ)
 		var content := beatz_file.get_as_text()
 		var beatz_data := General.import_beatz_file(content)
 		
 		if open_in_main:
+			song_scene.set("selected_artists", General.artist_names_from_info(metadata))
 			song_scene.set("song_title", selected_title)
 			song_scene.set("BPM", selected_bpm)
 			song_scene.set("local_beat_offset", selected_beat_offset)
-			song_scene.set("selected_background", selected_background)
-			song_scene.set("selected_background_name", selected_background.get_file())
+			if not selected_background.is_empty():
+				song_scene.set("selected_background", selected_background)
+				song_scene.set("selected_background_name", selected_background_path.get_file())
 			song_scene.set("background_vid_path", background_vid_path)
 			song_scene.set("cover_loop_vid_path", cover_loop_vid_path)
 			song_scene.set("album", selected_album)
@@ -1309,12 +1386,14 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 			song_scene.set("start_wait", beatz_data["start_wait"])
 			song_scene.set("preview_start", beatz_data["preview_start"])
 			song_scene.set("preview_end", beatz_data["preview_end"])
+			song_scene.set("fade_in", beatz_data.get("fade_in", false))
+			song_scene.set("fade_out", beatz_data.get("fade_out", false))
 			song_scene.set("charter", selected_charter)
 			song_scene.set("difficulty", beatz_data["difficulty"])
 			song_scene.set("diff_texture_path", diff_texture_path)
 			song_scene.set("customNotes", beatz_data["notes"])
 			song_scene.set("chart_name", beatz_data["chart_name"])
-			song_scene.set("start_wait", beatz_data["start_wait"])
+			song_scene.set("chart_path", selected_beatz_path)
 			
 			var extracted_colors: Array[Color] = General.extract_dominant_colors(selected_cover)
 			
@@ -1346,15 +1425,13 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 			else:
 				push_warning("Failed to load audio stream from: " + selected_stream)
 			
-			song_scene.set("selected_beatz_path", selected_beatz_path)
-
 			get_tree().root.add_child(song_scene)
 			get_tree().current_scene.queue_free()
 			get_tree().current_scene = song_scene
 			return
 		else:
-			song_scene.set("selected_stream", selected_stream)
 			song_scene.set("selected_stream_path", selected_stream)
+			song_scene.set("selected_artists", General.artist_names_from_info(metadata))
 			
 			song_scene.set("notes", beatz_data.notes)
 
@@ -1363,16 +1440,21 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 			song_scene.set("selected_cover", selected_cover)
 			song_scene.set("selected_artist", selected_artist)
 			song_scene.set("selected_year", selected_year)
+			song_scene.set("fade_in", beatz_data.get("fade_in", false))
+			song_scene.set("fade_out", beatz_data.get("fade_out", false))
 			song_scene.set("selected_bpm", selected_bpm)
 			song_scene.set("selected_difficulty", selected_difficulty)
 			song_scene.set("selected_chart_name", beatz_data["chart_name"])
 			song_scene.set("selected_charter", selected_charter)
 			song_scene.set("selected_beat_offset", selected_beat_offset)
-			song_scene.set("selected_background", selected_background)
+			if not selected_background.is_empty():
+				song_scene.set("selected_background", selected_background)
+				song_scene.set("selected_background_name", selected_background_path.get_file())
 			song_scene.set("background_vid_path", background_vid_path)
 			song_scene.set("cover_loop_vid_path", cover_loop_vid_path)
 			song_scene.set("selected_beatz_path", selected_beatz_path)
 			song_scene.set("selected_diff_texture", diff_texture_path)
+			song_scene.set("colors", General.extract_dominant_colors(selected_cover))
 	else:
 		song_scene.set("init_recording", true)
 		
@@ -1391,6 +1473,7 @@ func _on_playing_bar_going_to_song(path: String, imported_stream: bool) -> void:
 		song_scene.set("cover", song_cover)
 		
 		song_scene.set("artist", song_artist)
+		song_scene.set("selected_artists", General.artist_names_from_info($playing_bar.data))
 		song_scene.set("year", song_year)
 		
 		song_scene.set("difficulty", "easy")
@@ -1461,36 +1544,23 @@ func _on_playing_bar_prev_next(current_path: String, next_prev: int) -> void:
 	_on_song_list_context_play_as_bg_song(new_path, id)
 
 func _on_playing_bar_going_to_artist(path: String) -> void:
-	print("to artist not implemented yet")
-	print(path)
-
 	var id: int = -1
 	var items: Array = $main_list.all_items
-	
-	var album: String
-	var artist: String
-	var year: int
-	var cover_path: String
+	var artist: String = ""
 
 	for i in items.size():
 		var item = items[i]
-
 		if not item.metadata:
 			continue
-
 		var item_path = item.metadata.get("stream", "")
-		album = item.metadata.get("album", "")
-		artist = item.metadata.get("artist", "")
-		year = item.metadata.get("year", "")
-		cover_path = item.metadata.get("cover_path", "")
-
 		if item_path == path:
 			id = i
+			var artists: Array[String] = General.artist_names_from_info(item.metadata)
+			artist = artists[0] if not artists.is_empty() else str(item.metadata.get("artist", ""))
 			break
 
-	print(id)
-
-	$main_list.go_to_album(album, artist, year, Image.load_from_file(cover_path))
+	if id >= 0 and artist != "":
+		$main_list.go_to_artist(artist)
 
 
 func _on_main_list_error(title: String, code: Variant.Type) -> void:
@@ -1501,6 +1571,13 @@ func _on_main_list_error(title: String, code: Variant.Type) -> void:
 
 func _on_settings_cover_loops_playing_bar_toggled(toggled_on: bool) -> void:
 	var cover_loop_node: VideoPlayback = $playing_bar.get_node("cover_mask/VideoPlayback")
+	if WindowsMediaIntegration.media_available:
+		if toggled_on:
+			_external_cover_loop_lookup_valid = false
+			_update_external_cover_loop_lookup(str(WindowsMediaIntegration.media_info.get("album", "")))
+		else:
+			$playing_bar.refresh_external_cover_loop()
+		return
 	if toggled_on:
 		print("on")
 		cover_loop_node.set_video_path($playing_bar.data["cover_loop"])
@@ -1510,6 +1587,12 @@ func _on_settings_cover_loops_playing_bar_toggled(toggled_on: bool) -> void:
 		cover_loop_node.close()
 		cover_loop_node.hide()
 
+func _on_settings_external_cover_loop_matching_toggled(toggled_on: bool) -> void:
+	_external_cover_loop_lookup_valid = false
+	if WindowsMediaIntegration.media_available:
+		_update_external_cover_loop_lookup(str(WindowsMediaIntegration.media_info.get("album", "")))
+	elif not toggled_on:
+		$playing_bar.set_external_cover_loop("")
 
 func _on_settings_parallax_bg_toggled(toggled_on: bool) -> void:
 	if toggled_on:
@@ -1556,6 +1639,158 @@ func _on_settings_bg_parallax_speed_changed(value: float) -> void:
 
 var tint_worker_id: int
 
+func _on_settings_bg_matches_cover_toggled() -> void:
+	if Settings.misc.bg_matches_cover:
+		if _external_menu_artwork_active:
+			_apply_external_menu_artwork(WindowsMediaIntegration.artwork_bytes, true)
+		else:
+			_tint_hq_with_local_cover()
+	else:
+		$hq_background.tint([Color.WHITE, Color.WHITE])
+
+func _on_external_media_changed(active: bool, media_info: Dictionary, artwork_bytes: PackedByteArray) -> void:
+	_external_menu_artwork_active = active
+	if active:
+		_apply_external_menu_artwork(artwork_bytes)
+		_pause_local_menu_song_for_external_media()
+		_update_external_cover_loop_lookup(str(media_info.get("album", "")))
+	else:
+		_last_external_menu_artwork_bytes = PackedByteArray()
+		_external_cover_loop_lookup_valid = false
+		$playing_bar.set_external_cover_loop("")
+		$Visualizer.colors = _local_visualizer_colors
+		_tint_hq_with_local_cover()
+		_resume_local_menu_song_if_paused()
+
+func _on_main_list_song_list_built() -> void:
+	_cover_loop_lookup_cache.clear()
+	_external_cover_loop_lookup_valid = false
+	if WindowsMediaIntegration.media_available:
+		_update_external_cover_loop_lookup(str(WindowsMediaIntegration.media_info.get("album", "")))
+
+func _update_external_cover_loop_lookup(album: String) -> void:
+	var album_key: String = album.strip_edges().to_lower()
+	if _external_cover_loop_lookup_valid and album_key == _external_cover_loop_album_key:
+		return
+
+	_external_cover_loop_album_key = album_key
+	_external_cover_loop_lookup_valid = true
+	if not Settings.game.match_external_media_cover_loops or not Settings.misc.cover_loops_playing_bar:
+		$playing_bar.set_external_cover_loop("")
+		return
+
+	var cover_loop_path: String = ""
+	if not album_key.is_empty():
+		if _cover_loop_lookup_cache.has(album_key):
+			cover_loop_path = str(_cover_loop_lookup_cache[album_key])
+		else:
+			cover_loop_path = _find_album_cover_loop(album_key)
+			_cover_loop_lookup_cache[album_key] = cover_loop_path
+	$playing_bar.set_external_cover_loop(cover_loop_path)
+
+func _find_album_cover_loop(album_key: String) -> String:
+	if album_key.is_empty() or Beatz.LIST.is_empty():
+		return ""
+
+	for item_value: Variant in Beatz.LIST.values():
+		if typeof(item_value) != TYPE_DICTIONARY:
+			continue
+		var item_data: Dictionary = item_value
+		var metadata_value: Variant = item_data.get("metadata", {})
+		if typeof(metadata_value) != TYPE_DICTIONARY:
+			continue
+		var metadata: Dictionary = metadata_value
+		var item_album: String = str(metadata.get("album", "")).strip_edges().to_lower()
+		if item_album != album_key:
+			continue
+
+		var cover_loop_path: String = _resolve_cover_loop_path(metadata)
+		if not cover_loop_path.is_empty():
+			return cover_loop_path
+	return ""
+
+func _resolve_cover_loop_path(metadata: Dictionary) -> String:
+	var cover_loop_path: String = str(metadata.get("cover_loop", "")).strip_edges()
+	if cover_loop_path.is_empty():
+		return ""
+	if not cover_loop_path.begins_with("res://") and not cover_loop_path.begins_with("user://") and not cover_loop_path.is_absolute_path():
+		var chart_path: String = str(metadata.get("beatz_path", "")).strip_edges()
+		if chart_path.is_empty():
+			return ""
+		cover_loop_path = chart_path.get_base_dir().path_join(cover_loop_path)
+
+	var resolved_path: String = ProjectSettings.globalize_path(cover_loop_path)
+	if not FileAccess.file_exists(cover_loop_path) and not FileAccess.file_exists(resolved_path):
+		return ""
+	if not General.VIDEO_FORMATS.has("*." + cover_loop_path.get_extension().to_lower()):
+		return ""
+	return cover_loop_path
+
+func _pause_local_menu_song_for_external_media(force_suppress: bool = false) -> void:
+	if $bg_song.is_playing():
+		saved_pos = $bg_song.get_playback_position()
+		$bg_song.stop()
+		$Visualizer/Song_left.stop()
+		$Visualizer/Song_right.stop()
+		_external_paused_local_song = true
+	else:
+		_external_paused_local_song = force_suppress
+
+	$playing_bar.set_local_playback_state(false)
+
+func _resume_local_menu_song_if_paused() -> void:
+	if not _external_paused_local_song:
+		return
+	_external_paused_local_song = false
+	$bg_song.play(saved_pos)
+	$Visualizer/Song_left.play(saved_pos)
+	$Visualizer/Song_right.play(saved_pos)
+	$playing_bar.set_local_playback_state(true)
+
+func _apply_external_menu_artwork(artwork_bytes: PackedByteArray, force: bool = false) -> void:
+	if artwork_bytes.is_empty():
+		_last_external_menu_artwork_bytes = PackedByteArray()
+		$Visualizer.colors = _local_visualizer_colors
+		_tint_hq_with_local_cover()
+		return
+	if not force and artwork_bytes == _last_external_menu_artwork_bytes:
+		return
+	_last_external_menu_artwork_bytes = artwork_bytes
+
+	var image := Image.new()
+	if image.load_png_from_buffer(artwork_bytes) != OK or image.is_empty():
+		_last_external_menu_artwork_bytes = PackedByteArray()
+		$Visualizer.colors = _local_visualizer_colors
+		_tint_hq_with_local_cover()
+		return
+
+	var palette: Array[Color] = General.extract_dominant_colors(image)
+	if palette.is_empty():
+		palette = [General.get_dominant_color(image, 12), General.get_average_color(image, 16)]
+	palette = _normalize_hq_palette(palette)
+	$Visualizer.colors = palette
+	if Settings.misc.bg_matches_cover:
+		$hq_background.tint(palette)
+
+func _tint_hq_with_local_cover() -> void:
+	if not Settings.misc.bg_matches_cover:
+		return
+	if _local_menu_cover == null:
+		$hq_background.tint([Color.WHITE, Color.WHITE] as Array[Color])
+		return
+	tint_hq_bg_with(_local_menu_cover)
+
+func _normalize_hq_palette(palette: Array[Color]) -> Array[Color]:
+	if palette.is_empty():
+		return [Color.WHITE, Color.WHITE]
+	if palette.size() == 1:
+		var primary: Color = palette[0]
+		var secondary: Color = primary.lerp(Color.WHITE, 0.22)
+		if secondary == primary:
+			secondary = primary.lerp(Color.BLACK, 0.18)
+		return [primary, secondary]
+	return [palette[0], palette[1]]
+
 func tint_hq_bg_with(cover: Variant) -> void:
 	if not Settings.misc.bg_matches_cover:
 		return
@@ -1565,6 +1800,13 @@ func tint_hq_bg_with(cover: Variant) -> void:
 		img = cover.duplicate()
 	elif cover is ImageTexture or cover is CompressedTexture2D:
 		img = cover.get_image()
+	else:
+		$hq_background.tint([Color.WHITE, Color.WHITE])
+		return
+
+	if img == null or img.is_empty():
+		$hq_background.tint([Color.WHITE, Color.WHITE])
+		return
 
 	tint_worker_id = WorkerThreadPool.add_task(Callable(self, "_tint_hq_bg_worker").bind(img))
 	WorkerThreadPool.wait_for_task_completion(tint_worker_id)

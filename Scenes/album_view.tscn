@@ -178,18 +178,6 @@ tracks/5/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0)]
 }
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("center_bottom/loading_text:modulate")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 0)]
-}
 
 [sub_resource type="Animation" id="Animation_bwfns"]
 resource_name = "init"
@@ -263,18 +251,6 @@ tracks/5/loop_wrap = true
 tracks/5/keys = {
 "times": PackedFloat32Array(0, 0.8),
 "transitions": PackedFloat32Array(0.24148414, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("center_bottom/loading_text:modulate")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.43527535, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
@@ -739,7 +715,6 @@ autoplay = "bg_spin"
 libraries = {
 &"": SubResource("AnimationLibrary_kmjfj")
 }
-autoplay = "init"
 
 [node name="TransitionRect" type="TextureRect" parent="."]
 modulate = Color(1, 1, 1, 0)
@@ -771,7 +746,7 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="loading_text" type="RichTextLabel" parent="center_bottom"]
-modulate = Color(1, 1, 1, 0)
+visible = false
 top_level = true
 z_index = 12
 layout_mode = 1
@@ -797,6 +772,29 @@ horizontal_alignment = 1
 vertical_alignment = 1
 deselect_on_focus_loss_enabled = false
 drag_and_drop_selection_enabled = false
+
+[node name="loading_progress" type="ProgressBar" parent="center_bottom"]
+visible = false
+top_level = true
+z_index = 12
+custom_minimum_size = Vector2(400, 16)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -27.0
+offset_right = 200.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("7_4kgsw")
+show_percentage = false
+indeterminate = true
+editor_preview_indeterminate = false
 
 [connection signal="gui_input" from="charts_side/song_list" to="." method="_on_song_list_gui_input"]
 [connection signal="item_activated" from="charts_side/song_list" to="." method="_on_song_list_item_activated"]

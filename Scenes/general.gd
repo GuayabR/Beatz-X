@@ -61,6 +61,8 @@ const MAIN_MENU_MSGS: Array = [
 	"\"MAKE NIELSEN PROUD!\""
 ]
 
+var BUTTONS_THEME: Theme = preload("res://Resources/Themes/buttons.tres")
+
 var window_focused = true
 
 var port: String = "Desktop Port" if OS.get_name() == "Windows" else "%s Port" % OS.get_name()
@@ -822,6 +824,41 @@ func format_file_size(bytes: int) -> String:
 		i += 1
 
 	return "%0.2f %s" % [size, units[i]]
+
+func split_artist_credit(artist_credit: String) -> Array[String]:
+	var artists: Array[String] = []
+	var seen: Dictionary = {}
+	for artist_part in artist_credit.split(",", false):
+		var artist_name := artist_part.strip_edges()
+		var normalized_name := artist_name.to_lower()
+		if artist_name != "" and not seen.has(normalized_name):
+			artists.append(artist_name)
+			seen[normalized_name] = true
+	return artists
+
+func artist_names_from_info(info: Variant) -> Array[String]:
+	var artists: Array[String] = []
+	if typeof(info) != TYPE_DICTIONARY:
+		return artists
+
+	var raw_artists: Variant = info.get("artists", null)
+	if raw_artists is Array:
+		var seen: Dictionary = {}
+		for raw_artist in raw_artists:
+			var artist_name := str(raw_artist).strip_edges()
+			var normalized_name := artist_name.to_lower()
+			if artist_name != "" and not seen.has(normalized_name):
+				artists.append(artist_name)
+				seen[normalized_name] = true
+
+	if artists.is_empty():
+		var legacy_artist := str(info.get("artist", "")).strip_edges()
+		if legacy_artist != "":
+			artists.append(legacy_artist)
+	return artists
+
+func artist_credit_from_names(artists: Array[String]) -> String:
+	return ", ".join(artists)
 
 func _sanitize(what: String, is_path: bool = false) -> String:
 	var invalid_chars := [ "<", ">", ":", "\"", "/", "\\", "|", "?", "*" ]

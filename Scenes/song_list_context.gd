@@ -10,6 +10,8 @@ signal edit(idx: int, path: String, from_album: bool)
 
 signal go_to_album_pressed(idx: int, album_name: String, album_artist: String, album_year: int, album_cover: Image)
 
+signal go_to_artist_pressed(idx: int, artist_name: String)
+
 var path: String
 var metadata: Dictionary
 var index: int
@@ -52,9 +54,11 @@ func appear(item_name: String, meta: Dictionary, idx: int, from_album_view: bool
 	
 	if from_album_view:
 		$buttons/go_to_album.disabled = true
+		$buttons/go_to_artist.disabled = false
 		from_album = true
 	else:
 		$buttons/go_to_album.disabled = false
+		$buttons/go_to_artist.disabled = false
 		from_album = false
 
 func _on_play_as_bg_song_pressed() -> void:
@@ -87,4 +91,11 @@ func _on_edit_pressed() -> void:
 func _on_go_to_album_pressed() -> void:
 	$buttons/go_to_album.release_focus()
 	go_to_album_pressed.emit(index, metadata.album, metadata.artist, metadata.year, Image.load_from_file(metadata.cover_path))
+	hide()
+
+func _on_go_to_artist_pressed() -> void:
+	$buttons/go_to_artist.release_focus()
+	var artists: Array[String] = General.artist_names_from_info(metadata)
+	var artist_name: String = artists[0] if not artists.is_empty() else str(metadata.get("artist", ""))
+	go_to_artist_pressed.emit(index, artist_name)
 	hide()

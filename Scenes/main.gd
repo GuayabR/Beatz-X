@@ -11,9 +11,14 @@ var mod: Modifier = Modifier.NONE
 
 ## Starts the song and notes at a specific time, in the editor add "bookmarks" to mark different sections of the song.
 var start_pos: float = 0.0
+var playtest_note_start_pos: float = -1.0
 
 ## Playback speed for the song and notes, better over [code]playback_speed[/code] because it doesn't affect animations.
 var playback_speed: float = 1.0
+var recording_speed: float = 1.0
+
+const PLAY_PARAMETERS_SCENE: PackedScene = preload("res://Scenes/play_parameters.tscn")
+var recording_parameters_popup: PlayParameters
 
 var init_recording: bool = false
 
@@ -21,10 +26,11 @@ var init_recording: bool = false
 var editor_saved: bool = true
 
 # Song details
-var song: AudioStreamMP3
+var song: AudioStream
 var song_title: String
 var album: String
 var artist: String
+var selected_artists: Array[String] = []
 var year: int
 
 var selected_background: Image
@@ -119,6 +125,43 @@ func _has_valid_notes(ns: Array) -> bool:
 			return true
 	return false
 
+func _get_note_start_cutoff_ms() -> float:
+	if playtest_note_start_pos >= 0.0:
+		return (playtest_note_start_pos * 1000.0) - Beatz.BASE_REC_TIME_MS
+	return start_pos * 1000.0
+
+func _get_first_playable_note_timestamp(ns: Array, cutoff_ms: float) -> float:
+	var first_timestamp_ms := INF
+
+	for note_data in ns:
+		if not note_data is Dictionary:
+			continue
+		if not note_data.has("type") or not note_data.has("timestamp"):
+			continue
+		if note_data["type"] == "Effect":
+			continue
+
+		var timestamp_ms := float(note_data["timestamp"])
+		if timestamp_ms >= cutoff_ms and timestamp_ms < first_timestamp_ms:
+			first_timestamp_ms = timestamp_ms
+
+	return first_timestamp_ms
+
+func _get_delayed_intro_wait_time(ns: Array) -> float:
+	var first_timestamp_ms := _get_first_playable_note_timestamp(ns, -INF)
+	if is_inf(first_timestamp_ms):
+		return -1.0
+
+	var cutoff_ms := _get_note_start_cutoff_ms()
+	if first_timestamp_ms < cutoff_ms:
+		return -1.0
+
+	var delay_ms := first_timestamp_ms - cutoff_ms
+	if delay_ms < 5000.0:
+		return -1.0
+
+	return maxf((delay_ms - DELAYED_INTRO_NOTE_LEAD_MS) / 1000.0, 0.0) / maxf(playback_speed, 0.01)
+
 @onready var points_lbl: RichTextLabel = $UI/points
 @onready var stat_exacts: RichTextLabel = $UI/stat_exacts
 @onready var stat_insanes: RichTextLabel = $UI/stat_insanes
@@ -142,6 +185,7 @@ const insane_window_ms: float = 24.0
 const perfect_window_ms: float = 55.0
 const great_window_ms: float = 200.0
 const miss_window_ms: float = 285.0
+const DELAYED_INTRO_NOTE_LEAD_MS: float = 1500.0
 
 var baseline_speed: float = 13.0  # ← base speed
 
@@ -201,11 +245,13 @@ func _process_custom_notes(ns: Array) -> void:
 	var max_end_time_ms := -INF   # NEW — absolute end time of all notes
 	
 	var start_pos_ms = start_pos * 1000.0
+	var note_start_cutoff_ms := _get_note_start_cutoff_ms()
 	
-	if ns[0].timestamp > 5000.0:
+	var delayed_intro_wait_time := _get_delayed_intro_wait_time(ns)
+	if delayed_intro_wait_time >= 0.0:
 		var t2 := Timer.new()
 		t2.one_shot = true
-		t2.wait_time = (ns[0].timestamp - 1500.0) / 1000.0
+		t2.wait_time = delayed_intro_wait_time
 		
 		t2.connect("timeout", _on_fade_out_timeout)
 		
@@ -213,21 +259,27 @@ func _process_custom_notes(ns: Array) -> void:
 		t2.start()
 
 	for n in ns:
-		if n.has("end"):
-			has_end = true
-
 		if n.has("type") and n.has("timestamp"):
 			var direction = n["type"]
 			var original_timestamp: float = n["timestamp"]
 			var hold: float = n.get("hold", 0.0) / playback_speed
 
-			# shift note timeline by start position
-			var timestamp: float
-			timestamp = (original_timestamp - start_pos_ms) / playback_speed if start_pos > 0.01 else original_timestamp / playback_speed
+			if playtest_note_start_pos >= 0.0 and original_timestamp < note_start_cutoff_ms:
+				continue
+
+			# Keep note timers aligned to the song; the playtest cutoff only filters earlier notes.
+			var timestamp: float = (
+				(original_timestamp - start_pos_ms) / playback_speed
+				if start_pos > 0.01
+				else original_timestamp / playback_speed
+			)
 
 			# skip notes that already passed before the start point
-			if start_pos > 0.01 and (original_timestamp + hold) < start_pos_ms:
+			if playtest_note_start_pos < 0.0 and start_pos > 0.01 and (original_timestamp + hold) < start_pos_ms:
 				continue
+
+			if n.has("end"):
+				has_end = true
 
 			var note_end: float = timestamp + max(hold, 0.0)
 			if note_end > max_end_time_ms:
@@ -685,17 +737,20 @@ func _ready():
 		print("somehow no song, song: ", song, " | stringified song: ", str(song))
 		get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
 	
-	if customNotes[0].timestamp > 5000.0:
+	if _get_delayed_intro_wait_time(customNotes) >= 0.0:
 		$end_screen_anims.stop()
 		$end_screen_anims.play("fade_out")
 	await get_tree().create_timer(1.2).timeout
 	
 	var earliest_negative = null
 
-	for n in customNotes:
-		if n.timestamp < 0.0:
-			if earliest_negative == null or n.timestamp < earliest_negative:
-				earliest_negative = n.timestamp
+	if playtest_note_start_pos >= 0.0:
+		start_wait = 0
+	else:
+		for n in customNotes:
+			if n.timestamp < 0.0:
+				if earliest_negative == null or n.timestamp < earliest_negative:
+					earliest_negative = n.timestamp
 
 	if earliest_negative != null:
 		start_wait = abs(earliest_negative)
@@ -709,8 +764,17 @@ func _ready():
 		gamePaused = false
 		song_start_time = int(Time.get_unix_time_from_system())
 
+		var note_start_cutoff_ms := _get_note_start_cutoff_ms()
 		total_valid_notes = customNotes.filter(func(n):
-			return n.has("type") and n.has("timestamp") and n["type"] != "Effect"
+			return (
+				n.has("type")
+				and n.has("timestamp")
+				and n["type"] != "Effect"
+				and (
+					playtest_note_start_pos < 0.0
+					or float(n["timestamp"]) >= note_start_cutoff_ms
+				)
+			)
 		).size()
 
 	else:
@@ -877,6 +941,23 @@ var active_recorded_holds := {}
 # 	"note_index": int
 # }
 
+func _input(event: InputEvent) -> void:
+	if not event is InputEventJoypadButton or not event.is_action_pressed("pause-back"):
+		return
+
+	var joypad_event := event as InputEventJoypadButton
+	match joypad_event.button_index:
+		JOY_BUTTON_START:
+			if screen != "settings" or screen != "end" and not gamePaused:
+				_on_pause()
+			elif gamePaused and screen != "settings":
+				_on_unpause()
+			elif screen == "settings":
+				$pause.play("from_pause_to_stgs")
+		JOY_BUTTON_B:
+			if screen == "settings":
+				$pause.play("from_stgs_to_pause")
+
 func _process(delta):
 	for action in note_data.keys():
 		var key = note_data[action]["key"]
@@ -936,8 +1017,7 @@ func _process(delta):
 		if Input.is_action_just_pressed("record"):
 			if not recording and screen!= "end" and not gamePaused:
 				print("recording start")
-				$end_screen_anims.play("start_rec")
-				start_recording()
+				_open_recording_parameters(false)
 				
 		if Input.is_action_just_pressed("record_stop"):
 			if recording:
@@ -949,20 +1029,21 @@ func _process(delta):
 				
 				notes_hit_lbl.text = "Notes Hit: %d" % notesHit
 				
-				_on_reset_song_btn_up(true)
 				recording = false
+				_reset_recording_playback_speed()
+				_on_reset_song_btn_up(true)
 	
 	if recording and not gamePaused:
 		for action in note_data.keys():
 			var key = note_data[action]["key"]
 
 			if Input.is_action_just_pressed(action):
-				var current_time := Time.get_ticks_msec() - recording_start_time
+				var current_time: float = _get_recording_timeline_ms()
 				var note_index := recorded_notes.size()
 
 				recorded_notes.append({
 					"type": key,
-					"timestamp": current_time - Beatz.BASE_REC_TIME_MS,
+					"timestamp": int(round(current_time - float(Beatz.BASE_REC_TIME_MS))),
 					"id": General.generate_note_id()
 				})
 
@@ -970,7 +1051,7 @@ func _process(delta):
 				note_node.is_recording_hold = true
 
 				active_recorded_holds[action] = {
-					"start_time": Time.get_ticks_msec(),
+					"start_time": current_time,
 					"note_index": note_index,
 					"note_node": note_node,
 					"visual_started": false
@@ -985,7 +1066,7 @@ func _process(delta):
 				var hold_data = active_recorded_holds[action]
 				active_recorded_holds.erase(action)
 
-				var held_ms: int = Time.get_ticks_msec() - hold_data.start_time
+				var held_ms: int = int(round(_get_recording_timeline_ms() - float(hold_data.start_time)))
 
 				var rec_note = hold_data.note_node
 				if rec_note:
@@ -999,7 +1080,7 @@ func _process(delta):
 					continue
 
 				var hold_data = active_recorded_holds[action]
-				var held_ms: int = Time.get_ticks_msec() - hold_data.start_time
+				var held_ms: int = int(round(_get_recording_timeline_ms() - float(hold_data.start_time)))
 
 				if held_ms < 150:
 					continue
@@ -1028,18 +1109,6 @@ func _process(delta):
 	
 	if Input.is_action_just_pressed("ui_cancel"):
 		handle_back()
-	
-	if Input.is_action_just_pressed("controller-pause"):
-		if screen != "settings" or screen != "end" and not gamePaused:
-			_on_pause()
-		elif gamePaused and screen != "settings":
-			_on_unpause()
-		elif screen == "settings":
-			$pause.play("from_pause_to_stgs")
-	
-	if Input.is_action_just_pressed("controller-back"):
-		if screen == "settings":
-			$pause.play("from_stgs_to_pause")
 	
 	if Input.is_action_just_pressed("fast_restart"):
 		if !gamePaused: _on_reset_song_btn_up(true)
@@ -1440,6 +1509,61 @@ var recorded_notes := []  # Array to store recorded notes as dictionaries
 var recording := false
 var recording_start_time := 0.0
 
+func _get_recording_timeline_ms() -> float:
+	if not is_instance_valid($song):
+		return 0.0
+	if recording and (gamePaused or pause_transitioning):
+		return max(pausedpos * 1000.0, 0.0)
+	return max($song.get_playback_position() * 1000.0, 0.0)
+
+func _open_recording_parameters(from_pause: bool) -> void:
+	if is_instance_valid(recording_parameters_popup):
+		return
+
+	var metadata := {
+		"title": song_title,
+		"artist": artist,
+		"album": album,
+		"year": year,
+		"cover": cover
+	}
+	recording_parameters_popup = PLAY_PARAMETERS_SCENE.instantiate()
+	recording_parameters_popup.configure(
+		PlayParameters.PanelMode.RECORD,
+		$song.stream.get_length(),
+		metadata,
+		false,
+		recording_speed
+	)
+	recording_parameters_popup.recording_confirmed.connect(_on_recording_parameters_confirmed.bind(from_pause))
+	recording_parameters_popup.tree_exited.connect(_on_recording_parameters_popup_tree_exited)
+	add_child(recording_parameters_popup)
+
+func _on_recording_parameters_popup_tree_exited() -> void:
+	recording_parameters_popup = null
+
+func _on_recording_parameters_confirmed(speed: float, from_pause: bool) -> void:
+	recording_speed = speed
+	if from_pause:
+		$pause.play("start_rec_from_pause")
+		notes_hit_lbl.text = "Notes Recorded: 0"
+		await get_tree().create_timer(0.87).timeout
+		$end_screen_anims.play("start_rec")
+	else:
+		$end_screen_anims.play("start_rec")
+	start_recording()
+	if from_pause:
+		await get_tree().create_timer(1.0).timeout
+
+func _reset_recording_playback_speed() -> void:
+	recording_speed = 1.0
+	playback_speed = 1.0
+	Beatz.playback_speed = 1.0
+	$song.pitch_scale = 1.0
+	$Visualizer/Song_left.pitch_scale = 1.0
+	$Visualizer/Song_right.pitch_scale = 1.0
+	$VideoPlayback.playback_speed = 1.0
+
 func start_recording():
 	await clear_generated_notes()
 	
@@ -1498,6 +1622,12 @@ func start_recording():
 	recorded_notes.clear()
 	
 	# Start song
+	playback_speed = recording_speed
+	Beatz.playback_speed = playback_speed
+	$song.pitch_scale = recording_speed
+	$Visualizer/Song_left.pitch_scale = recording_speed
+	$Visualizer/Song_right.pitch_scale = recording_speed
+	$VideoPlayback.playback_speed = recording_speed
 	$song.play()
 	$Visualizer/Song_left.play()
 	$Visualizer/Song_right.play()
@@ -2310,9 +2440,11 @@ func _on_unpause() -> void:
 		$Visualizer/Song_left.play(resume_pos)
 		$Visualizer/Song_right.play(resume_pos)
 		
-		$song.pitch_scale = 1.0
-		$Visualizer/Song_left.pitch_scale = 1.0
-		$Visualizer/Song_right.pitch_scale = 1.0
+		var resume_speed: float = recording_speed if recording else playback_speed
+		$song.pitch_scale = resume_speed
+		$Visualizer/Song_left.pitch_scale = resume_speed
+		$Visualizer/Song_right.pitch_scale = resume_speed
+		$VideoPlayback.playback_speed = resume_speed
 		
 		beat()
 		set_discord_rpc()
@@ -2334,6 +2466,7 @@ func _on_unpause() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	screen = "game"
+	var resume_speed: float = recording_speed if recording else playback_speed
 	
 	$song.pitch_scale = 0.001
 	$Visualizer/Song_left.pitch_scale = 0.001
@@ -2350,9 +2483,10 @@ func _on_unpause() -> void:
 
 	unpause_tween = create_tween()
 
-	unpause_tween.tween_property($song, "pitch_scale", 1.0, unpause_tween_time)
-	unpause_tween.parallel().tween_property($Visualizer/Song_left, "pitch_scale", 1.0, unpause_tween_time)
-	unpause_tween.parallel().tween_property($Visualizer/Song_right, "pitch_scale", 1.0, unpause_tween_time)
+	unpause_tween.tween_property($song, "pitch_scale", resume_speed, unpause_tween_time)
+	unpause_tween.parallel().tween_property($Visualizer/Song_left, "pitch_scale", resume_speed, unpause_tween_time)
+	unpause_tween.parallel().tween_property($Visualizer/Song_right, "pitch_scale", resume_speed, unpause_tween_time)
+	$VideoPlayback.playback_speed = resume_speed
 
 	gamePaused = false
 	pause_transitioning = false
@@ -2664,14 +2798,7 @@ func _on_go_to_stgs_pressed() -> void:
 func _on_record_btn_pressed() -> void:
 	$record_btn.release_focus()
 	if not recording:
-		$pause.play("start_rec_from_pause")
-		
-		notes_hit_lbl.text = "Notes Recorded: 0"
-		
-		await get_tree().create_timer(0.87).timeout
-		$end_screen_anims.play("start_rec")
-		start_recording()
-		await get_tree().create_timer(1.0).timeout
+		_open_recording_parameters(true)
 	else:
 		$pause.play("start_rec_from_pause")
 		
@@ -2679,14 +2806,18 @@ func _on_record_btn_pressed() -> void:
 		
 		await get_tree().create_timer(0.87).timeout
 		$end_screen_anims.play("stop_rec")
-		_on_reset_song_btn_up(true)
 		recording = false
+		_reset_recording_playback_speed()
+		_on_reset_song_btn_up(true)
 		
 		await get_tree().create_timer(1.0).timeout
 		$record_btn.text = "Start Recording"
 
-var preview_start: float
-var preview_end: float
+var preview_start: float = 0.0
+var preview_end: float = 30.0
+
+var fade_in: bool = false
+var fade_out: bool = false
 
 var difficulty: String = "easy"
 var diff_texture_path: String
@@ -2710,6 +2841,19 @@ func _track_scene_loading(request: Variant) -> void:
 	else:
 		loading_text.text = "Loading failed."
 		loading_progress.hide()
+
+func _load_editor_diff_texture() -> Texture2D:
+	if diff_texture_path.is_empty():
+		return null
+	if not FileAccess.file_exists(diff_texture_path):
+		push_warning("Difficulty texture file not found: " + diff_texture_path)
+		return null
+
+	var image := Image.load_from_file(diff_texture_path)
+	if image.is_empty():
+		push_warning("Failed to load difficulty texture: " + diff_texture_path)
+		return null
+	return ImageTexture.create_from_image(image)
 
 func _on_edit_btn_pressed() -> void:
 	$edit_btn.release_focus()
@@ -2749,7 +2893,10 @@ func _on_edit_btn_pressed() -> void:
 	edit.new_beatzmap = false
 
 	edit.set("saved", editor_saved)
-	edit.set("playtest_start_pos", start_pos + Beatz.BASE_REC_TIME / 1.5)
+	var editor_playtest_start_pos: float = playtest_note_start_pos
+	if editor_playtest_start_pos < 0.0:
+		editor_playtest_start_pos = start_pos + Beatz.BASE_REC_TIME / 1.5
+	edit.set("playtest_start_pos", editor_playtest_start_pos)
 
 	edit.set("start_wait", start_wait)
 
@@ -2757,6 +2904,7 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("song_path", song_path)
 	edit.set("selected_title", song_title)
 	edit.set("selected_album", album)
+	edit.set("selected_artists", selected_artists.duplicate())
 
 	edit.set("selected_background", selected_background)
 	edit.set("selected_background_name", selected_background_name)
@@ -2767,12 +2915,14 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("selected_cover", cover)
 	edit.set("selected_artist", artist)
 	edit.set("selected_year", year)
+	edit.set("fade_in", fade_in)
+	edit.set("fade_out", fade_out)
 
 	edit.set("preview_start", preview_start)
 	edit.set("preview_end", preview_end)
 
 	edit.set("selected_difficulty", difficulty)
-	edit.set("diff_texture_path", diff_texture_path)
+	edit.set("selected_diff_texture", _load_editor_diff_texture())
 
 	if not recorded_notes:
 		edit.set("notes", customNotes)
@@ -2782,7 +2932,6 @@ func _on_edit_btn_pressed() -> void:
 	edit.set("selected_chart_name", chart_name)
 
 	edit.set("selected_beatz_path", chart_path)
-	edit.set("song_path", song_path)
 
 	edit.set("selected_bpm", BPM)
 	edit.set("selected_charter", charter)
@@ -2911,7 +3060,7 @@ func _on_tree_exiting() -> void:
 
 func _on_settings_parallax_bg_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		if background_vid_path != "" or $hq_background._running:
+		if background_vid_path != "":
 			$hq_background.stop()
 			$hq_background.hide()
 			return

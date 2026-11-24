@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://utqa2rt7vj28" path="res://Scenes/achievement_container.tscn" id="2_ehtkc"]
 [ext_resource type="PackedScene" uid="uid://da55mf3b65c15" path="res://Scenes/Visualizer.tscn" id="2_jr6u5"]
 [ext_resource type="PackedScene" uid="uid://72iwv8sulrfp" path="res://Scenes/main_list.tscn" id="2_opfnp"]
-[ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="3_8dnnj"]
+[ext_resource type="PackedScene" uid="uid://cgw81xrx28i5q" path="res://Scenes/new_settings.tscn" id="3_ehtkc"]
 [ext_resource type="Texture2D" uid="uid://cae7qvwquuw5t" path="res://Resources/Arrows/NoteUpPress.png" id="3_s4jxt"]
 [ext_resource type="Texture2D" uid="uid://dupwinbpcx21h" path="res://Resources/misc/PlayText.png" id="4_vr1f0"]
 [ext_resource type="PackedScene" uid="uid://l2cyllydgxhc" path="res://Scenes/Background.tscn" id="5_4nkqq"]
@@ -3031,6 +3031,12 @@ script = ExtResource("1_n45e2")
 z_index = 1
 layout_mode = 1
 
+[node name="settings" parent="." instance=ExtResource("3_ehtkc")]
+z_index = 1
+layout_mode = 1
+offset_left = 1920.0
+offset_right = 1920.0
+
 [node name="Visualizer" parent="." instance=ExtResource("2_jr6u5")]
 self_modulate = Color(1, 1, 1, 0.3882353)
 z_index = 1
@@ -3055,12 +3061,6 @@ fill_with_bars = false
 bar_spacing = 4.0
 individual_bar_width = 7.0
 HEIGHT = 145
-
-[node name="settings" parent="." instance=ExtResource("3_8dnnj")]
-z_index = 1
-layout_mode = 1
-offset_left = 1920.0
-offset_right = 1919.9998
 
 [node name="logo_sprite" type="TextureRect" parent="."]
 z_index = 2
@@ -3252,11 +3252,8 @@ visible = false
 z_index = -1
 layout_mode = 1
 
-[node name="loading_progress" parent="main_list/center_bottom" index="1"]
-modulate = Color(1, 1, 1, 0)
-
 [node name="playing_bar" parent="main_list/album_view" index="3"]
-offset_right = -0.0034179688
+offset_right = -0.00390625
 
 [node name="TransitionRect" type="TextureRect" parent="."]
 modulate = Color(1, 1, 1, 0)
@@ -3482,7 +3479,7 @@ layout_mode = 1
 anchor_bottom = 0.28800002
 offset_left = -351.0
 offset_right = -350.40002
-offset_bottom = 44.95999
+offset_bottom = 68.95999
 grow_horizontal = 1
 grow_vertical = 1
 
@@ -3616,7 +3613,6 @@ mouse_filter = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[connection signal="bg_changed" from="settings" to="." method="_on_settings_bg_changed"]
 [connection signal="bg_effect_changed" from="settings" to="." method="_on_settings_bg_effect_changed"]
 [connection signal="bg_fx_random_multi_max_changed" from="settings" to="." method="_on_settings_bg_fx_random_multi_max_changed"]
 [connection signal="bg_fx_random_multi_min_changed" from="settings" to="." method="_on_settings_bg_fx_random_multi_min_changed"]
@@ -3624,16 +3620,15 @@ alignment = 1
 [connection signal="bg_parallax_toggled" from="settings" to="." method="_on_settings_bg_parallax_toggled"]
 [connection signal="bg_rot_time_changed" from="settings" to="." method="_on_settings_bg_rot_time_changed"]
 [connection signal="bg_time_interval_changed" from="settings" to="." method="_on_settings_bg_time_interval_changed"]
-[connection signal="check_for_upd_pressed" from="settings" to="." method="_on_settings_check_for_upd_pressed"]
 [connection signal="cover_loops_playing_bar_toggled" from="settings" to="." method="_on_settings_cover_loops_playing_bar_toggled"]
-[connection signal="menu_brightness_changed" from="settings" to="." method="_on_settings_menu_brightness_changed"]
+[connection signal="square_playing_bar_cover_toggled" from="settings" to="." method="_on_settings_square_playing_bar_cover_toggled"]
+[connection signal="external_cover_loop_matching_toggled" from="settings" to="." method="_on_settings_external_cover_loop_matching_toggled"]
 [connection signal="parallax_bg_toggled" from="settings" to="." method="_on_settings_parallax_bg_toggled"]
 [connection signal="set_banner" from="settings" to="." method="_on_settings_set_banner"]
 [connection signal="set_clan" from="settings" to="." method="_on_settings_set_clan"]
 [connection signal="set_profile" from="settings" to="." method="_on_settings_set_profile"]
 [connection signal="set_title" from="settings" to="." method="_on_settings_set_title"]
 [connection signal="set_username" from="settings" to="." method="_on_settings_set_username"]
-[connection signal="vis_toggled" from="settings" to="." method="_on_settings_vis_toggled"]
 [connection signal="focus_entered" from="logo_sprite/message" to="." method="_on_message_focus_entered"]
 [connection signal="button_up" from="play_button" to="." method="_on_play_button_button_up"]
 [connection signal="button_up" from="exit_game" to="." method="_on_exit_game_button_up"]
@@ -3667,12 +3662,14 @@ alignment = 1
 [connection signal="delete" from="song_list_context" to="." method="_on_song_list_context_delete"]
 [connection signal="edit" from="song_list_context" to="." method="_on_song_list_context_edit"]
 [connection signal="go_to_album_pressed" from="song_list_context" to="." method="_on_song_list_context_go_to_album_pressed"]
+[connection signal="go_to_artist_pressed" from="song_list_context" to="." method="_on_song_list_context_go_to_artist_pressed"]
 [connection signal="play" from="song_list_context" to="." method="_on_song_list_context_play"]
 [connection signal="play_as_bg_song" from="song_list_context" to="." method="_on_song_list_context_play_as_bg_song"]
 [connection signal="focus_entered" from="overlay" to="." method="_on_overlay_focus_entered"]
 [connection signal="close" from="new_ver_popup" to="." method="_on_new_ver_popup_close"]
 [connection signal="new_version" from="new_ver_popup" to="." method="_on_new_ver_popup_new_version"]
 
+[editable path="settings"]
 [editable path="main_list"]
 [editable path="main_list/album_view"]
 [editable path="playing_bar"]

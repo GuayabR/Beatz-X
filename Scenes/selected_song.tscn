@@ -1,6 +1,7 @@
-[gd_scene load_steps=33 format=3 uid="uid://l7ksfvfmfm60"]
+[gd_scene load_steps=34 format=3 uid="uid://l7ksfvfmfm60"]
 
 [ext_resource type="Script" uid="uid://0r052n8wuguj" path="res://Scenes/selected_song.gd" id="1_82m22"]
+[ext_resource type="Script" uid="uid://b3niovgr515aq" path="res://Scenes/text_marquee.gd" id="1_marquee"]
 [ext_resource type="Texture2D" uid="uid://bwtheoipmlbe" path="res://Resources/BeatzRoundCover.png" id="2_hv8tc"]
 [ext_resource type="Texture2D" uid="uid://dsvxjtj2ay2mx" path="res://Resources/Arrows/NoteLeft.png" id="2_rjvkx"]
 [ext_resource type="Texture2D" uid="uid://dha00vxwgm1wr" path="res://Resources/Arrows/NoteLeftPress.png" id="3_272fv"]
@@ -182,7 +183,7 @@ tracks/12/keys = {
 tracks/13/type = "value"
 tracks/13/imported = false
 tracks/13/enabled = true
-tracks/13/path = NodePath("Title:self_modulate")
+tracks/13/path = NodePath("Title/Text:self_modulate")
 tracks/13/interp = 1
 tracks/13/loop_wrap = true
 tracks/13/keys = {
@@ -278,7 +279,7 @@ tracks/20/keys = {
 tracks/21/type = "value"
 tracks/21/imported = false
 tracks/21/enabled = true
-tracks/21/path = NodePath("Artist:self_modulate")
+tracks/21/path = NodePath("Artist/Text:self_modulate")
 tracks/21/interp = 1
 tracks/21/loop_wrap = true
 tracks/21/keys = {
@@ -311,7 +312,6 @@ tracks/23/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0)]
 }
-
 
 [sub_resource type="Animation" id="Animation_tyr5u"]
 resource_name = "back_from_stgs"
@@ -366,7 +366,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Title:self_modulate")
+tracks/4/path = NodePath("Title/Text:self_modulate")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -378,7 +378,7 @@ tracks/4/keys = {
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("Artist:self_modulate")
+tracks/5/path = NodePath("Artist/Text:self_modulate")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
@@ -550,7 +550,7 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Title:self_modulate")
+tracks/4/path = NodePath("Title/Text:self_modulate")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -562,7 +562,7 @@ tracks/4/keys = {
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("Artist:self_modulate")
+tracks/5/path = NodePath("Artist/Text:self_modulate")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
@@ -851,7 +851,6 @@ tracks/13/keys = {
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="Animation" id="Animation_272fv"]
 resource_name = "play_song"
 tracks/0/type = "value"
@@ -1047,7 +1046,6 @@ tracks/15/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_dar74"]
 _data = {
 &"RESET": SubResource("Animation_hv8tc"),
@@ -1163,9 +1161,9 @@ script = ExtResource("1_82m22")
 [node name="song" type="AudioStreamPlayer" parent="."]
 bus = &"Song"
 
-[node name="Title" type="RichTextLabel" parent="."]
+[node name="Title" type="Control" parent="."]
 z_index = 5
-clip_contents = false
+clip_contents = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -1178,6 +1176,16 @@ grow_horizontal = 2
 scale = Vector2(0.818571, 0.818571)
 pivot_offset = Vector2(791, 51.5)
 mouse_filter = 2
+script = ExtResource("1_marquee")
+max_width = 1582.0
+expand_to_content = false
+center_when_fitting = true
+
+[node name="Text" type="RichTextLabel" parent="Title"]
+layout_mode = 0
+offset_right = 1582.0
+offset_bottom = 103.0
+mouse_filter = 2
 theme_override_constants/outline_size = 10
 theme_override_fonts/normal_font = ExtResource("6_7pdq2")
 theme_override_font_sizes/normal_font_size = 75
@@ -1187,25 +1195,35 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Artist" type="RichTextLabel" parent="."]
+[node name="Artist" type="Control" parent="."]
 z_index = 5
+clip_contents = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -79.5
+offset_left = -717.5
 offset_top = 146.00002
-offset_right = 79.5
+offset_right = 717.5
 offset_bottom = 229.00002
 grow_horizontal = 2
 scale = Vector2(0.880704, 0.880704)
-pivot_offset = Vector2(79.5, 41.5)
+pivot_offset = Vector2(717.5, 41.5)
+mouse_filter = 2
+script = ExtResource("1_marquee")
+max_width = 1435.0
+expand_to_content = false
+center_when_fitting = true
+
+[node name="Text" type="RichTextLabel" parent="Artist"]
+layout_mode = 0
+offset_right = 1435.0
+offset_bottom = 83.0
 mouse_filter = 2
 theme_override_constants/outline_size = 8
 theme_override_fonts/normal_font = ExtResource("7_0y5ll")
 theme_override_font_sizes/normal_font_size = 50
 text = "Artist"
-fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
@@ -1654,6 +1672,7 @@ drag_and_drop_selection_enabled = false
 
 [node name="loading_progress" type="ProgressBar" parent="."]
 visible = false
+modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 12
 layout_mode = 1

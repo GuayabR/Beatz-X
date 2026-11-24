@@ -1,6 +1,7 @@
-[gd_scene load_steps=67 format=3 uid="uid://cobclrhdkc7ju"]
+[gd_scene load_steps=73 format=3 uid="uid://cobclrhdkc7ju"]
 
 [ext_resource type="Script" uid="uid://cqcj17e2xfik7" path="res://Scenes/editor.gd" id="1_exjlx"]
+[ext_resource type="Script" uid="uid://b3niovgr515aq" path="res://Scenes/text_marquee.gd" id="1_marquee"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="2_nfgmo"]
 [ext_resource type="PackedScene" uid="uid://b5t0lioff7gvs" path="res://Scenes/fps.tscn" id="2_op3c8"]
 [ext_resource type="PackedScene" uid="uid://utqa2rt7vj28" path="res://Scenes/achievement_container.tscn" id="3_l5j4h"]
@@ -29,6 +30,11 @@
 [ext_resource type="Texture2D" uid="uid://c1lwlpk8n64v4" path="res://Resources/misc/favicon.png" id="19_af0oh"]
 [ext_resource type="PackedScene" uid="uid://diftyasf40ssh" path="res://Scenes/settings.tscn" id="22_u6te5"]
 [ext_resource type="PackedScene" uid="uid://dre1xut64ofbe" path="res://Scenes/audio_waveform.tscn" id="29_ukxwk"]
+[ext_resource type="Script" uid="uid://naek0vyqtxvj" path="res://Scenes/editor_chart_display_system.gd" id="editor_chart_display_system"]
+[ext_resource type="Script" uid="uid://cu5x567mlsek" path="res://Scenes/editor_metadata_system.gd" id="editor_metadata_system"]
+[ext_resource type="Script" uid="uid://bf8gr5vqhh5uy" path="res://Scenes/editor_note_context_system.gd" id="editor_note_context_system"]
+[ext_resource type="Script" uid="uid://cwxbafdkk8dpu" path="res://Scenes/editor_recording_system.gd" id="editor_recording_system"]
+[ext_resource type="Script" uid="uid://bhp6p0qgpi38v" path="res://Scenes/editor_save_system.gd" id="editor_save_system"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_op3c8"]
 blend_mode = 1
@@ -309,7 +315,6 @@ tracks/15/keys = {
 "values": [Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="Animation" id="Animation_06d57"]
 resource_name = "back_to_edit"
 tracks/0/type = "value"
@@ -376,7 +381,6 @@ tracks/2/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_af0oh"]
 resource_name = " go_to_settings"
@@ -589,7 +593,6 @@ tracks/14/keys = {
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0l4bc"]
 _data = {
 &"RESET": SubResource("Animation_cnbw5"),
@@ -795,6 +798,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_exjlx")
+
+[node name="NoteContextSystem" type="Node" parent="."]
+script = ExtResource("editor_note_context_system")
+
+[node name="ChartDisplaySystem" type="Node" parent="."]
+script = ExtResource("editor_chart_display_system")
+
+[node name="SaveSystem" type="Node" parent="."]
+script = ExtResource("editor_save_system")
+
+[node name="MetadataSystem" type="Node" parent="."]
+script = ExtResource("editor_metadata_system")
+
+[node name="EditorRecordingSystem" type="Node" parent="."]
+script = ExtResource("editor_recording_system")
 
 [node name="overlay" type="TextureRect" parent="."]
 modulate = Color(1, 1, 1, 0)
@@ -1048,25 +1066,32 @@ offset_bottom = 40.0
 mouse_filter = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="song_title" type="RichTextLabel" parent="Control/song_details"]
+[node name="song_title" type="Control" parent="Control/song_details"]
 z_index = 3
-layout_mode = 0
+clip_contents = true
+anchors_preset = 0
 offset_left = 23.0
 offset_top = 23.0
 offset_right = 232.0
 offset_bottom = 62.0
 mouse_filter = 2
+script = ExtResource("1_marquee")
+
+[node name="Text" type="RichTextLabel" parent="Control/song_details/song_title"]
+layout_mode = 0
+offset_right = 209.0
+offset_bottom = 39.0
+mouse_filter = 2
 theme_override_fonts/normal_font = ExtResource("3_op3c8")
 theme_override_font_sizes/normal_font_size = 38
 text = "Song Name"
-fit_content = true
 autowrap_mode = 0
 vertical_alignment = 1
 
-[node name="song_artist" type="RichTextLabel" parent="Control/song_details"]
+[node name="song_artist" type="Control" parent="Control/song_details"]
 z_index = 3
+clip_contents = true
 layout_mode = 1
-anchors_preset = -1
 anchor_top = -0.075
 anchor_bottom = -0.075
 offset_left = 23.0
@@ -1074,29 +1099,42 @@ offset_top = 65.0
 offset_right = 225.0
 offset_bottom = 102.0
 mouse_filter = 2
+script = ExtResource("1_marquee")
+
+[node name="Text" type="RichTextLabel" parent="Control/song_details/song_artist"]
+layout_mode = 0
+offset_right = 202.0
+offset_bottom = 37.0
+mouse_filter = 2
 theme_override_fonts/normal_font = ExtResource("5_0l4bc")
 theme_override_fonts/bold_font = ExtResource("9_af0oh")
 theme_override_font_sizes/normal_font_size = 30
 theme_override_font_sizes/bold_font_size = 30
 bbcode_enabled = true
 text = "Artist"
-fit_content = true
 autowrap_mode = 0
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="album" type="RichTextLabel" parent="Control/song_details"]
+[node name="album" type="Control" parent="Control/song_details"]
 z_index = 3
-layout_mode = 0
+clip_contents = true
+anchors_preset = 0
 offset_left = 23.0
 offset_top = 93.0
 offset_right = 130.0
 offset_bottom = 124.0
 mouse_filter = 2
+script = ExtResource("1_marquee")
+
+[node name="Text" type="RichTextLabel" parent="Control/song_details/album"]
+layout_mode = 0
+offset_right = 107.0
+offset_bottom = 31.0
+mouse_filter = 2
 theme_override_fonts/normal_font = ExtResource("5_0l4bc")
 theme_override_font_sizes/normal_font_size = 30
 text = "Album"
-fit_content = true
 autowrap_mode = 0
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
@@ -1117,19 +1155,26 @@ autowrap_mode = 0
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="song_path" type="RichTextLabel" parent="Control/song_details"]
+[node name="song_path" type="Control" parent="Control/song_details"]
 z_index = 3
-layout_mode = 0
+clip_contents = true
+anchors_preset = 0
 offset_left = 23.0
 offset_top = 153.0
-offset_right = 515.0
+offset_right = 473.0
 offset_bottom = 174.0
+mouse_filter = 2
+script = ExtResource("1_marquee")
+
+[node name="Text" type="RichTextLabel" parent="Control/song_details/song_path"]
+layout_mode = 0
+offset_right = 450.0
+offset_bottom = 21.0
 mouse_filter = 2
 theme_override_fonts/normal_font = ExtResource("5_0l4bc")
 theme_override_font_sizes/normal_font_size = 20
 text = "Path:"
-fit_content = true
-autowrap_mode = 2
+autowrap_mode = 0
 vertical_alignment = 1
 
 [node name="sha" type="TextureRect" parent="Control/song_details"]
@@ -1633,33 +1678,41 @@ Here"
 
 [node name="btn_cont" type="HBoxContainer" parent="Control/chart_btns"]
 layout_mode = 0
-offset_left = -400.0
-offset_top = -68.0
-offset_right = -20.0
-offset_bottom = 8.0
-theme_override_constants/separation = 30
+offset_left = -457.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = 12.0
+theme_override_constants/separation = 18
 alignment = 1
 
 [node name="play" type="Button" parent="Control/chart_btns/btn_cont"]
 z_index = 3
-custom_minimum_size = Vector2(175, 0)
+custom_minimum_size = Vector2(135, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_cnbw5")
-theme_override_fonts/font = ExtResource("5_0l4bc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 32
 text = "Play"
 
 [node name="playtest" type="Button" parent="Control/chart_btns/btn_cont"]
 z_index = 3
-custom_minimum_size = Vector2(175, 0)
+custom_minimum_size = Vector2(135, 0)
 layout_mode = 2
-tooltip_text = "Start playtesting from zero."
+tooltip_text = "Start playtesting."
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_cnbw5")
-theme_override_fonts/font = ExtResource("5_0l4bc")
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 32
 text = "Test"
+
+[node name="record" type="Button" parent="Control/chart_btns/btn_cont"]
+z_index = 3
+custom_minimum_size = Vector2(135, 0)
+layout_mode = 2
+tooltip_text = "Record new notes for a selected section."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 32
+text = "Record"
 
 [node name="chart_controls" type="Control" parent="Control"]
 z_index = 3
@@ -1698,6 +1751,32 @@ mouse_force_pass_scroll_events = false
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_cnbw5")
 step = 0.0
+
+[node name="scroll_time_hover" type="Panel" parent="Control/chart_controls"]
+visible = false
+z_index = 20
+layout_mode = 0
+offset_left = -414.0
+offset_top = -30.0
+offset_right = -309.0
+offset_bottom = 30.0
+theme = ExtResource("8_cnbw5")
+
+[node name="time_lbl" type="RichTextLabel" parent="Control/chart_controls/scroll_time_hover"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 18
+text = "0:00:000"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="pos_label" type="RichTextLabel" parent="Control/chart_controls"]
 self_modulate = Color(1, 1, 1, 0.498039)
@@ -2189,29 +2268,101 @@ text = "No song added."
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="artist_edit" type="TextEdit" parent="Control/edit_meta_cont"]
+[node name="artist_edit" type="LineEdit" parent="Control/edit_meta_cont"]
 z_index = 5
-clip_contents = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -446.0
 offset_top = -70.0
-offset_right = -167.0
-offset_bottom = -20.0
+offset_right = -211.0
+offset_bottom = -38.0
 grow_horizontal = 2
 tooltip_text = "Artist (Optional)"
-focus_next = NodePath("../album_edit")
+focus_next = NodePath("../add_artist")
 theme = ExtResource("8_cnbw5")
 theme_override_fonts/font = ExtResource("5_0l4bc")
 theme_override_font_sizes/font_size = 20
 placeholder_text = "Optional: Artist"
-emoji_menu_enabled = false
 backspace_deletes_composite_character_enabled = true
-tab_input_mode = false
 caret_blink = true
 caret_mid_grapheme = true
+
+[node name="add_artist" type="Button" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -199.0
+offset_top = -70.0
+offset_right = -167.0
+offset_bottom = -38.0
+grow_horizontal = 2
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = "+"
+
+[node name="rm_artist" type="Button" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -199.0
+offset_top = -28.0
+offset_right = -167.0
+offset_bottom = -2.0
+grow_horizontal = 2
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="split_artists" type="Button" parent="Control/edit_meta_cont"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -446.0
+offset_top = -28.0
+offset_right = -402.0
+offset_bottom = -2.0
+grow_horizontal = 2
+tooltip_text = "This will get the old
+artist tag, and if it detects more than 1 artist
+It will split them into an array"
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 14
+text = "Split"
+
+[node name="artist_added_label" type="RichTextLabel" parent="Control/edit_meta_cont"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -399.0
+offset_top = -35.0
+offset_right = -202.0
+offset_bottom = 5.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No artists added"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="album_edit" type="TextEdit" parent="Control/edit_meta_cont"]
 z_index = 5
@@ -3143,28 +3294,101 @@ text = "No song added."
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="artist_edit" type="TextEdit" parent="Control/create_map_panel"]
+[node name="artist_edit" type="LineEdit" parent="Control/create_map_panel"]
 z_index = 5
-clip_contents = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -446.0
 offset_top = -70.0
-offset_right = -167.0
-offset_bottom = -20.0
+offset_right = -211.0
+offset_bottom = -38.0
 grow_horizontal = 2
 tooltip_text = "Artist (Optional)"
+focus_next = NodePath("../add_artist")
 theme = ExtResource("8_cnbw5")
 theme_override_fonts/font = ExtResource("5_0l4bc")
 theme_override_font_sizes/font_size = 20
 placeholder_text = "Optional: Artist"
-emoji_menu_enabled = false
 backspace_deletes_composite_character_enabled = true
-tab_input_mode = false
 caret_blink = true
 caret_mid_grapheme = true
+
+[node name="add_artist" type="Button" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -199.0
+offset_top = -70.0
+offset_right = -167.0
+offset_bottom = -38.0
+grow_horizontal = 2
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = "+"
+
+[node name="rm_artist" type="Button" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -199.0
+offset_top = -28.0
+offset_right = -167.0
+offset_bottom = -2.0
+grow_horizontal = 2
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_fonts/font = ExtResource("11_iis80")
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="split_artists" type="Button" parent="Control/create_map_panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -447.0
+offset_top = -28.0
+offset_right = -402.0
+offset_bottom = -2.0
+grow_horizontal = 2
+tooltip_text = "This will get the old
+artist tag, and if it detects more than 1 artist
+It will split them into an array"
+focus_next = NodePath("../album_edit")
+mouse_default_cursor_shape = 2
+theme = ExtResource("8_cnbw5")
+theme_override_font_sizes/font_size = 14
+text = "Split"
+
+[node name="artist_added_label" type="RichTextLabel" parent="Control/create_map_panel"]
+z_index = 4
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -399.0
+offset_top = -35.0
+offset_right = -202.0
+offset_bottom = 5.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("3_op3c8")
+theme_override_font_sizes/normal_font_size = 14
+text = "No artists added"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="album_edit" type="TextEdit" parent="Control/create_map_panel"]
 z_index = 5
@@ -4608,6 +4832,366 @@ horizontal_alignment = 1
 vertical_alignment = 1
 metadata/background_name = ""
 
+[node name="recording_panel" type="Control" parent="Control"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(20, 20)
+
+[node name="Panel" type="Panel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -379.0
+offset_top = -382.0
+offset_right = 379.0
+offset_bottom = 382.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_cnbw5")
+
+[node name="title" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = -342.0
+offset_right = 160.0
+offset_bottom = -291.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_fonts/normal_font = ExtResource("6_06d57")
+theme_override_font_sizes/normal_font_size = 42
+text = "Record Section"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="start_lbl" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = -259.0
+offset_right = 180.0
+offset_bottom = -219.0
+grow_horizontal = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Recording Start: 0:00:000"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="start_slider" type="HSlider" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -261.0
+offset_top = -256.0
+offset_right = 261.0
+offset_bottom = -226.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+step = 0.01
+
+[node name="use_start" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -295.0
+offset_top = -214.0
+offset_right = -45.0
+offset_bottom = -178.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Use Current Position"
+
+[node name="start_from_chart" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 46.0
+offset_top = -214.0
+offset_right = 296.0
+offset_bottom = -178.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Set Position from Chart"
+
+[node name="start_edit" type="LineEdit" parent="Control/recording_panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = -259.0
+offset_right = 180.0
+offset_bottom = -219.0
+grow_horizontal = 2
+focus_mode = 1
+theme = ExtResource("4_cnbw5")
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="end_lbl" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = -130.0
+offset_right = 180.0
+offset_bottom = -90.0
+grow_horizontal = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Recording End: 0:10:000"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="end_slider" type="HSlider" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -261.0
+offset_top = -127.0
+offset_right = 261.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+step = 0.01
+
+[node name="use_end" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -295.0
+offset_top = -85.0
+offset_right = -45.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Use Current Position"
+
+[node name="end_from_chart" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 46.0
+offset_top = -85.0
+offset_right = 296.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 20
+text = "Set Position from Chart"
+
+[node name="end_edit" type="LineEdit" parent="Control/recording_panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = -130.0
+offset_right = 180.0
+offset_bottom = -90.0
+grow_horizontal = 2
+focus_mode = 1
+theme = ExtResource("4_cnbw5")
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="lead_lbl" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 85.0
+offset_right = 180.0
+offset_bottom = 125.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Recording Lead-in: 2.00s"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="lead_slider" type="HSlider" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -261.0
+offset_top = 88.0
+offset_right = 261.0
+offset_bottom = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+max_value = 10.0
+step = 0.1
+value = 2.0
+
+[node name="speed_lbl" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 143.0
+offset_right = 180.0
+offset_bottom = 183.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Recording Speed: 1.00x"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="speed_slider" type="HSlider" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -261.0
+offset_top = 148.0
+offset_right = 261.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+min_value = 0.01
+max_value = 8.0
+step = 0.01
+value = 1.0
+
+[node name="status_lbl" type="RichTextLabel" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = 201.0
+offset_right = 260.0
+offset_bottom = 233.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 20
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="start_recording" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = 229.0
+offset_right = 172.0
+offset_bottom = 281.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 28
+text = "Start Recording"
+
+[node name="cancel" type="Button" parent="Control/recording_panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = 301.0
+offset_right = 172.0
+offset_bottom = 335.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 24
+text = "Cancel"
+
 [node name="playtest_panel" type="Control" parent="Control"]
 z_index = 10
 layout_mode = 1
@@ -4794,7 +5378,8 @@ grow_vertical = 2
 scale = Vector2(1e-05, 1e-05)
 pivot_offset = Vector2(20, 20)
 
-[node name="Panel" type="Panel" parent="Control/help"]
+[node name="help_pages" type="TabContainer" parent="Control/help"]
+z_index = 1
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -4807,118 +5392,199 @@ offset_right = 508.0
 offset_bottom = 373.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("8_cnbw5")
+theme = ExtResource("4_cnbw5")
+theme_override_font_sizes/font_size = 20
+current_tab = 0
 
-[node name="help_label" type="RichTextLabel" parent="Control/help"]
-z_index = 1
+[node name="Overview" type="Control" parent="Control/help/help_pages"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="overview_text" type="RichTextLabel" parent="Control/help/help_pages/Overview"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -58.0
-offset_top = -333.0
-offset_right = 58.0
-offset_bottom = -277.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("4_cnbw5")
-theme_override_constants/line_separation = 3
+theme_override_constants/line_separation = 6
 theme_override_constants/outline_size = 8
-theme_override_fonts/normal_font = ExtResource("3_op3c8")
-theme_override_font_sizes/normal_font_size = 40
-text = "Editor Help"
-fit_content = true
-autowrap_mode = 0
-
-[node name="overall_help" type="RichTextLabel" parent="Control/help"]
-z_index = 1
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -205.5
-offset_top = -277.0
-offset_right = 205.5
-offset_bottom = 54.0
-grow_horizontal = 2
-mouse_filter = 2
-theme = ExtResource("4_cnbw5")
-theme_override_constants/line_separation = 3
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/normal_font_size = 25
-theme_override_font_sizes/bold_font_size = 25
-theme_override_font_sizes/italics_font_size = 14
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true
-text = "To Create a [b]Beatzmap[/b]:
-Add a [b]Song file[/b]
-[i](.mp3, .ogg, .wav)[/i]
-Name your Song
-Add your Username
-Listen to the [b]rhythm[/b]
-Place notes according to the rhythm
-[b]Feel your Rhythm[/b]
-Once finished
-Save and share your [b]beatzmap[/b]
-to the world!"
-fit_content = true
-autowrap_mode = 0
-horizontal_alignment = 1
+text = "[b]Create a Beatzmap[/b]
 
-[node name="keybinds_help" type="RichTextLabel" parent="Control/help"]
-z_index = 1
+Add a song file (.mp3, .ogg, or .wav), enter the song name and charter name, then listen to the rhythm and place notes that match it.
+
+Use the timeline and zoom controls to find the right section, place notes accurately, and save when the chart feels complete.
+
+Use the metadata panel to add the artist, album art, background, difficulty, and other map details."
+fit_content = true
+scroll_active = false
+
+[node name="Chart" type="Control" parent="Control/help/help_pages"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="chart_text" type="RichTextLabel" parent="Control/help/help_pages/Chart"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -96.0
-offset_top = 64.0
-offset_right = 96.0
-offset_bottom = 120.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("4_cnbw5")
-theme_override_constants/line_separation = 3
 theme_override_constants/outline_size = 8
-theme_override_fonts/normal_font = ExtResource("3_op3c8")
-theme_override_font_sizes/normal_font_size = 40
-text = "Keybinds"
-fit_content = true
-autowrap_mode = 0
+theme_override_font_sizes/normal_font_size = 23
+theme_override_font_sizes/bold_font_size = 23
+bbcode_enabled = true
+text = "[b]Chart Timeline[/b]
 
-[node name="binds" type="RichTextLabel" parent="Control/help"]
-z_index = 1
+Scroll the chart timeline to move through the song. The playhead shows the current time, while zoom lets you inspect or place notes at different levels of precision.
+
+[b]Grid snapping[/b] aligns notes to the selected rhythm grid. Toggle it from the editor controls when free positioning or recording requires it.
+
+Use [b]Undo[/b] and [b]Redo[/b] to recover from edits. Chart, save, and metadata controls are available around the editor."
+fit_content = true
+scroll_active = false
+
+[node name="Notes" type="Control" parent="Control/help/help_pages"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="notes_text" type="RichTextLabel" parent="Control/help/help_pages/Notes"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -185.5
-offset_top = 131.0
-offset_right = 185.5
-offset_bottom = 351.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("4_cnbw5")
-theme_override_constants/line_separation = 3
 theme_override_constants/outline_size = 8
-theme_override_font_sizes/normal_font_size = 25
-text = "CRTL+S: Save
-CRTL+SHIFT+S: Share
-CRTL+ALT+S: Save Copy
-CTRL+Q: Quit (No Save)
-CTLR+SHIFT+Q: Save and Quit
-C: Delete Notes
-Q: View Notes
-E: Place Notes"
+theme_override_font_sizes/normal_font_size = 23
+theme_override_font_sizes/bold_font_size = 23
+bbcode_enabled = true
+text = "[b]Notes and Note Context[/b]
+
+Use [b]Place[/b] to add notes and [b]Delete[/b] to remove them. [b]View[/b] opens the note array and raw chart data tools.
+
+Select one or multiple notes to open the note context panel. From there you can change timing and note type, move notes to the grid, copy, cut, flip, mirror, or delete selections.
+
+Hold notes use the hold context fields to set their length. The tools panel also includes offset, alignment, duplicate cleanup, and imported-note actions."
 fit_content = true
-autowrap_mode = 0
-vertical_alignment = 1
+scroll_active = false
+
+[node name="Recording" type="Control" parent="Control/help/help_pages"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
+
+[node name="recording_text" type="RichTextLabel" parent="Control/help/help_pages/Recording"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 23
+theme_override_font_sizes/bold_font_size = 23
+bbcode_enabled = true
+text = "[b]Recording and Playtesting[/b]
+
+Recording mode captures note inputs between a start and end point. Set the recording range, lead time, and speed before starting.
+
+Playtest lets you audition the chart with real gameplay timing. Start from the current chart position or choose a custom start position.
+
+Use the tools panel for precise chart-wide adjustments, and use [b]Reload[/b] if you need to reset the loaded chart state."
+fit_content = true
+scroll_active = false
+
+[node name="Tools" type="Control" parent="Control/help/help_pages"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 4
+
+[node name="tools_text" type="RichTextLabel" parent="Control/help/help_pages/Tools"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("4_cnbw5")
+theme_override_constants/line_separation = 6
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/normal_font_size = 23
+theme_override_font_sizes/bold_font_size = 23
+bbcode_enabled = true
+text = "[b]Tools Panel[/b]
+
+Offset every note by a specified number of milliseconds, or offset the beatlines independently when the song has leading silence.
+
+Align hold tails within 35 ms, align notes that share nearly the same timestamp, or remove duplicate notes. These actions update the chart and show how many notes were modified.
+
+Reimport existing notes from a .beatz, .chart, .osu, or .qua file. The import can replace the current notes and update chart details such as BPM and charter metadata.
+
+Use the clear button beside Reimport to remove imported notes from the chart."
+fit_content = true
+scroll_active = false
+
+[node name="Keybinds" type="Control" parent="Control/help/help_pages"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 5
+
+[node name="keybind_rows" type="GridContainer" parent="Control/help/help_pages/Keybinds"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = -30.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 8
+columns = 2
 
 [node name="help_exit" type="Button" parent="Control/help"]
 layout_mode = 1
-offset_left = -469.0
-offset_top = -334.0
-offset_right = -377.0
-offset_bottom = -282.0
+offset_left = -472.0
+offset_top = -420.0
+offset_right = -380.0
+offset_bottom = -368.0
 mouse_default_cursor_shape = 2
 theme = ExtResource("4_cnbw5")
 theme_override_font_sizes/font_size = 30
@@ -5322,6 +5988,7 @@ drag_and_drop_selection_enabled = false
 
 [node name="loading_progress" type="ProgressBar" parent="."]
 visible = false
+modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 12
 layout_mode = 1
@@ -5954,12 +6621,12 @@ text = "Double"
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
 [node name="waveform" parent="." instance=ExtResource("29_ukxwk")]
+visible = false
 layout_mode = 1
 offset_left = 516.94836
 offset_top = 989.0
 offset_right = -323.05164
 offset_bottom = 793.0
-rotation = -1.5707964
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 COLOR = Color(1, 1, 1, 0.49019608)
@@ -5982,57 +6649,69 @@ waveform_quality = 2
 [connection signal="pressed" from="Control/editor_controls/undo_btn" to="." method="undo"]
 [connection signal="pressed" from="Control/chart_btns/btn_cont/play" to="." method="_on_play_pressed"]
 [connection signal="pressed" from="Control/chart_btns/btn_cont/playtest" to="." method="_on_playtest_pressed"]
+[connection signal="pressed" from="Control/chart_btns/btn_cont/record" to="." method="_on_record_pressed"]
 [connection signal="drag_ended" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_drag_ended"]
+[connection signal="gui_input" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_gui_input"]
+[connection signal="mouse_entered" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_mouse_entered"]
+[connection signal="mouse_exited" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_mouse_exited"]
 [connection signal="value_changed" from="Control/chart_controls/chart_scroll" to="." method="_on_chart_scroll_value_changed"]
 [connection signal="pressed" from="Control/chart_controls/exit" to="." method="_on_exit_warn_pressed"]
-[connection signal="pressed" from="Control/chart_controls/save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="Control/chart_controls/save" to="SaveSystem" method="_on_save_pressed"]
 [connection signal="pressed" from="Control/chart_controls/edit_meta" to="." method="_on_edit_meta_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/save_btn" to="." method="_on_save_meta_btn_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/save_btn" to="MetadataSystem" method="_on_save_meta_btn_pressed"]
 [connection signal="pressed" from="Control/edit_meta_cont/cancel_btn" to="." method="_on_cancel_btn_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/diff_texture_edit" to="." method="_on_diff_texture_edit_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/clear_diff" to="." method="_on_clear_diff_texture_pressed"]
-[connection signal="focus_entered" from="Control/edit_meta_cont/search_bpm" to="." method="_on_search_bpm_focus_entered"]
-[connection signal="mouse_entered" from="Control/edit_meta_cont/search_bpm" to="." method="_on_search_bpm_mouse_entered"]
-[connection signal="pressed" from="Control/edit_meta_cont/search_bpm" to="." method="_on_search_bpm_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/song_file_select" to="." method="_on_edit_song_file_select_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/album_cover_edit" to="." method="_on_album_cover_edit_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/fetch_cover" to="." method="_on_fetch_cover_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/rotate_cover" to="." method="_on_rotate_cover_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/bg_img_edit" to="." method="_on_bg_img_edit_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/clear_bg" to="." method="_on_clear_bg_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/bg_vid_edit" to="." method="_on_bg_vid_edit_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/search_bg_vid" to="." method="_on_search_bg_vid_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/clear_bg_vid" to="." method="_on_clear_bg_vid_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/cover_loop_edit" to="." method="_on_cover_loop_edit_pressed"]
-[connection signal="pressed" from="Control/edit_meta_cont/clear_loop" to="." method="_on_clear_loop_pressed"]
-[connection signal="toggled" from="Control/edit_meta_cont/metadata_use_check" to="." method="_on_edit_metadata_use_check_toggled"]
+[connection signal="pressed" from="Control/edit_meta_cont/diff_texture_edit" to="MetadataSystem" method="_on_diff_texture_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_diff" to="MetadataSystem" method="_on_clear_diff_texture_pressed"]
+[connection signal="focus_entered" from="Control/edit_meta_cont/search_bpm" to="MetadataSystem" method="_on_search_bpm_focus_entered"]
+[connection signal="mouse_entered" from="Control/edit_meta_cont/search_bpm" to="MetadataSystem" method="_on_search_bpm_mouse_entered"]
+[connection signal="pressed" from="Control/edit_meta_cont/search_bpm" to="MetadataSystem" method="_on_search_bpm_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/song_file_select" to="MetadataSystem" method="_on_edit_song_file_select_pressed"]
+[connection signal="text_submitted" from="Control/edit_meta_cont/artist_edit" to="MetadataSystem" method="_on_edit_meta_artist_edit_text_submitted"]
+[connection signal="pressed" from="Control/edit_meta_cont/add_artist" to="MetadataSystem" method="_on_edit_meta_add_artist_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/rm_artist" to="MetadataSystem" method="_on_edit_meta_rm_artist_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/split_artists" to="MetadataSystem" method="_on_edit_meta_split_artists_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/album_cover_edit" to="MetadataSystem" method="_on_album_cover_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/fetch_cover" to="MetadataSystem" method="_on_fetch_cover_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/rotate_cover" to="MetadataSystem" method="_on_rotate_cover_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/bg_img_edit" to="MetadataSystem" method="_on_bg_img_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_bg" to="MetadataSystem" method="_on_clear_bg_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/bg_vid_edit" to="MetadataSystem" method="_on_bg_vid_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/search_bg_vid" to="MetadataSystem" method="_on_search_bg_vid_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_bg_vid" to="MetadataSystem" method="_on_clear_bg_vid_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/cover_loop_edit" to="MetadataSystem" method="_on_cover_loop_edit_pressed"]
+[connection signal="pressed" from="Control/edit_meta_cont/clear_loop" to="MetadataSystem" method="_on_clear_loop_pressed"]
+[connection signal="toggled" from="Control/edit_meta_cont/metadata_use_check" to="MetadataSystem" method="_on_edit_metadata_use_check_toggled"]
 [connection signal="pressed" from="Control/edit_meta_cont/explorer_open_btn" to="." method="_on_explorer_open_btn_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/complete_setup_btn" to="." method="_on_complete_setup_btn_pressed"]
-[connection signal="text_changed" from="Control/create_map_panel/chart_name_edit" to="." method="_on_chart_name_edit_text_changed"]
-[connection signal="pressed" from="Control/create_map_panel/diff_texture_edit" to="." method="_on_diff_texture_edit_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/clear_diff" to="." method="_on_clear_diff_texture_pressed"]
-[connection signal="text_changed" from="Control/create_map_panel/bpm_edit" to="." method="_on_bpm_edit_text_changed"]
-[connection signal="mouse_entered" from="Control/create_map_panel/search_bpm" to="." method="_on_search_bpm_mouse_entered"]
-[connection signal="pressed" from="Control/create_map_panel/search_bpm" to="." method="_on_search_bpm_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/song_file_select" to="." method="_on_song_file_select_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/album_cover_edit" to="." method="_on_album_cover_edit_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/rotate_cover" to="." method="_on_rotate_cover_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/fetch_cover" to="." method="_on_fetch_cover_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/bg_img_edit" to="." method="_on_bg_img_edit_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/bg_vid_edit" to="." method="_on_bg_vid_edit_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/clear_bg_vid" to="." method="_on_clear_bg_vid_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/search_bg_vid" to="." method="_on_search_bg_vid_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/cover_loop_edit" to="." method="_on_cover_loop_edit_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/clear_loop" to="." method="_on_clear_loop_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/import_from_beatz" to="." method="_on_import_from_beatz_pressed"]
-[connection signal="pressed" from="Control/create_map_panel/clear_imported_notes" to="." method="_on_clear_imported_notes_pressed"]
-[connection signal="toggled" from="Control/create_map_panel/metadata_use_check" to="." method="_on_metadata_use_check_toggled"]
-[connection signal="mouse_entered" from="Control/save_to_list/save_to_list" to="." method="_on_save_to_list_mouse_entered"]
-[connection signal="pressed" from="Control/save_to_list/save_to_list" to="." method="_on_save_to_list_pressed"]
-[connection signal="mouse_entered" from="Control/save_to_list/save_copy_to_list" to="." method="_on_save_copy_to_list_mouse_entered"]
-[connection signal="pressed" from="Control/save_to_list/save_copy_to_list" to="." method="_on_save_copy_to_list_pressed"]
-[connection signal="pressed" from="Control/save_to_list/share_to_bx" to="." method="_on_share_chart_pressed"]
-[connection signal="pressed" from="Control/save_to_list/back" to="." method="_on_saving_back_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/complete_setup_btn" to="MetadataSystem" method="_on_complete_setup_btn_pressed"]
+[connection signal="text_changed" from="Control/create_map_panel/chart_name_edit" to="MetadataSystem" method="_on_chart_name_edit_text_changed"]
+[connection signal="pressed" from="Control/create_map_panel/diff_texture_edit" to="MetadataSystem" method="_on_diff_texture_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_diff" to="MetadataSystem" method="_on_clear_diff_texture_pressed"]
+[connection signal="text_changed" from="Control/create_map_panel/bpm_edit" to="MetadataSystem" method="_on_bpm_edit_text_changed"]
+[connection signal="mouse_entered" from="Control/create_map_panel/search_bpm" to="MetadataSystem" method="_on_search_bpm_mouse_entered"]
+[connection signal="pressed" from="Control/create_map_panel/search_bpm" to="MetadataSystem" method="_on_search_bpm_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/song_file_select" to="MetadataSystem" method="_on_song_file_select_pressed"]
+[connection signal="text_submitted" from="Control/create_map_panel/artist_edit" to="MetadataSystem" method="_on_create_map_artist_edit_text_submitted"]
+[connection signal="pressed" from="Control/create_map_panel/add_artist" to="MetadataSystem" method="_on_create_map_add_artist_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/rm_artist" to="MetadataSystem" method="_on_create_map_rm_artist_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/split_artists" to="MetadataSystem" method="_on_create_map_split_artists_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/album_cover_edit" to="MetadataSystem" method="_on_album_cover_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/rotate_cover" to="MetadataSystem" method="_on_rotate_cover_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/fetch_cover" to="MetadataSystem" method="_on_fetch_cover_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/bg_img_edit" to="MetadataSystem" method="_on_bg_img_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/bg_vid_edit" to="MetadataSystem" method="_on_bg_vid_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_bg_vid" to="MetadataSystem" method="_on_clear_bg_vid_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/search_bg_vid" to="MetadataSystem" method="_on_search_bg_vid_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/cover_loop_edit" to="MetadataSystem" method="_on_cover_loop_edit_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_loop" to="MetadataSystem" method="_on_clear_loop_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/import_from_beatz" to="SaveSystem" method="_on_import_from_beatz_pressed"]
+[connection signal="pressed" from="Control/create_map_panel/clear_imported_notes" to="SaveSystem" method="_on_clear_imported_notes_pressed"]
+[connection signal="toggled" from="Control/create_map_panel/metadata_use_check" to="MetadataSystem" method="_on_metadata_use_check_toggled"]
+[connection signal="mouse_entered" from="Control/save_to_list/save_to_list" to="SaveSystem" method="_on_save_to_list_mouse_entered"]
+[connection signal="pressed" from="Control/save_to_list/save_to_list" to="SaveSystem" method="_on_save_to_list_pressed"]
+[connection signal="mouse_entered" from="Control/save_to_list/save_copy_to_list" to="SaveSystem" method="_on_save_copy_to_list_mouse_entered"]
+[connection signal="pressed" from="Control/save_to_list/save_copy_to_list" to="SaveSystem" method="_on_save_copy_to_list_pressed"]
+[connection signal="pressed" from="Control/save_to_list/share_to_bx" to="SaveSystem" method="_on_share_chart_pressed"]
+[connection signal="pressed" from="Control/save_to_list/back" to="SaveSystem" method="_on_saving_back_pressed"]
 [connection signal="pressed" from="Control/exit_warn/exit" to="." method="_on_exit_pressed"]
 [connection signal="pressed" from="Control/exit_warn/cancel" to="." method="_on_cancel_exit_pressed"]
 [connection signal="pressed" from="Control/close_warn/HBoxContainer/quit" to="." method="_on_quit_btn_pressed"]
@@ -6051,8 +6730,24 @@ waveform_quality = 2
 [connection signal="pressed" from="Control/tools/HBoxContainer/align_hold_ends" to="." method="_on_align_hold_ends_pressed"]
 [connection signal="pressed" from="Control/tools/HBoxContainer/align_dbl_notes" to="." method="_on_align_dbl_notes_pressed"]
 [connection signal="pressed" from="Control/tools/HBoxContainer/rm_duplicate_notes" to="." method="_on_rm_duplicate_notes_pressed"]
-[connection signal="pressed" from="Control/tools/import_from_beatz" to="." method="_on_import_from_beatz_pressed"]
-[connection signal="pressed" from="Control/tools/clear_imported_notes" to="." method="_on_clear_imported_notes_pressed" binds= [true]]
+[connection signal="pressed" from="Control/tools/import_from_beatz" to="SaveSystem" method="_on_import_from_beatz_pressed"]
+[connection signal="pressed" from="Control/tools/clear_imported_notes" to="SaveSystem" method="_on_clear_imported_notes_pressed" binds= [true]]
+[connection signal="focus_entered" from="Control/recording_panel/start_lbl" to="EditorRecordingSystem" method="_on_start_label_focus_entered"]
+[connection signal="value_changed" from="Control/recording_panel/start_slider" to="EditorRecordingSystem" method="_on_start_value_changed"]
+[connection signal="pressed" from="Control/recording_panel/use_start" to="EditorRecordingSystem" method="_on_use_current_start_pressed"]
+[connection signal="pressed" from="Control/recording_panel/start_from_chart" to="EditorRecordingSystem" method="_on_set_start_from_chart_pressed"]
+[connection signal="focus_exited" from="Control/recording_panel/start_edit" to="EditorRecordingSystem" method="_on_start_edit_focus_exited"]
+[connection signal="text_submitted" from="Control/recording_panel/start_edit" to="EditorRecordingSystem" method="_on_start_edit_text_submitted"]
+[connection signal="focus_entered" from="Control/recording_panel/end_lbl" to="EditorRecordingSystem" method="_on_end_label_focus_entered"]
+[connection signal="value_changed" from="Control/recording_panel/end_slider" to="EditorRecordingSystem" method="_on_end_value_changed"]
+[connection signal="pressed" from="Control/recording_panel/use_end" to="EditorRecordingSystem" method="_on_use_current_end_pressed"]
+[connection signal="pressed" from="Control/recording_panel/end_from_chart" to="EditorRecordingSystem" method="_on_set_end_from_chart_pressed"]
+[connection signal="focus_exited" from="Control/recording_panel/end_edit" to="EditorRecordingSystem" method="_on_end_edit_focus_exited"]
+[connection signal="text_submitted" from="Control/recording_panel/end_edit" to="EditorRecordingSystem" method="_on_end_edit_text_submitted"]
+[connection signal="value_changed" from="Control/recording_panel/lead_slider" to="EditorRecordingSystem" method="_on_lead_value_changed"]
+[connection signal="value_changed" from="Control/recording_panel/speed_slider" to="EditorRecordingSystem" method="_on_recording_speed_changed"]
+[connection signal="pressed" from="Control/recording_panel/start_recording" to="EditorRecordingSystem" method="_on_start_recording_pressed"]
+[connection signal="pressed" from="Control/recording_panel/cancel" to="EditorRecordingSystem" method="close_panel"]
 [connection signal="value_changed" from="Control/playtest_panel/playback_rate" to="." method="_on_playtest_rate_value_changed"]
 [connection signal="value_changed" from="Control/playtest_panel/at_pos_slider" to="." method="_on_playtest_start_pos_value_changed"]
 [connection signal="pressed" from="Control/playtest_panel/use_current" to="." method="_on_playtest_use_current_pressed"]
@@ -6060,43 +6755,43 @@ waveform_quality = 2
 [connection signal="pressed" from="Control/playtest_panel/cancel" to="." method="_on_playtest_cancel_pressed"]
 [connection signal="pressed" from="Control/help/help_exit" to="." method="_on_help_exit_pressed"]
 [connection signal="edit_show_hold_ends_toggled" from="settings" to="." method="_on_settings_edit_show_hold_ends_toggled"]
-[connection signal="editor_bg_vids_toggled" from="settings" to="." method="_on_settings_editor_bg_vids_toggled"]
+[connection signal="editor_bg_vids_toggled" from="settings" to="MetadataSystem" method="_on_settings_editor_bg_vids_toggled"]
 [connection signal="editor_brightness_changed" from="settings" to="." method="_on_settings_editor_brightness_changed"]
-[connection signal="editor_cover_loops_toggled" from="settings" to="." method="_on_settings_editor_cover_loops_toggled"]
-[connection signal="editor_diff_graph_toggled" from="settings" to="." method="_on_settings_editor_diff_graph_toggled"]
+[connection signal="editor_cover_loops_toggled" from="settings" to="MetadataSystem" method="_on_settings_editor_cover_loops_toggled"]
+[connection signal="editor_diff_graph_toggled" from="settings" to="NoteContextSystem" method="_on_settings_editor_diff_graph_toggled"]
 [connection signal="editor_note_backdrop_opacity_changed" from="settings" to="." method="_on_settings_editor_note_backdrop_opacity_changed"]
 [connection signal="note_offset_changed" from="settings" to="." method="_on_settings_note_offset_changed"]
 [connection signal="note_style_changed" from="settings" to="." method="_on_settings_note_style_changed"]
-[connection signal="selection_box_quality_changed" from="settings" to="." method="_on_settings_selection_box_quality_changed"]
+[connection signal="selection_box_quality_changed" from="settings" to="NoteContextSystem" method="_on_settings_selection_box_quality_changed"]
 [connection signal="show_error_notes_toggled" from="settings" to="." method="_on_settings_show_error_notes_toggled"]
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/cancel_btn" to="." method="_on_cancel_quit_btn_pressed"]
 [connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/save_and_quit_btn" to="." method="_on_save_and_quit_btn_pressed"]
 [connection signal="pressed" from="Popup/VBoxContainer/HBoxContainer/quit_btn" to="." method="_on_quit_btn_pressed"]
-[connection signal="text_submitted" from="note_context/hold_edit" to="." method="_on_singular_ctx_hold_edit_text_submitted"]
-[connection signal="text_submitted" from="note_context/timestamp_edit" to="." method="_on_singular_ctx_timestamp_edit_text_submitted"]
-[connection signal="item_selected" from="note_context/type_drop" to="." method="_on_singular_ctx_type_drop_item_selected"]
-[connection signal="pressed" from="note_context/btns_cont/copycutpaste/copy" to="." method="_on_singular_ctx_copy_pressed"]
-[connection signal="pressed" from="note_context/btns_cont/copycutpaste/cut" to="." method="_on_singular_ctx_cut_pressed"]
-[connection signal="pressed" from="note_context/btns_cont/flip" to="." method="_on_singular_ctx_flip_pressed"]
-[connection signal="pressed" from="note_context/btns_cont/to_grid_cont/to_grid" to="." method="_on_singular_ctx_to_grid_pressed"]
-[connection signal="pressed" from="note_context/btns_cont/to_grid_cont/snap" to="." method="_on_singular_ctx_snap_pressed"]
-[connection signal="pressed" from="note_context/btns_cont/delete" to="." method="_on_singular_ctx_delete_pressed"]
-[connection signal="text_submitted" from="multiple_note_context/timestamp_edit" to="." method="_on_multiple_ctx_timestamp_edit_text_submitted"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/copycutpaste/copy" to="." method="_on_multiple_ctx_copy_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/copycutpaste/cut" to="." method="_on_multiple_ctx_cut_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/mirror" to="." method="_on_multiple_ctx_mirror_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/align" to="." method="_on_multiple_ctx_align_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/stream" to="." method="_on_multiple_ctx_stream_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/to_grid_cont/to_grid" to="." method="_on_multiple_ctx_to_grid_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/to_grid_cont/snap" to="." method="_on_multiple_ctx_snap_pressed"]
-[connection signal="pressed" from="multiple_note_context/btns_cont/delete" to="." method="_on_multiple_ctx_delete_pressed"]
-[connection signal="text_changed" from="no_note_context/hold_edit" to="." method="_on_no_ctx_hold_edit_text_changed"]
-[connection signal="item_selected" from="no_note_context/type_drop" to="." method="_on_no_ctx_type_drop_item_selected"]
-[connection signal="pressed" from="no_note_context/place" to="." method="_on_no_ctx_place_pressed"]
-[connection signal="pressed" from="no_note_context/btns_cont/paste" to="." method="_on_no_ctx_paste_pressed"]
-[connection signal="pressed" from="no_note_context/btns_cont/to_grid_cont/create_stream" to="." method="_on_no_ctx_create_stream_pressed"]
-[connection signal="pressed" from="no_note_context/btns_cont/to_grid_cont/space" to="." method="_on_no_ctx_space_pressed"]
-[connection signal="pressed" from="no_note_context/btns_cont/place_as/place" to="." method="_on_no_ctx_place_jack_pressed"]
-[connection signal="pressed" from="no_note_context/btns_cont/place_as/quantity" to="." method="_on_no_ctx_jack_quantity_pressed"]
-[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
+[connection signal="text_submitted" from="note_context/hold_edit" to="NoteContextSystem" method="_on_singular_ctx_hold_edit_text_submitted"]
+[connection signal="text_submitted" from="note_context/timestamp_edit" to="NoteContextSystem" method="_on_singular_ctx_timestamp_edit_text_submitted"]
+[connection signal="item_selected" from="note_context/type_drop" to="NoteContextSystem" method="_on_singular_ctx_type_drop_item_selected"]
+[connection signal="pressed" from="note_context/btns_cont/copycutpaste/copy" to="NoteContextSystem" method="_on_singular_ctx_copy_pressed"]
+[connection signal="pressed" from="note_context/btns_cont/copycutpaste/cut" to="NoteContextSystem" method="_on_singular_ctx_cut_pressed"]
+[connection signal="pressed" from="note_context/btns_cont/flip" to="NoteContextSystem" method="_on_singular_ctx_flip_pressed"]
+[connection signal="pressed" from="note_context/btns_cont/to_grid_cont/to_grid" to="NoteContextSystem" method="_on_singular_ctx_to_grid_pressed"]
+[connection signal="pressed" from="note_context/btns_cont/to_grid_cont/snap" to="NoteContextSystem" method="_on_singular_ctx_snap_pressed"]
+[connection signal="pressed" from="note_context/btns_cont/delete" to="NoteContextSystem" method="_on_singular_ctx_delete_pressed"]
+[connection signal="text_submitted" from="multiple_note_context/timestamp_edit" to="NoteContextSystem" method="_on_multiple_ctx_timestamp_edit_text_submitted"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/copycutpaste/copy" to="NoteContextSystem" method="_on_multiple_ctx_copy_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/copycutpaste/cut" to="NoteContextSystem" method="_on_multiple_ctx_cut_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/mirror" to="NoteContextSystem" method="_on_multiple_ctx_mirror_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/align" to="NoteContextSystem" method="_on_multiple_ctx_align_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/stream" to="NoteContextSystem" method="_on_multiple_ctx_stream_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/to_grid_cont/to_grid" to="NoteContextSystem" method="_on_multiple_ctx_to_grid_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/to_grid_cont/snap" to="NoteContextSystem" method="_on_multiple_ctx_snap_pressed"]
+[connection signal="pressed" from="multiple_note_context/btns_cont/delete" to="NoteContextSystem" method="_on_multiple_ctx_delete_pressed"]
+[connection signal="text_changed" from="no_note_context/hold_edit" to="NoteContextSystem" method="_on_no_ctx_hold_edit_text_changed"]
+[connection signal="item_selected" from="no_note_context/type_drop" to="NoteContextSystem" method="_on_no_ctx_type_drop_item_selected"]
+[connection signal="pressed" from="no_note_context/place" to="NoteContextSystem" method="_on_no_ctx_place_pressed"]
+[connection signal="pressed" from="no_note_context/btns_cont/paste" to="NoteContextSystem" method="_on_no_ctx_paste_pressed"]
+[connection signal="pressed" from="no_note_context/btns_cont/to_grid_cont/create_stream" to="NoteContextSystem" method="_on_no_ctx_create_stream_pressed"]
+[connection signal="pressed" from="no_note_context/btns_cont/to_grid_cont/space" to="NoteContextSystem" method="_on_no_ctx_space_pressed"]
+[connection signal="pressed" from="no_note_context/btns_cont/place_as/place" to="NoteContextSystem" method="_on_no_ctx_place_jack_pressed"]
+[connection signal="pressed" from="no_note_context/btns_cont/place_as/quantity" to="NoteContextSystem" method="_on_no_ctx_jack_quantity_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="MetadataSystem" method="_on_http_request_request_completed"]

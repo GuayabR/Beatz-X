@@ -1,7 +1,7 @@
 extends Node
 
-const BASE_REC_TIME_MS := 1080
-const BASE_REC_TIME := 1.08
+const BASE_REC_TIME_MS: float = 1080.0
+const BASE_REC_TIME: float = 1.08
 
 var lifetime_points := 0.0
 

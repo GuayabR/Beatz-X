@@ -1,5 +1,7 @@
 extends Control
 
+const PLAY_PARAMETERS_SCENE: PackedScene = preload("res://Scenes/play_parameters.tscn")
+
 @onready var list: ItemList = $center/song_list
 
 signal went_back
@@ -8,6 +10,7 @@ signal item_context_menu(meta: String, pos: Vector2, idx: int)
 signal item_context_menu_focus_released
 
 signal item_play_as_bg(path: String, index: int)
+signal song_list_built
 
 signal loading_song(title: String)
 signal loaded_song_meta(title: String)
@@ -28,6 +31,10 @@ var difficulty_order := [
 ]
 
 var all_items: Array = []
+var record_parameters_popup: PlayParameters
+var pending_record_stream: AudioStream
+var pending_record_path: String = ""
+var pending_record_metadata: Dictionary = {}
 
 func load_song_info():
 	var file := FileAccess.open("res://song_info.json", FileAccess.READ)
@@ -130,6 +137,7 @@ func _load_cached_song_list(cached: Dictionary, update_memory_cache: bool) -> vo
 	update_visible_covers(0)
 	songs_built = true
 	song_loading_progress.emit(total_songs, total_songs)
+	song_list_built.emit()
 
 func wait_until_songs_built() -> void:
 	while not songs_built:
@@ -301,6 +309,7 @@ func _process(_delta):
 
 		songs_built = true
 		song_loading_progress.emit(total_songs, total_songs)
+		song_list_built.emit()
 		# so next process loop skips over this part
 	
 	if _cover_update_pending:
@@ -640,7 +649,9 @@ func _parse_beatz_file(beatz_path: String, grouped: Dictionary):
 					"diff_texture_path": "res://Resources/misc/" + _file_difficulty + "_label.png",
 					"selected_background": "",
 					"background_vid": "",
+					"cover_loop": "",
 					"stream": mp3_path,
+					"date_modified": FileAccess.get_modified_time(beatz_path),
 					"note_count": _decoded_notes.size()
 				}
 			}
@@ -687,8 +698,10 @@ func _parse_beatz_file(beatz_path: String, grouped: Dictionary):
 				"speed": _file_note_speed,
 				"start_wait": _file_start_wait,
 				"stream": new_stream,
+				"date_modified": FileAccess.get_modified_time(beatz_path),
 				"selected_background": "",
 				"background_vid": "",
+				"cover_loop": "",
 				"note_count": _decoded_notes.size()
 			}
 		}
@@ -1062,7 +1075,12 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	var info = original_info.duplicate(true)
 
 	var song_title = info.get("title", "Unknown Title")
-	var artist_name = info.get("artist", "Unknown Artist")
+	var artists: Array[String] = General.artist_names_from_info(info)
+	var artist_name := str(info.get("artist", ""))
+	if artist_name.strip_edges() == "":
+		artist_name = General.artist_credit_from_names(artists)
+	if artist_name == "":
+		artist_name = "Unknown Artist"
 	var album_name = info.get("album", "Unknown Album")
 	var year = info.get("year", 0)
 	
@@ -1143,6 +1161,7 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 		"id": id,
 		"song_title": song_title,
 		"artist_name": artist_name,
+		"artists": artists,
 		"album_name": album_name,
 		"year": year,
 		"bpm": bpm,
@@ -1220,6 +1239,7 @@ func _finalize_custom_folder_entry(data: Dictionary, grouped: Dictionary) -> voi
 			"song_name": song_title,
 			"album": album_name,
 			"artist": artist_name,
+			"artists": data.get("artists", []),
 			"year": year,
 			"diff_texture_path": diff_texture,
 			"bpm": bpm,
@@ -1270,6 +1290,7 @@ func _track_scene_loading(request: Variant) -> void:
 	loading_text.text = "Loading..."
 	loading_progress.value = 0.0
 	loading_progress.show()
+	loading_text.show()
 
 	while not request.is_completed:
 		loading_progress.value = request.progress * 100.0
@@ -1355,7 +1376,7 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 	var selected_beat_offset = metadata["local_beat_offset"]
 
 	var selected_video = metadata["background_vid"]
-	var selected_cover_loop_video = metadata["cover_loop"]
+	var selected_cover_loop_video: String = str(metadata.get("cover_loop", ""))
 
 	var scene_request := SceneLoader.load_scene("res://Scenes/selected_song.tscn")
 	_track_scene_loading(scene_request)
@@ -1370,19 +1391,25 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 	var beatz_file := FileAccess.open(beatz_path, FileAccess.READ)
 	var content := beatz_file.get_as_text()
 	var beatz_data := General.import_beatz_file(content)
+	var selected_cover := Image.load_from_file(cover_texture_path)
+	if not selected_cover:
+		selected_cover = preload("res://Resources/misc/noCover.png").get_image()
 
 	game.set("selected_stream_path", selected_stream)
 	game.set("selected_title", song_name)
 	game.set("selected_album", album)
 
-	game.set("selected_cover", Image.load_from_file(cover_texture_path))
+	game.set("selected_cover", selected_cover)
 
 	game.set("selected_artist", artist)
+	game.set("selected_artists", General.artist_names_from_info(metadata))
 	game.set("selected_year", year)
 
 	game.set("start_wait", beatz_data["start_wait"])
 	game.set("preview_start", beatz_data["preview_start"])
 	game.set("preview_end", beatz_data["preview_end"])
+	game.set("fade_in", beatz_data.get("fade_in", false))
+	game.set("fade_out", beatz_data.get("fade_out", false))
 
 	game.set("selected_difficulty", beatz_data["difficulty"])
 	game.set("selected_diff_texture", diff_texture_path)
@@ -1401,6 +1428,7 @@ func _on_song_selected(index: int, from_all_items: bool = false) -> void:
 
 	game.set("selected_bpm", bpm)
 	game.set("selected_charter", charter)
+	game.set("colors", General.extract_dominant_colors(selected_cover))
 
 	get_tree().root.add_child(game)
 	get_tree().current_scene.queue_free()
@@ -1414,7 +1442,59 @@ func go_to_album(album_name: String, album_artist: String, album_year: int, albu
 	$album_view.selected_year = album_year
 	$album_view.selected_cover = album_cover
 	await get_tree().create_timer(0.5).timeout
+	if Settings.misc.hq_background:
+		$song_list_sprite.hide()
+		$album_view/bg.hide()
+		for ctrl in [$center, $top_right, $top_left, $center_right, $center_bottom]:
+			ctrl.hide()
 	$album_view.load_album()
+	loading_text.hide()
+
+func go_to_artist(artist_name: String):
+	if artist_name == "":
+		push_warning("Cannot open artist view without an artist name")
+		return
+
+	var artist_view: Control = _get_or_create_artist_view()
+	if artist_view == null:
+		return
+
+	$album_view.position = Vector2(1920, 0)
+	artist_view.position = Vector2(1920, 0)
+	artist_view.call("prepare_artist_loading", artist_name)
+
+	var enter_tween: Tween = create_tween()
+	enter_tween.tween_property(artist_view, "position", Vector2.ZERO, 0.55)\
+		.set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+
+	await enter_tween.finished
+	if Settings.misc.hq_background:
+		$song_list_sprite.hide()
+		for ctrl in [$center, $top_right, $top_left, $center_right, $center_bottom]:
+			ctrl.hide()
+	artist_view.call("load_artist")
+	loading_text.hide()
+
+func _get_or_create_artist_view() -> Control:
+	var artist_view := get_node_or_null("artist_view") as Control
+	if artist_view != null:
+		return artist_view
+
+	var artist_scene := load("res://Scenes/artist_view.tscn") as PackedScene
+	if artist_scene == null:
+		push_error("Failed to load artist view scene.")
+		return null
+
+	artist_view = artist_scene.instantiate() as Control
+	if artist_view == null:
+		push_error("Artist view scene root is not a Control.")
+		return null
+
+	artist_view.name = "artist_view"
+	artist_view.z_index = 4
+	artist_view.position = Vector2(1920, 0)
+	add_child(artist_view)
+	return artist_view
 
 
 func _on_back_button_up() -> void:
@@ -1429,7 +1509,11 @@ func _on_back_button_up() -> void:
 		$AnimationPlayer.play("back", -1, 250.0)
 	else:
 		$AnimationPlayer.play("back")
-		await get_tree().create_timer(0.7).timeout
+	await get_tree().create_timer(0.75).timeout
+	var artist_view := get_node_or_null("artist_view") as Control
+	if artist_view != null:
+		artist_view.position = Vector2(1920, 0)
+	$album_view.position = Vector2(1920, 0)
 	went_back.emit()
 
 var reload_loading_active := false
@@ -2045,48 +2129,90 @@ func _on_record_pressed() -> void:
 	$center/create_panel/HBoxContainer/record.release_focus()
 
 func _on_song_select_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("list song select file status", status)
-	print("list song select paths ", paths)
-	print("list song select filter idx", _filter_idx)
-
 	if not status or paths.is_empty():
 		return
 
-	if paths[0].get_extension() not in ["mp3", "ogg", "wav"]:
-		$Control/create_map_panel/song_file_label.text = "Song has to be an mp3, ogg or wav file."
+	_load_recording_song(paths[0])
+
+func _load_recording_song(song_path: String) -> void:
+	var extension := song_path.get_extension().to_lower()
+	if extension not in ["mp3", "ogg", "wav"]:
+		push_warning("Song has to be an mp3, ogg or wav file.")
 		return
 
-	var song_path = paths[0]
-
-	var stream
-	var song_didnt_fail := true
-
-	if song_path.ends_with(".mp3") or song_path.ends_with(".ogg") or song_path.ends_with(".wav"):
-		if song_path.ends_with(".mp3"):
+	var stream: AudioStream
+	match extension:
+		"mp3":
 			stream = AudioStreamMP3.load_from_file(song_path)
-		elif song_path.ends_with(".ogg"):
+		"ogg":
 			stream = AudioStreamOggVorbis.load_from_file(song_path)
-		elif song_path.ends_with(".wav"):
+		"wav":
 			stream = AudioStreamWAV.load_from_file(song_path)
-		else:
-			song_didnt_fail = false
-			stream = null
-
-	if not song_didnt_fail:
+	if stream == null:
+		push_warning("Failed to load audio stream from: " + song_path)
 		return
 
-	var metaRead := MP3ID3Tag.new()
-	var loaded_ok := metaRead.load_file(song_path)
-	if not loaded_ok:
+	var metadata_reader := MP3ID3Tag.new()
+	var loaded_ok := metadata_reader.load_file(song_path)
+	var track: String = ""
+	var artist: String = ""
+	var album: String = ""
+	var year: int = 0
+	var cover_image: Image = DEFAULT_COVER.get_image()
+	if loaded_ok:
+		track = metadata_reader.getTrackName()
+		artist = metadata_reader.getArtist()
+		album = metadata_reader.getAlbum()
+		year = int(metadata_reader.getYear())
+		var cover_response: Array = metadata_reader.getAttachedPictureAndMime(0)
+		if not cover_response.is_empty() and cover_response[0] is Image:
+			cover_image = cover_response[0]
+	else:
+		push_warning("Song metadata is unavailable for: " + song_path)
+
+	pending_record_stream = stream
+	pending_record_path = song_path
+	pending_record_metadata = {
+		"title": track if track.strip_edges() != "" else song_path.get_file().get_basename(),
+		"artist": artist,
+		"album": album,
+		"year": year,
+		"cover": cover_image
+	}
+
+	if is_instance_valid(record_parameters_popup):
+		record_parameters_popup.update_recording_metadata(pending_record_metadata)
 		return
 
-	var track := metaRead.getTrackName()
-	var artist := metaRead.getArtist()
-	var album := metaRead.getAlbum()
-	var year := metaRead.getYear()
+	record_parameters_popup = PLAY_PARAMETERS_SCENE.instantiate()
+	record_parameters_popup.configure(
+		PlayParameters.PanelMode.RECORD,
+		stream.get_length(),
+		pending_record_metadata,
+		true
+	)
+	record_parameters_popup.recording_confirmed.connect(_on_song_record_parameters_confirmed)
+	record_parameters_popup.change_file_requested.connect(_on_record_parameters_change_file_requested)
+	record_parameters_popup.tree_exited.connect(_on_record_parameters_popup_tree_exited)
+	get_tree().current_scene.add_child(record_parameters_popup)
 
-	var response: Array = metaRead.getAttachedPictureAndMime(0)
+func _on_record_parameters_change_file_requested() -> void:
+	var err := DisplayServer.file_dialog_show(
+		"Open .mp3, .ogg or .wav files.",
+		"",
+		"",
+		true,
+		DisplayServer.FILE_DIALOG_MODE_OPEN_FILES,
+		["*.mp3", "*.ogg", "*.wav", "*"],
+		Callable(self, "_on_song_select_file_selected")
+	)
+	if err != OK:
+		push_warning("Failed to show native file dialog.")
 
+func _on_record_parameters_popup_tree_exited() -> void:
+	record_parameters_popup = null
+
+func _on_song_record_parameters_confirmed(recording_speed: float) -> void:
 	var scene_request := SceneLoader.load_scene("res://Scenes/main.tscn")
 	_track_scene_loading(scene_request)
 
@@ -2104,25 +2230,21 @@ func _on_song_select_file_selected(status, paths: PackedStringArray, _filter_idx
 		return
 	var main = packed_scene.instantiate()
 
-	main.set("song", stream)
-	main.set("song_path", song_path)
-	main.set("song_title", track)
-	main.set("album", album)
-
-	if not response.is_empty() and response.get(0):
-		main.set("cover", response[0])
-
-	main.set("artist", artist)
-	main.set("year", year)
+	main.set("song", pending_record_stream)
+	main.set("song_path", pending_record_path)
+	main.set("song_title", pending_record_metadata["title"])
+	main.set("album", pending_record_metadata["album"])
+	main.set("cover", pending_record_metadata["cover"])
+	main.set("artist", pending_record_metadata["artist"])
+	main.set("selected_artists", General.artist_names_from_info({"artist": pending_record_metadata["artist"]}))
+	main.set("year", pending_record_metadata["year"])
 
 	main.set("difficulty", "easy")
-	main.set("chart_name", track)
+	main.set("chart_name", pending_record_metadata["title"])
 	main.set("charter", Settings.game.username)
-
-	if not response.is_empty() and response.get(0):
-		main.set("colors", General.extract_dominant_colors(response[0]))
-
+	main.set("colors", General.extract_dominant_colors(pending_record_metadata["cover"]))
 	main.set("init_recording", true)
+	main.set("recording_speed", recording_speed)
 
 	get_tree().root.add_child(main)
 	get_tree().current_scene.queue_free()

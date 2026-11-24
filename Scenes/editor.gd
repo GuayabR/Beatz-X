@@ -2,6 +2,15 @@ extends Control
 
 signal save
 
+@onready var NoteContextSystem: Variant = $NoteContextSystem
+@onready var ChartDisplaySystem: Variant = $ChartDisplaySystem
+@onready var SaveSystem: Variant = $SaveSystem
+@onready var MetadataSystem: Variant = $MetadataSystem
+@onready var EditorRecordingSystem: Variant = $EditorRecordingSystem
+
+var background_vid_path: String = ""
+var cover_loop_vid_path: String = ""
+
 const BASE_TIME: float = 360.0
 
 var edit_start_time
@@ -35,11 +44,11 @@ func restore_note(note_properties: Dictionary) -> void:
 
 
 func refresh_notes_after_history() -> void:
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 
 	set_save_warn()
 
-	calculate_difficulty_threaded()
+	ChartDisplaySystem.calculate_difficulty_threaded()
 
 func undo() -> void:
 	$Control/editor_controls/undo_btn.release_focus()
@@ -67,6 +76,11 @@ func undo() -> void:
 
 		"hold":
 			_apply_note_state_array(action["before"])
+
+		"record_section":
+			notes.clear()
+			for before_note in action["before"]:
+				notes.append(before_note.duplicate(true))
 
 	apply_scroll(action.get("scroll", $Control/chart_controls/chart_scroll.value))
 
@@ -100,6 +114,11 @@ func redo() -> void:
 		"hold":
 			_apply_note_state_array(action["after"])
 
+		"record_section":
+			notes.clear()
+			for after_note in action["after"]:
+				notes.append(after_note.duplicate(true))
+
 	apply_scroll(action.get("scroll", $Control/chart_controls/chart_scroll.value))
 
 	refresh_notes_after_history()
@@ -118,7 +137,7 @@ func _apply_note_state_array(state: Array) -> void:
 				notes[i] = changed_note.duplicate(true)
 				break
 
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 
 func _update_undo_redo_buttons() -> void:
 	var undo_btn = $Control/editor_controls/undo_btn
@@ -142,6 +161,9 @@ var song_path: String
 
 var selected_title: String
 var selected_artist: String
+var selected_artists: Array[String] = []
+var selected_artists_before_edit: Array[String] = []
+var legacy_artist_needs_split_before_edit: bool = false
 var selected_album: String
 var selected_cover: Image
 var selected_year: int
@@ -285,7 +307,6 @@ var OFFSET = Settings.misc.note_offset
 
 var setting_up := false
 
-var mandatory := []
 
 func set_discord_rpc():
 	if not setting_up: 
@@ -304,6 +325,11 @@ func set_discord_rpc():
 func create_beatzmap():
 	save_editor_mode()
 	setting_up = true
+	selected_artist = ""
+	selected_artists.clear()
+	MetadataSystem.legacy_artist_needs_split = false
+	$Control/create_map_panel/artist_edit.clear()
+	MetadataSystem.refresh_all_artist_controls()
 	await get_tree().process_frame
 	transition($Control/create_map_panel, "scale", Vector2.ONE, .2, false)
 	
@@ -317,7 +343,7 @@ func create_beatzmap():
 
 func create_from_dropped_file(path):
 	$Control/create_map_panel/metadata_use_check.button_pressed = true
-	_on_song_select_file_selected(true, [path], 0)
+	MetadataSystem._on_song_select_file_selected(true, [path], 0)
 	
 	$Control/create_map_panel/cover_img_details.text = ""
 	
@@ -463,6 +489,7 @@ func _on_close_requested() -> void:
 
 func _ready() -> void:
 	get_tree().set_auto_accept_quit(false)
+	_setup_editor_help_pages()
 	
 	General.apply_fps_limit(name) # editor
 	
@@ -503,7 +530,7 @@ func _ready() -> void:
 	
 	buttons = [$Control/editor_controls/tools, $Control/editor_controls/view_notes_array, $Control/editor_controls/view_btn, $Control/zoom_scroll, $Control/editor_controls/place_btn, $Control/editor_controls/reload, $Control/editor_controls/dlt_btn, $Control/chart_btns/btn_cont/play, $Control/chart_btns/btn_cont/playtest, $Control/chart_controls/chart_scroll, $Control/chart_controls/exit, $Control/chart_controls/save]
 	
-	menus = [$Control/edit_meta_cont, $Control/create_map_panel, $Control/save_to_list, $Control/exit_warn, $Control/note_array_panel, $Control/tools, $Control/help, $Control/playtest_panel]
+	menus = [$Control/edit_meta_cont, $Control/create_map_panel, $Control/save_to_list, $Control/exit_warn, $Control/note_array_panel, $Control/tools, $Control/help, $Control/playtest_panel, $Control/recording_panel]
 	
 	$Control/chart_details/note_speed.text = "Note speed: " + str(note_speed)
 	
@@ -515,6 +542,11 @@ func _ready() -> void:
 	$Control/edit_meta_cont/charter_edit.text = Settings.game.username
 	$Control/create_map_panel/charter_edit.text = Settings.game.username
 	$Control/chart_details/charter.text = Settings.game.username
+
+	if not background_vid_path.is_empty():
+		MetadataSystem.background_vid_path = background_vid_path
+	if not cover_loop_vid_path.is_empty():
+		MetadataSystem.cover_loop_vid_path = cover_loop_vid_path
 	
 	if new_beatzmap:
 		await get_tree().process_frame
@@ -527,22 +559,23 @@ func _ready() -> void:
 	
 	song_path = ProjectSettings.globalize_path(song_path)
 	selected_beatz_path = ProjectSettings.globalize_path(selected_beatz_path)
+	_load_selected_artists()
 	
 	$song.stream = selected_stream
 	
 	$Control/chart_details/bpm.text = "BPM: " + str(selected_bpm)
 	$Control/chart_details/note_count.text = "Total notes: " + str(len(notes))
 	
-	$Control/song_details/song_title.text = selected_title
+	$Control/song_details/song_title/Text.text = selected_title
 	
 	if selected_artist.to_upper() == "LINKIN PARK":
-		$Control/song_details/song_artist.text = "[b]" + selected_artist.to_upper() + "[/b]"
+		$Control/song_details/song_artist/Text.text = "[b]" + selected_artist.to_upper() + "[/b]"
 		$Control/song_details/song_artist.position.y = 56.0
 	else:
-		$Control/song_details/song_artist.text = selected_artist
+		$Control/song_details/song_artist/Text.text = selected_artist
 		#$Control/song_details/song_artist.position.y = 62.0
 	
-	$Control/song_details/album.text = selected_album
+	$Control/song_details/album/Text.text = selected_album
 	$Control/song_details/year.text = str(selected_year)
 	
 	$Control/chart_details/chart_name.text = "\"" + selected_chart_name + "\""
@@ -550,26 +583,26 @@ func _ready() -> void:
 	$Control/chart_details/diff.text = "Difficulty: " + selected_difficulty.to_pascal_case()
 	if selected_diff_texture: $Control/chart_details/diff_tex.texture = selected_diff_texture
 	else:
-		var diff_img = Image.load_from_file(diff_texture_path)
+		var diff_img = Image.load_from_file(MetadataSystem.diff_texture_path)
 		var diff_tex = ImageTexture.create_from_image(diff_img)
 		$Control/chart_details/diff_tex.texture = diff_tex
 		selected_diff_texture = diff_tex
-		print("Created diff tex from path ", diff_texture_path)
+		print("Created diff tex from path ", MetadataSystem.diff_texture_path)
 	
 	$Control/song_details/sha/cover_spin.texture = ImageTexture.create_from_image(selected_cover)
 	
 	if selected_background: 
 		$Control/bg.texture = ImageTexture.create_from_image(selected_background)
 	
-	if background_vid_path: 
-		background_vid_path = ProjectSettings.globalize_path(background_vid_path)
-		print("Setting bg vid as ", background_vid_path)
-		_on_bg_vid_file_selected(background_vid_path)
+	if MetadataSystem.background_vid_path:
+		MetadataSystem.background_vid_path = ProjectSettings.globalize_path(MetadataSystem.background_vid_path)
+		print("Setting bg vid as ", MetadataSystem.background_vid_path)
+		MetadataSystem._on_bg_vid_file_selected(MetadataSystem.background_vid_path)
 	
-	if cover_loop_vid_path: 
-		cover_loop_vid_path = ProjectSettings.globalize_path(cover_loop_vid_path)
-		print("Setting cover loop vid as ", cover_loop_vid_path)
-		_on_cover_loop_vid_file_selected(cover_loop_vid_path)
+	if MetadataSystem.cover_loop_vid_path:
+		MetadataSystem.cover_loop_vid_path = ProjectSettings.globalize_path(MetadataSystem.cover_loop_vid_path)
+		print("Setting cover loop vid as ", MetadataSystem.cover_loop_vid_path)
+		MetadataSystem._on_cover_loop_vid_file_selected(MetadataSystem.cover_loop_vid_path)
 	
 	$Control/tools/beat_offset_value.text = "(Current offset: %s)" % [str(local_beat_offset)]
 	
@@ -592,7 +625,11 @@ func _ready() -> void:
 		# Construct the full path relative to the beatz file
 		song_path = ProjectSettings.globalize_path(selected_beatz_path.get_base_dir() + "/" + song_file_name)
 	
-	$Control/song_details/song_path.text = "Path: " + song_path
+	$Control/song_details/song_path/Text.text = "Path: " + song_path
+	$Control/song_details/song_title.refresh()
+	$Control/song_details/song_artist.refresh()
+	$Control/song_details/album.refresh()
+	$Control/song_details/song_path.refresh()
 	
 	$Control/edit_meta_cont/explorer_open_btn.tooltip_text = "Open " + ProjectSettings.globalize_path(selected_beatz_path.get_base_dir()) + " in your explorer."
 	
@@ -606,7 +643,7 @@ func _ready() -> void:
 	
 	apply_note_style()
 	
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 	
 	$waveform.use_chunks = true
 	$waveform.setup(selected_stream)
@@ -673,16 +710,16 @@ func _open_note_context_menu(note, pos: Vector2, multiple: bool = false) -> void
 		
 		$no_note_context/title.text = "No note"
 		
-		no_ctx_place_type = get_lane_type(pos - Vector2(15, 15))
+		NoteContextSystem.no_ctx_place_type = get_lane_type(pos - Vector2(15, 15))
 		
-		var idx = type_map.find(no_ctx_place_type)
+		var idx = NoteContextSystem.type_map.find(NoteContextSystem.no_ctx_place_type)
 
 		if idx != -1:
 			$no_note_context/type_drop.select(idx)
 		
 		$no_note_context/place_details.text = "Of Type %s with Hold of %s ms" % [$no_note_context/type_drop.get_item_text(idx), $no_note_context/hold_edit.text]
 		
-		$no_note_context/btns_cont/paste.text = "Paste %s Notes" % copied_notes.size()
+		$no_note_context/btns_cont/paste.text = "Paste %s Notes" % NoteContextSystem.copied_notes.size()
 		return
 		
 	if multiple:
@@ -712,7 +749,7 @@ func _open_note_context_menu(note, pos: Vector2, multiple: bool = false) -> void
 		$note_context/hold_edit.text = str(note.hold_ms)
 		$note_context/timestamp_edit.text = str(note.timestamp)
 
-		var type_index = type_map.find(note.type)
+		var type_index = NoteContextSystem.type_map.find(note.type)
 		$note_context/type_drop.select(type_index)
 
 func _fit_menu_to_screen(menu: Control, pos: Vector2) -> Vector2:
@@ -754,7 +791,7 @@ func _apply_note_changes():
 	notes[ctx_note_index] = data
 
 	set_save_warn()
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 
 func _apply_multiple_note_changes():
 	for n in ctx_multiple_notes:
@@ -779,8 +816,8 @@ func _apply_multiple_note_changes():
 		notes[idx] = data
 
 	set_save_warn()
-	_setup_notes()
-	calculate_difficulty_threaded()
+	ChartDisplaySystem._setup_notes()
+	ChartDisplaySystem.calculate_difficulty_threaded()
 
 func hide_all_note_context_menus():
 	$note_context.hide()
@@ -796,32 +833,32 @@ var hold_original_value := 0.0
 var hold_changed := false
 
 func _process(delta: float) -> void:
-	_update_visible_notes()
-	_update_visible_beatlines()
+	ChartDisplaySystem._update_visible_notes()
+	ChartDisplaySystem._update_visible_beatlines()
 	
-	if difficulty_calculating and difficulty_thread and not difficulty_thread.is_alive():
-		difficulty_result = difficulty_thread.wait_to_finish()
+	if ChartDisplaySystem.difficulty_calculating and ChartDisplaySystem.difficulty_thread and not ChartDisplaySystem.difficulty_thread.is_alive():
+		ChartDisplaySystem.difficulty_result = ChartDisplaySystem.difficulty_thread.wait_to_finish()
 
-		update_difficulty_graph()
-		difficulty_calculating = false
+		ChartDisplaySystem.update_difficulty_graph()
+		ChartDisplaySystem.difficulty_calculating = false
 
 		#print("finished calc", difficulty_result)
 
 	# if notes changed while thread was running
-	if difficulty_dirty and not difficulty_calculating:
-		calculate_difficulty_threaded()
+	if ChartDisplaySystem.difficulty_dirty and not ChartDisplaySystem.difficulty_calculating:
+		ChartDisplaySystem.calculate_difficulty_threaded()
 
-	if difficulty_result.is_empty():
+	if ChartDisplaySystem.difficulty_result.is_empty():
 		return
 
 	$Control/chart_details/diff.text = "Difficulty: %s (%.2f)" % [
 		selected_difficulty.to_pascal_case(),
-		difficulty_result["rating"]
+		ChartDisplaySystem.difficulty_result["rating"]
 	]
 
-	$Control/chart_details/diff2.text = "Peak NPS: %.2f" % difficulty_result["peak_nps"]
+	$Control/chart_details/diff2.text = "Peak NPS: %.2f" % ChartDisplaySystem.difficulty_result["peak_nps"]
 
-	$Control/chart_details/diff3.text = "Average NPS: %.2f" % difficulty_result["average_nps"]
+	$Control/chart_details/diff3.text = "Average NPS: %.2f" % ChartDisplaySystem.difficulty_result["average_nps"]
 	
 	if chart_scroll_tween and chart_scroll_tween.is_running():
 		video_seek_timer += delta
@@ -846,6 +883,9 @@ func _process(delta: float) -> void:
 
 	# Space bar toggles play/pause
 	if Input.is_action_just_pressed("ui_select"): # space
+		if EditorRecordingSystem.recording:
+			EditorRecordingSystem.toggle_pause()
+			return
 		if playing:
 			_pause()
 		else:
@@ -982,7 +1022,7 @@ func _process(delta: float) -> void:
 			if type == "out": preview_note.hide()
 			else: preview_note.show()
 			
-			preview_note.position.x = _get_note_x(type)
+			preview_note.position.x = ChartDisplaySystem._get_note_x(type)
 			
 			if preview_note.type != type: preview_note.set_type(type)
 			
@@ -1035,6 +1075,8 @@ func _process(delta: float) -> void:
 				n.modulate = Color.CYAN
 			else:
 				n.modulate = Color.WHITE
+			if EditorRecordingSystem.range_preview_active:
+				EditorRecordingSystem.refresh_note_range_visual(n)
 	
 	if not playing and editor_mode == "view":
 		if dragging_selected_notes and dragged_note:
@@ -1046,7 +1088,7 @@ func _process(delta: float) -> void:
 				get_viewport().get_mouse_position()
 			)
 
-			var target_x = _get_note_x(lane_type)
+			var target_x = ChartDisplaySystem._get_note_x(lane_type)
 
 			# ORIGINAL dragged note position
 			var dragged_data = selected_note_offsets[dragged_note]
@@ -1096,6 +1138,8 @@ func _process(delta: float) -> void:
 
 					if n.type != lane_type:
 						n.set_type(lane_type)
+						if EditorRecordingSystem.range_preview_active:
+							EditorRecordingSystem.refresh_note_range_visual(n)
 
 				var idx = n.note_index
 
@@ -1148,7 +1192,10 @@ func close_panel_from_input():
 			continue
 		
 		if menu.scale > Vector2.ZERO:
-			transition(menu, "scale", Vector2.ZERO, 0.2, true)
+			if menu.name == "recording_panel":
+				EditorRecordingSystem.close_panel()
+			else:
+				transition(menu, "scale", Vector2.ZERO, 0.2, true)
 
 func set_save_warn():
 	saved = false
@@ -1162,14 +1209,17 @@ func _input(event):
 		if editor_mode == "none":
 			return
 		_on_reload_pressed()
-	if Input.is_action_just_pressed("pause-back"):
+	if event.is_action_pressed("pause-back") and (
+		not event is InputEventJoypadButton
+		or (event as InputEventJoypadButton).button_index == JOY_BUTTON_B
+	):
 		if editor_mode == "settings": _on_back_pressed()
 		close_panel_from_input()
 	
 	if Input.is_action_just_pressed("save_quit"):
 		if editor_mode == "none":
 			return
-		_on_save_to_list_pressed()
+		SaveSystem._on_save_to_list_pressed()
 		await save
 		_on_exit_pressed()
 		
@@ -1182,17 +1232,17 @@ func _input(event):
 	if Input.is_action_just_pressed("editor_save"):
 		if editor_mode == "none":
 			return
-		_on_save_to_list_pressed()
+		SaveSystem._on_save_to_list_pressed()
 	
 	if Input.is_action_just_pressed("editor_save_copy"):
 		if editor_mode == "none":
 			return
-		_on_save_copy_to_list_pressed()
+		SaveSystem._on_save_copy_to_list_pressed()
 	
 	if Input.is_action_just_pressed("editor_share"):
 		if editor_mode == "none":
 			return
-		_on_share_chart_pressed()
+		SaveSystem._on_share_chart_pressed()
 		$Control/chart_controls/saved_to_popup.text = "Sharing..."
 		$Control/chart_controls/saved_to_popup.size = Vector2(121.0, 40.0)
 		$popups.stop()
@@ -1220,16 +1270,16 @@ func _input(event):
 		redo()
 	
 	if Input.is_action_just_pressed("ui_text_delete"):
-		delete_notes(selected_notes)
+		NoteContextSystem.delete_notes(selected_notes)
 	
 	if Input.is_action_just_pressed("ui_copy"):
-		copy_selected_notes()
+		NoteContextSystem.copy_selected_notes()
 	
 	if Input.is_action_just_pressed("ui_cut"):
-		cut_selected_notes()
+		NoteContextSystem.cut_selected_notes()
 	
 	if Input.is_action_just_pressed("ui_paste"):
-		paste_copied_notes()
+		NoteContextSystem.paste_copied_notes()
 		
 	
 	var mouse_pos := get_viewport().get_mouse_position()
@@ -1272,6 +1322,8 @@ func _input(event):
 								n.modulate = Color.CYAN
 							else:
 								n.modulate = Color.WHITE
+							if EditorRecordingSystem.range_preview_active:
+								EditorRecordingSystem.refresh_note_range_visual(n)
 
 						dragged_note = hovered_note
 						dragged_note_index = hovered_note.note_index
@@ -1329,7 +1381,7 @@ func _input(event):
 								"after": move_after.duplicate(true)
 							})
 
-						calculate_difficulty_threaded()
+						ChartDisplaySystem.calculate_difficulty_threaded()
 
 					dragging_selected_notes = false
 
@@ -1434,7 +1486,7 @@ func _input(event):
 						"scroll": $Control/chart_controls/chart_scroll.value
 					})
 
-				calculate_difficulty_threaded()
+				ChartDisplaySystem.calculate_difficulty_threaded()
 
 				right_click_hold_armed = false
 				hold_changed = false
@@ -1499,67 +1551,6 @@ func _input(event):
 var chart_scroll_tween: Tween = null
 var chart_scroll_velocity := 0.0
 var last_scroll_time := 0.0
-
-func _on_note_hovered(note: Node2D) -> void:
-	if hovered_note == note:
-		return
-
-	if hovered_note:
-		var t = create_tween()
-		t.tween_property(hovered_note.get_node("noteImg"), "scale", Vector2.ONE, 0.15)
-		t.parallel().tween_property(hovered_note.get_node("noteImg"), "modulate", Color(1,1,1,1), 0.2)
-
-	hovered_note = note
-
-	if editor_mode == "view":
-		var t = create_tween()
-		t.tween_property(note.get_node("noteImg"), "scale", Vector2(1.05, 1.05), 0.1)
-		t.parallel().tween_property(note.get_node("noteImg"), "modulate", Color(0.607, 1.0, 0.577, 1.0), 0.2)
-
-	elif editor_mode == "delete":
-		var t = create_tween()
-		t.tween_property(note.get_node("noteImg"), "scale", Vector2(0.95, 0.95), 0.1)
-		t.parallel().tween_property(note.get_node("noteImg"), "modulate", Color(1,1,1,0.6), 0.15)
-
-func _on_note_unhovered(note: Node2D) -> void:
-	if hovered_note != note:
-		return
-
-	var t = create_tween()
-	t.tween_property(note.get_node("noteImg"), "scale", Vector2.ONE, 0.15)
-	t.parallel().tween_property(note.get_node("noteImg"), "modulate", Color(1,1,1,1), 0.2)
-
-	hovered_note = null
-
-func _on_note_pressed(note: Node2D, event: InputEventMouseButton) -> void:
-	if event.button_index == MOUSE_BUTTON_LEFT:
-		if editor_mode == "view":
-			dragged_note = note
-
-		elif editor_mode == "delete":
-			delete_note(note)
-
-	if event.button_index == MOUSE_BUTTON_RIGHT:
-		if editor_mode in ["view"]:
-			resizing_hold_note = note
-
-			# if note has no hold yet, create a temporary one so visuals appear
-			if resizing_hold_note.hold_ms < 0.0:
-				resizing_hold_note.hold_ms = 0.0
-
-				var bar = resizing_hold_note.get_node("HoldBar2D")
-				var bar2 = resizing_hold_note.get_node("HoldBar")
-				var end = resizing_hold_note.get_node("note_hold_end")
-
-				bar.visible = true
-				bar2.visible = true
-				if Settings.misc.editor_show_note_hold_ends: end.visible = true
-
-				bar.points[1].y = 0.0
-				bar.points[2].y = 20.0
-				bar2.size.y = 0.0
-				end.position.y = 0.0
-
 
 func get_note_under_mouse() -> Node2D:
 	var mouse_pos = $notes.get_local_mouse_position()
@@ -1637,7 +1628,7 @@ func delete_note(note_to_delete):
 		note_to_delete.hit()
 
 	set_save_warn()
-	calculate_difficulty_threaded()
+	ChartDisplaySystem.calculate_difficulty_threaded()
 
 	if not deleted_snapshot.is_empty():
 		push_history({
@@ -1673,7 +1664,7 @@ func place_note_at(y_pos: float, note_type: String, timestamp_override: float = 
 	
 	#print("appended: ", note_type)
 	
-	calculate_difficulty_threaded()
+	ChartDisplaySystem.calculate_difficulty_threaded()
 
 	# Add to undo history (only if not from undo/redo)
 	if record_history:
@@ -1729,6 +1720,37 @@ func _update_video_frame() -> void:
 func _on_chart_scroll_drag_ended(value_changed: bool) -> void:
 	if value_changed: _update_video_frame()
 
+func _on_chart_scroll_mouse_entered() -> void:
+	$Control/chart_controls/scroll_time_hover.show()
+	var t = create_tween()
+	t.tween_property($Control/chart_controls/scroll_time_hover, "modulate", Color.WHITE, 0.15)
+
+func _on_chart_scroll_mouse_exited() -> void:
+	var t = create_tween()
+	t.tween_property($Control/chart_controls/scroll_time_hover, "modulate", Color.TRANSPARENT, 0.15)
+
+func _on_chart_scroll_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		var chart_scroll: VSlider = $Control/chart_controls/chart_scroll
+		var local_y: float = chart_scroll.get_local_mouse_position().y
+		var height: float = max(chart_scroll.size.y, 1.0)
+		var ratio: float = clamp(1.0 - (local_y / height), 0.0, 1.0)
+		var hover_seconds: float = chart_scroll.min_value + (
+			(chart_scroll.max_value - chart_scroll.min_value) * ratio
+		)
+
+		var total_milliseconds: int = int(round(clampf(hover_seconds, 0.0, song_len) * 1000.0))
+		@warning_ignore("integer_division")
+		var minutes: int = total_milliseconds / 60000
+		@warning_ignore("integer_division")
+		var seconds: int = (total_milliseconds % 60000) / 1000
+		var milliseconds: int = total_milliseconds % 1000
+
+		var hover_panel: Panel = $Control/chart_controls/scroll_time_hover
+		hover_panel.get_node("time_lbl").text = "%d:%02d:%03d" % [minutes, seconds, milliseconds]
+
+		hover_panel.position = Vector2(chart_scroll.position.x - 110.0, get_local_mouse_position().y - 550.0)
+
 func _scroll_time_to_y(time: float) -> float:
 	if setting_up: return 0.0
 	
@@ -1737,7 +1759,6 @@ func _scroll_time_to_y(time: float) -> float:
 	return lerp(highest_note_y, 0.0, ratio)
 
 func _on_zoom_scroll_value_changed(value: float) -> void:
-	
 	zoom = value
 	$Control/zoom_label.text = "Zoom: " + str(zoom)
 
@@ -1809,6 +1830,9 @@ func _play() -> void:
 
 func _pause() -> void:
 	if setting_up: return
+	if EditorRecordingSystem.recording:
+		EditorRecordingSystem.toggle_pause()
+		return
 	
 	restore_editor_mode()
 	if preview_note: preview_note.show()
@@ -1829,525 +1853,20 @@ func _pause() -> void:
 		else:
 			btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
-var difficulty_thread: Thread
-var difficulty_result: Dictionary = {}
-var difficulty_calculating := false
-var difficulty_dirty := false
 
-var difficulty_graph_data := {}
-
-func calculate_difficulty_threaded() -> void:
-	difficulty_dirty = true
-
-	if difficulty_calculating:
-		return
-
-	difficulty_calculating = true
-	difficulty_dirty = false
-
-	if difficulty_thread and difficulty_thread.is_started():
-		difficulty_thread.wait_to_finish()
-
-	difficulty_thread = Thread.new()
-	difficulty_thread.start(calculate_difficulty)
-
-
-func calculate_difficulty() -> Dictionary:
-	#print("runnning")
-	if notes.is_empty():
-		return {
-			"rating": 0.0,
-			"peak_nps": 0.0,
-			"average_nps": 0.0
-		}
-
-	var sorted_notes := notes.duplicate()
-
-	sorted_notes.sort_custom(func(a, b):
-		return a.timestamp < b.timestamp
-	)
-
-	var note_counts := {}
-	var graph_data := {}
-
-	var total_notes := sorted_notes.size()
-	var diagonal_notes := 0
-
-	var break_penalty := 0.0
-
-	var first_timestamp: float = sorted_notes[0].timestamp
-	var last_timestamp: float = sorted_notes[-1].timestamp
-
-	var previous_timestamp := first_timestamp
-
-	for i in total_notes:
-		var note = sorted_notes[i]
-
-		var timestamp: float = note.timestamp
-
-		var second := int(timestamp * 0.001)
-
-		var new_count = note_counts.get(second, 0) + 1
-
-		note_counts[second] = new_count
-		graph_data[second] = new_count
-
-		match note.type:
-			"Upright", "Downright", "Upleft", "Downleft":
-				diagonal_notes += 1
-
-		if i != 0:
-			var gap_seconds := (timestamp - previous_timestamp) * 0.001
-
-			if gap_seconds > 3.0:
-				break_penalty += (gap_seconds - 3.0) * 0.005
-
-		previous_timestamp = timestamp
-
-	var peak_nps := 0.0
-	var total_nps := 0.0
-
-	for nps in note_counts.values():
-		total_nps += nps
-
-		if nps > peak_nps:
-			peak_nps = nps
-
-	var active_sections: float = max(note_counts.size(), 1)
-
-	var average_nps: float = total_nps / active_sections
-
-	var song_length: float = max((last_timestamp - first_timestamp) * 0.001, 1.0)
-
-	var length_factor: float = clamp(song_length / 120.0, 0.85, 1.15)
-
-	var diagonal_ratio: float = float(diagonal_notes) / max(total_notes, 1)
-	var diagonal_bonus: float = 1.0 + (diagonal_ratio * 0.08)
-
-	var difficulty_rating := (
-		average_nps * 0.95 +
-		peak_nps * 0.3
-	)
-
-	difficulty_rating *= length_factor
-	difficulty_rating *= diagonal_bonus
-
-	difficulty_rating -= break_penalty
-
-	return {
-		"rating": snappedf(max(difficulty_rating, 0.0), 0.01),
-		"peak_nps": snappedf(peak_nps, 0.01),
-		"average_nps": snappedf(average_nps, 0.01),
-		"song_length": snappedf(song_length, 0.01),
-		"break_penalty": snappedf(break_penalty, 0.01),
-		"diagonal_ratio": snappedf(diagonal_ratio, 0.001),
-		"graph_data": graph_data
-	}
-
-func get_nps_color(nps: float) -> Color:
-	var t = clamp(nps / 35.0, 0.0, 1.0)
-
-	var cyan := Color(0.0, 1.0, 1.0, 0.5)        # 0 NPS
-	var blue := Color(0.702, 0.0, 1.0, 0.6)
-	var purple := Color(1.0, 0.0, 0.482, 0.7)
-	var red := Color(1.0, 0.0, 0.0, 0.9)
-	var black := Color(0.0, 0.0, 0.0, 1.0)       # 35 NPS
-
-	if t < 0.25:
-		return cyan.lerp(blue, t / 0.25)
-	elif t < 0.5:
-		return blue.lerp(purple, (t - 0.25) / 0.25)
-	elif t < 0.8:
-		return purple.lerp(red, (t - 0.5) / 0.25)
-	else:
-		return red.lerp(black, (t - 0.75) / 0.25)
-
-func update_difficulty_graph() -> void:
-	if not Settings.misc.editor_show_diff_graph:
-		return
-
-	var scroll := $Control/chart_controls/chart_scroll
-
-	for child in scroll.get_children():
-		if child is ColorRect:
-			child.queue_free()
-
-	if difficulty_result.is_empty():
-		return
-
-	if not difficulty_result.has("graph_data"):
-		return
-
-	var graph_data: Dictionary = difficulty_result["graph_data"]
-	if graph_data.is_empty():
-		return
-
-	var peak_nps: float = max(difficulty_result["peak_nps"], 1.0)
-
-	var scroll_height = scroll.size.y
-	var max_second = max(int(song_len), 1)
-
-	var BAR_COUNT: int = int(scroll_height / 4.0)
-	var seconds_per_bar: float = float(max_second) / float(BAR_COUNT)
-
-	for bar_index in range(BAR_COUNT):
-		var start_second: float = bar_index * seconds_per_bar
-		var end_second: float = (bar_index + 1) * seconds_per_bar
-
-		var total_nps := 0.0
-		var samples := 0
-
-		for second in graph_data.keys():
-			if second >= start_second and second < end_second:
-				total_nps += graph_data[second]
-				samples += 1
-
-		var nps := 0.0
-		if samples > 0:
-			nps = total_nps / samples
-
-		var rect := ColorRect.new()
-		rect.name = "diff_rect_%s" % bar_index
-
-		# WIDTH = strength (relative)
-		var width_strength = clamp(nps / peak_nps, 0.0, 1.0)
-		rect.size = Vector2(lerpf(20.0, 75.0, width_strength), 2)
-
-		var y = scroll_height - (
-			(float(bar_index) / float(BAR_COUNT)) * scroll_height
-		)
-
-		rect.position = Vector2(12, y - 4)
-
-		rect.z_index = -1
-		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-		# COLOR = absolute NPS scale (0 → 35)
-		rect.color = get_nps_color(nps)
-
-		var mat := CanvasItemMaterial.new()
-		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-		rect.material = mat
-
-		scroll.add_child(rect)
 
 var highest_note_y := 0.0
 var highest_timestamp: float = 0.0
 
 var rendered_notes := {}
 
-const NOTE_RENDER_DISTANCE: float = 986.0
 
-func _setup_notes():
-	if setting_up:
-		return
-
-	for child in $notes.get_children():
-		child.queue_free()
-
-	rendered_notes.clear()
-
-	var highest_y: float = ((song_len_ms) * note_speed / zoom)
-	#var highest_time: float = song_len
-
-	for n: Dictionary in notes:
-		var timestamp = n.timestamp + OFFSET + BASE_TIME
-		var y = (timestamp * note_speed / 10.0) * -1
-
-		if -y > highest_y:
-			highest_y = -y
-
-		#if (n.timestamp + 1080.0) / 1000.0 > highest_time:
-			#highest_time = (n.timestamp + 1080.0) / 1000.0
-
-	highest_note_y = highest_y
-	highest_timestamp = song_len
-
-	$Control/chart_controls/chart_scroll.min_value = 0
-	$Control/chart_controls/chart_scroll.max_value = highest_timestamp
-
-	$Control/chart_details/note_count.text = "Total notes: " + str(notes.size())
-
-	_update_visible_notes()
-
-	calculate_difficulty_threaded()
-	
-	_update_visible_beatlines()
-
-func _update_visible_notes():
-	var min_y = -1 * get_y() - NOTE_RENDER_DISTANCE
-	var max_y = -1 * get_y() + NOTE_RENDER_DISTANCE
-
-	var visible_notes := {}
-
-	for i in range(notes.size()):
-		var n = notes.get(i)
-		
-		if n == null:
-			print("Note not found in index ", i)
-			continue
-
-		var timestamp = n.timestamp + (OFFSET * 2) + BASE_TIME
-		var y = (timestamp * note_speed / 10.0) * -1
-
-		var hold_ms: float = 0.0
-		if n.has("hold"):
-			hold_ms = n.hold
-
-		var tail_y = y
-		if hold_ms > 0.0:
-			var hold_pixels := (hold_ms * note_speed / 10.0)
-			tail_y = y + -hold_pixels  # downward extension (because y is inverted)
-
-		var on_screen = not (
-			(max(y, tail_y) < min_y) or
-			(min(y, tail_y) > max_y)
-		)
-
-		if not on_screen:
-			continue
-		
-		visible_notes[i] = true
-
-		if rendered_notes.has(i):
-			var existing = rendered_notes[i]
-
-			if is_instance_valid(existing):
-				continue
-
-			rendered_notes.erase(i)
-
-		var obj := NOTE.instantiate()
-		
-		obj.note_index = i
-		
-		obj.note_id = n.get("id", -1)
-
-		obj.edit = true
-		obj.timestamp = n.timestamp
-
-		var x := _get_note_x(n.type)
-
-		obj.position = Vector2(x, y)
-		obj.scale = Vector2(0.65, 0.65)
-
-		if n.has("hold") and n.hold > 0.0:
-			obj.hold_ms = n.hold
-
-		var effects := []
-
-		for fx in n.keys():
-			if fx == "timestamp" or fx == "type":
-				continue
-
-			effects.append([fx, n[fx]])
-
-		obj.effects = effects
-
-		obj.set_type(n.type)
-
-		obj.editor_hovered.connect(_on_note_hovered)
-		obj.editor_unhovered.connect(_on_note_unhovered)
-		obj.editor_pressed.connect(_on_note_pressed)
-		
-		if menu_open: obj.get_node("editor_hitbox").mouse_filter = MOUSE_FILTER_IGNORE
-
-		$notes.add_child(obj)
-
-		rendered_notes[i] = obj
-
-	var to_remove := []
-
-	for i in rendered_notes.keys():
-		if visible_notes.has(i):
-			continue
-
-		var obj = rendered_notes[i]
-
-		# keep selected notes alive even offscreen
-		if selected_notes.has(obj):
-			continue
-
-		if is_instance_valid(obj):
-			obj.queue_free()
-
-		to_remove.append(i)
-
-	for i in to_remove:
-		rendered_notes.erase(i)
-
-func _get_note_x(type: String) -> float:
-	match type:
-		"Effect",  "Section":
-			return $stationary_notes/noteEffectSprite.position.x
-
-		"Upleft":
-			return $stationary_notes/noteUpleftSprite.position.x
-
-		"Downleft":
-			return $stationary_notes/noteDownleftSprite.position.x
-
-		"Left":
-			return $stationary_notes/noteLeftSprite.position.x
-
-		"Down":
-			return $stationary_notes/noteDownSprite.position.x
-
-		"Up":
-			return $stationary_notes/noteUpSprite.position.x
-
-		"Right":
-			return $stationary_notes/noteRightSprite.position.x
-
-		"Downright":
-			return $stationary_notes/noteDownrightSprite.position.x
-
-		"Upright":
-			return $stationary_notes/noteUprightSprite.position.x
-	
-	if type != "out": print("Unrecognized note type: ", type)
-	return $stationary_notes/noteEffectSprite.position.x
-
-var rendered_beatlines := {}
-const BEAT_RENDER_DISTANCE := 1000.0
-
-func y_to_timestamp(y: float) -> float:
-	return (-y * zoom / note_speed) - BASE_TIME - (OFFSET * 2.0)
-	
-func timestamp_to_y(t: float) -> float:
-	return ((t + BASE_TIME + (OFFSET * 2.0)) * note_speed / zoom) * -1.0
-
-func _update_visible_beatlines():
-	var min_y = -1 * get_y() - BEAT_RENDER_DISTANCE
-	var max_y = -1 * get_y() + BEAT_RENDER_DISTANCE
-
-	var min_time = y_to_timestamp(max_y)
-	var max_time = y_to_timestamp(min_y)
-
-	var interval := beattime_ms
-	var sub_div := 4
-
-	# IMPORTANT: align start to actual interval grid
-	var start_t = floor(min_time / interval) * interval
-
-	var visible_beatlines := {}
-	var t = start_t
-
-	while t <= max_time:
-		# DO NOT SNAP main_time
-		var main_time = t
-
-		var main_key := "beat_%d" % round(main_time * 1000.0)
-		visible_beatlines[main_key] = true
-
-		if not rendered_beatlines.has(main_key):
-			var y := timestamp_to_y(main_time)
-
-			var line := BEAT.instantiate()
-			line.position = Vector2(960, y)
-			line.process_mode = Node.PROCESS_MODE_DISABLED
-			$beatlines.add_child(line)
-
-			rendered_beatlines[main_key] = line
-		else:
-			var line = rendered_beatlines[main_key]
-			if is_instance_valid(line):
-				line.position.y = timestamp_to_y(main_time)
-
-		# SUBDIVISIONS (pure math, no snapping
-		for i in range(1, sub_div):
-			var sub_time = t + (interval * float(i) / sub_div)
-
-			var sub_key := "beat_%d_%d" % [round(t * 1000.0), i]
-			visible_beatlines[sub_key] = true
-
-			if not rendered_beatlines.has(sub_key):
-				var y := timestamp_to_y(sub_time)
-
-				var sub := BEAT.instantiate()
-				sub.position = Vector2(960, y)
-				sub.scale = Vector2(2.6, 0.3)
-				sub.modulate = Color(0.5, 0.5, 0.5, 1.0)
-				sub.process_mode = Node.PROCESS_MODE_DISABLED
-
-				$beatlines.add_child(sub)
-				rendered_beatlines[sub_key] = sub
-			else:
-				var sub = rendered_beatlines[sub_key]
-				if is_instance_valid(sub):
-					sub.position.y = timestamp_to_y(sub_time)
-
-		t += interval
-
-	# cleanup
-	var to_remove := []
-
-	for k in rendered_beatlines.keys():
-		if not visible_beatlines.has(k):
-			if is_instance_valid(rendered_beatlines[k]):
-				rendered_beatlines[k].queue_free()
-			to_remove.append(k)
-
-	for k in to_remove:
-		rendered_beatlines.erase(k)
-
-
-
-func _setup_beatlines():
-	for line in $beatlines.get_children():
-		line.queue_free()
-
-	var t := 0.0 - beattime * 16
-	var times := local_beat_offset
-
-	while t <= song_len:
-		# MAIN BEAT
-		var main_timestamp := t + times
-
-		var y = (
-			((main_timestamp * 1000.0) + BASE_TIME - OFFSET)
-			* note_speed
-			/ zoom
-		) * -1.0
-
-		var main_line := BEAT.instantiate()
-
-		main_line.position = Vector2(960, y)
-		main_line.process_mode = Node.PROCESS_MODE_DISABLED
-
-		$beatlines.add_child(main_line)
-		
-		# SUBDIVISIONS
-		for i in range(1, 4):
-			var sub_t := t + (beattime / 4.0) * i
-
-			if sub_t > song_len:
-				break
-
-			var sub_timestamp := sub_t + times
-
-			var sub_y = (
-				((sub_timestamp * 1000.0) + BASE_TIME - OFFSET)
-				* note_speed
-				/ zoom
-			) * -1.0
-
-			var sub_line := BEAT.instantiate()
-
-			sub_line.position = Vector2(960, sub_y)
-			sub_line.scale = Vector2(2.6, 0.3)
-			sub_line.modulate = Color(0.5, 0.5, 0.5, 1.0)
-			sub_line.process_mode = Node.PROCESS_MODE_DISABLED
-
-			$beatlines.add_child(sub_line)
-
-		t += beattime
 
 func _on_reload_pressed() -> void:
 	for obj in $notes.get_children():
 		if obj.name != "preview": obj.queue_free()
 	
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 	
 	$waveform.regenerate()
 	#$Control/chart_controls/waveform._draw_preview()
@@ -2355,7 +1874,9 @@ func _on_reload_pressed() -> void:
 	$Control/editor_controls/reload.release_focus()
 
 func _on_play_pressed() -> void:
-	if playing:
+	if EditorRecordingSystem.recording:
+		EditorRecordingSystem.toggle_pause()
+	elif playing:
 		_pause()
 	else:
 		_play()
@@ -2363,7 +1884,10 @@ func _on_play_pressed() -> void:
 	$Control/chart_btns/btn_cont/play.release_focus()
 
 func _on_song_finished() -> void:
-	_pause()
+	if EditorRecordingSystem.recording:
+		EditorRecordingSystem._finish_recording()
+	else:
+		_pause()
 
 func _on_place_btn_pressed() -> void:
 	editor_mode = "place"
@@ -2453,7 +1977,7 @@ var menu_open: bool = false
 
 var active_tweens: Array[Tween] = []
 
-func transition(panel: Object, property: String, to: Variant, time: float, close: bool): 
+func transition(panel: Object, property: String, to: Variant, time: float, close: bool, tween_playback_speed: bool = true): 
 	if menu_open and close == false: return
 	if close:
 		menu_open = false
@@ -2482,8 +2006,9 @@ func transition(panel: Object, property: String, to: Variant, time: float, close
 	
 	t.tween_property(panel, property, to, time).set_trans(Tween.TRANS_CIRC) 
 	t.parallel().tween_property($overlay, "modulate", Color(0, 0, 0, 0.5) if not close else Color(0, 0, 0, 0.0), 0.2).set_trans(Tween.TRANS_CUBIC)
-	t.parallel().tween_property($song, "pitch_scale", 0.85 if not close else 1.0, 0.2)
-	t.parallel().tween_property($Control/VideoPlayback, "playback_speed", 0.85 if not close else 1.0, 0.2)
+	if tween_playback_speed:
+		t.parallel().tween_property($song, "pitch_scale", 0.85 if not close else 1.0, 0.2)
+		t.parallel().tween_property($Control/VideoPlayback, "playback_speed", 0.85 if not close else 1.0, 0.2)
 
 func disable_editor_notes():
 	if $notes.get_child_count() == 0: return
@@ -2533,6 +2058,38 @@ func _on_exit_pressed() -> void:
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = main
 
+func _load_selected_artists() -> void:
+	var passed_artists := selected_artists.duplicate()
+	selected_artists.clear()
+	var has_artist_array := false
+	var info_path := selected_beatz_path.get_base_dir().path_join("info.json")
+	if FileAccess.file_exists(info_path):
+		var info_json: Variant = JSON.parse_string(FileAccess.get_file_as_string(info_path))
+		if typeof(info_json) == TYPE_DICTIONARY and typeof(info_json.get("info")) == TYPE_DICTIONARY:
+			var info: Dictionary = info_json["info"]
+			var artists_value: Variant = info.get("artists", null)
+			if artists_value is Array and not artists_value.is_empty():
+				selected_artists = General.artist_names_from_info(info)
+				has_artist_array = not selected_artists.is_empty()
+
+	if not has_artist_array and passed_artists.size() > 1:
+		selected_artists = passed_artists
+		has_artist_array = true
+
+	MetadataSystem.legacy_artist_needs_split = false
+	if not has_artist_array:
+		var legacy_artist := str(selected_artist).strip_edges()
+		if legacy_artist != "":
+			selected_artists.append(legacy_artist)
+		MetadataSystem.legacy_artist_needs_split = (
+			selected_artists.is_empty()
+			or legacy_artist.contains(",")
+			or legacy_artist.contains("&")
+			or legacy_artist.contains("/")
+		)
+
+	MetadataSystem.refresh_all_artist_controls()
+
 func _on_cancel_exit_pressed() -> void:
 	restore_editor_mode()
 	transition($Control/exit_warn, "scale", Vector2.ZERO, .2, true)
@@ -2543,6 +2100,8 @@ func _on_cancel_exit_pressed() -> void:
 
 func _on_edit_meta_pressed() -> void:
 	save_editor_mode()
+	selected_artists_before_edit = selected_artists.duplicate()
+	legacy_artist_needs_split_before_edit = MetadataSystem.legacy_artist_needs_split
 	
 	transition($Control/edit_meta_cont, "scale", Vector2.ONE, .2, false)
 	$Control/chart_controls/edit_meta.release_focus()
@@ -2555,8 +2114,9 @@ func _on_edit_meta_pressed() -> void:
 	$Control/edit_meta_cont/bpm_edit.text = str(selected_bpm)
 	$Control/edit_meta_cont/song_file_select.text = "Change song file..."
 	$Control/edit_meta_cont/song_file_label.text = song_path
-	
-	$Control/edit_meta_cont/artist_edit.text = selected_artist
+
+	$Control/edit_meta_cont/artist_edit.clear()
+	MetadataSystem.refresh_artist_added_label("edit_meta_cont")
 	$Control/edit_meta_cont/album_edit.text = selected_album
 	$Control/edit_meta_cont/year_edit.text = str(selected_year)
 	$Control/edit_meta_cont/album_cover_edit.icon = ImageTexture.create_from_image(selected_cover)
@@ -2570,7 +2130,7 @@ func _on_edit_meta_pressed() -> void:
 	if selected_cover: $Control/edit_meta_cont/cover_img_details.text = str(selected_cover.get_width()) + "x" + str(selected_cover.get_height()) + "\n" + selected_album + "\n" + General.format_file_size(selected_cover.get_data_size())
 	else: $Control/edit_meta_cont/cover_img_details.text = "No cover image."
 	
-	$Control/edit_meta_cont/metadata_use_check.set_pressed_no_signal(use_meta_check)
+	$Control/edit_meta_cont/metadata_use_check.set_pressed_no_signal(MetadataSystem.use_meta_check)
 	
 	if not colors.is_empty():
 		var brightest_color = colors[0]
@@ -2590,92 +2150,17 @@ func _on_edit_meta_pressed() -> void:
 		if colors.get(3): $Control/edit_meta_cont/sig_colors_cont/sig_color_pick4.color = colors[3]
 		if colors.get(4): $Control/edit_meta_cont/sig_colors_cont/sig_color_pick5.color = colors[4]
 
-func _on_save_meta_btn_pressed() -> void:
-	restore_editor_mode()
-	transition($Control/edit_meta_cont, "scale", Vector2.ZERO, .2, true)
-	$Control/edit_meta_cont/save_btn.release_focus()
-	
-	$Control/chart_details/chart_name.text = '"' + $Control/edit_meta_cont/chart_name_edit.text + '"'
-	selected_chart_name = $Control/edit_meta_cont/chart_name_edit.text
-	
-	$Control/song_details/song_title.text = $Control/edit_meta_cont/song_name_edit.text
-	selected_title = $Control/edit_meta_cont/song_name_edit.text
-	
-	$Control/chart_details/charter.text = $Control/edit_meta_cont/charter_edit.text
-	selected_charter = $Control/edit_meta_cont/charter_edit.text
-	
-	var diff_text: String = $Control/edit_meta_cont/diff_edit.text.strip_edges()
-	$Control/chart_details/diff.text = "Difficulty: " + diff_text.to_pascal_case() if diff_text != "" else "Easy"
-	selected_difficulty = $Control/edit_meta_cont/diff_edit.text
-	
-	$Control/chart_details/diff_tex.texture = $Control/edit_meta_cont/diff_texture_edit.icon
-	selected_diff_texture = $Control/edit_meta_cont/diff_texture_edit.icon
-	
-	var bpm_text: String = $Control/edit_meta_cont/bpm_edit.text.strip_edges()
-	$Control/chart_details/bpm.text = "BPM: " + bpm_text if bpm_text != "" else "BPM: 120"
-	selected_bpm = float($Control/edit_meta_cont/bpm_edit.text)
-	
-	_update_visible_beatlines()
-	
-	$Control/song_details/song_artist.text = $Control/edit_meta_cont/artist_edit.text
-	selected_artist = $Control/edit_meta_cont/artist_edit.text
-	
-	if selected_artist.to_upper() == "LINKIN PARK":
-		$Control/song_details/song_artist.text = "[b]" + selected_artist.to_upper() + "[/b]"
-		$Control/song_details/song_artist.position.y = 56.0
-	else:
-		$Control/song_details/song_artist.text = selected_artist
-		#$Control/song_details/song_artist.position.y = 62.0
-	
-	$Control/song_details/album.text = $Control/edit_meta_cont/album_edit.text
-	selected_album = $Control/edit_meta_cont/album_edit.text
-	
-	var cov: ImageTexture = $Control/edit_meta_cont/album_cover_edit.icon
-	if cov: 
-		selected_cover = cov.get_image()
-		$Control/song_details/sha.show()
-	else: 
-		selected_cover = preload("res://Resources/misc/noCover.png").get_image()
-		$Control/song_details/sha.hide()
-	
-	selected_background_name = $Control/edit_meta_cont/bg_img_details.get_meta("background_name")
-	
-	var bg: ImageTexture
-	
-	if $Control/edit_meta_cont/bg_img_edit.icon: 
-		bg = $Control/edit_meta_cont/bg_img_edit.icon
-		selected_background = bg.get_image()
-	
-	if bg and removed_bg:
-		selected_background = null
-		selected_background_name = ""
-	
-	if not bg:
-		var t = load("res://Resources/defaultBG.png")
-		bg = ImageTexture.create_from_image(t.get_image())
-	
-	$Control/bg.texture = bg
-	
-	$Control/song_details/sha/cover_spin.texture = ImageTexture.create_from_image(selected_cover)
-	
-	$Control/song_details/year.text = $Control/edit_meta_cont/year_edit.text
-	selected_year = int($Control/edit_meta_cont/year_edit.text)
-	
-	$Control/song_details/song_path.text = "Path: " + song_path
-	
-	DisplayServer.window_set_title("Editing %s - %s | Beatz! X" % [selected_title, selected_artist])
-	
-	set_save_warn()
-	
-	set_discord_rpc()
-
 func _on_cancel_btn_pressed() -> void:
 	restore_editor_mode()
 	transition($Control/edit_meta_cont, "scale", Vector2.ZERO, .2, true)
 	$Control/edit_meta_cont/save_btn.release_focus()
+	selected_artists = selected_artists_before_edit.duplicate()
+	MetadataSystem.legacy_artist_needs_split = legacy_artist_needs_split_before_edit
+	MetadataSystem.refresh_all_artist_controls()
 
 var playtest_playback_speed: float = 1.0
 var playtest_start_pos: float = 0.0
+const PLAYTEST_LEAD_IN_SECONDS: float = 4.0
 
 func _on_playtest_pressed() -> void:
 	if setting_up: return
@@ -2741,27 +2226,36 @@ func _on_playtest_test_pressed() -> void:
 	test.set("song_title", selected_title)
 	test.set("album", selected_album)
 	test.set("artist", selected_artist)
+	test.set("selected_artists", selected_artists.duplicate())
 	test.set("year", selected_year)
+	test.set("start_wait", start_wait)
+	test.set("preview_start", preview_start)
+	test.set("preview_end", preview_end)
 	test.set("cover", selected_cover)
 	test.set("customNotes", notes)
 	test.set("difficulty", selected_difficulty)
+	test.set("diff_texture_path", MetadataSystem.diff_texture_path)
 	test.set("chart_name", selected_chart_name)
 	test.set("charter", selected_charter)
+	test.set("fade_in", fade_in)
+	test.set("fade_out", fade_out)
 	test.set("BPM", selected_bpm)
 	test.set("local_beat_offset", local_beat_offset)
 	test.set("selected_background", selected_background)
 	test.set("selected_background_name", selected_background_name)
 	test.set("colors", colors)
-	test.set("background_vid_path", background_vid_path)
-	test.set("cover_loop_vid_path", cover_loop_vid_path)
+	test.set("background_vid_path", MetadataSystem.background_vid_path)
+	test.set("cover_loop_vid_path", MetadataSystem.cover_loop_vid_path)
 
 	test.set("editor_saved", saved)
 
 	print("Giving main a speed ", playtest_playback_speed)
 	test.set("playback_speed", playtest_playback_speed)
 
-	print("Giving main a start pos of ", $Control/chart_controls/chart_scroll.value)
-	test.set("start_pos", playtest_start_pos - Beatz.BASE_REC_TIME / 1.5)
+	var actual_start_pos: float = maxf(playtest_start_pos - PLAYTEST_LEAD_IN_SECONDS, 0.0)
+	test.set("playtest_note_start_pos", playtest_start_pos)
+	print("Giving main a start pos of ", actual_start_pos)
+	test.set("start_pos", actual_start_pos)
 
 	get_tree().root.add_child(test)
 	get_tree().current_scene.queue_free()
@@ -2769,1141 +2263,12 @@ func _on_playtest_test_pressed() -> void:
 
 func _on_playtest_cancel_pressed() -> void:
 	transition($Control/playtest_panel, "scale", Vector2.ZERO, 0.2, true)
-	$Control/playtest_panel/cancel.release_focus()
 
-func _on_complete_setup_btn_pressed() -> void:
-	$Control/create_map_panel/complete_setup_btn.release_focus()
-	
-	restore_editor_mode()
-	$Control/chart_details/chart_name.text = '"' + $Control/create_map_panel/chart_name_edit.text + '"'
-	selected_chart_name = $Control/create_map_panel/chart_name_edit.text
-	
-	$Control/song_details/song_title.text = $Control/create_map_panel/song_name_edit.text
-	selected_title = $Control/create_map_panel/song_name_edit.text
-	
-	$Control/chart_details/charter.text = $Control/create_map_panel/charter_edit.text
-	selected_charter = $Control/create_map_panel/charter_edit.text
-	
-	var diff_text: String = $Control/create_map_panel/diff_edit.text.strip_edges()
-	$Control/chart_details/diff.text = "Difficulty: " + diff_text if diff_text != "" else "Easy"
-	selected_difficulty = $Control/create_map_panel/diff_edit.text
-	
-	$Control/chart_details/diff_tex.texture = $Control/create_map_panel/diff_texture_edit.icon
-	selected_diff_texture = $Control/create_map_panel/diff_texture_edit.icon
-	
-	var bpm_text: String = "BPM: " + $Control/create_map_panel/bpm_edit.text.strip_edges()
-	$Control/chart_details/bpm.text = bpm_text
-	selected_bpm = float($Control/create_map_panel/bpm_edit.text)
-	
-	$Control/song_details/song_artist.text = $Control/create_map_panel/artist_edit.text
-	selected_artist = $Control/create_map_panel/artist_edit.text
-	
-	if selected_artist.to_upper() == "LINKIN PARK":
-		$Control/song_details/song_artist.text = "[b]" + selected_artist.to_upper() + "[/b]"
-		$Control/song_details/song_artist.position.y = 56.0
-	else:
-		$Control/song_details/song_artist.text = selected_artist
-		#$Control/song_details/song_artist.position.y = 62.0
-	
-	$Control/song_details/album.text = $Control/create_map_panel/album_edit.text
-	selected_album = $Control/create_map_panel/album_edit.text
-	
-	var cov: ImageTexture = $Control/create_map_panel/album_cover_edit.icon
-	if cov:
-		selected_cover = cov.get_image()
-		
-		$Control/song_details/sha/cover_spin.texture = cov
-		
-		$Control/song_details/sha.show()
-	else:
-		selected_cover = preload("res://Resources/misc/noCover.png").get_image()
-	
-	selected_background_name = $Control/edit_meta_cont/bg_img_details.get_meta("background_name")
-	
-	var bg: ImageTexture
-	
-	if $Control/edit_meta_cont/bg_img_edit.icon: 
-		bg = $Control/edit_meta_cont/bg_img_edit.icon
-		selected_background = bg.get_image()
-	
-	if bg and removed_bg:
-		selected_background = null
-		selected_background_name = ""
-	
-	if not bg:
-		var t = load("res://Resources/defaultBG.png")
-		bg = ImageTexture.create_from_image(t.get_image())
-	
-	$Control/bg.texture = bg
-	
-	selected_background_name = $Control/edit_meta_cont/bg_img_details.get_meta("background_name")
-	
-	$Control/song_details/year.text = $Control/create_map_panel/year_edit.text
-	selected_year = int($Control/create_map_panel/year_edit.text)
-	
-	$Control/song_details/song_path.text = "Path: " + song_path
-	
-	$Control/edit_meta_cont/explorer_open_btn.tooltip_text = "Open " + song_path.get_base_dir() + " in your explorer."
-	
-	setting_up = false
-	
-	DisplayServer.window_set_title("Editing %s - %s | Beatz! X" % [selected_title, selected_artist])
-	
-	transition($Control/create_map_panel, "scale", Vector2.ZERO, .2, true)
-	
-	_on_reload_pressed()
-	set_discord_rpc()
+func _on_record_pressed() -> void:
+	EditorRecordingSystem.open_panel()
 
-func _on_song_file_select_pressed() -> void:
-	var err := DisplayServer.file_dialog_show(
-		"Open .mp3, .wav or .ogg file.",          # Title
-		"",
-		"",                                            # Initial path (empty means default)
-		true,
-		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,    # Mode: open multiple files
-		General.AUDIO_FORMATS,   # File filters
-		Callable(self, "_on_song_select_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("create_song_file", err, error_string(err))
 
-func _on_edit_song_file_select_pressed() -> void:
-	var err := DisplayServer.file_dialog_show(
-		"Open .mp3, .wav or .ogg file.",          # Title
-		"",
-		"",                                            # Initial path (empty means default)
-		true,
-		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,    # Mode: open multiple files
-		General.AUDIO_FORMATS,   # File filters
-		Callable(self, "_on_edit_song_select_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("edit_song_file", err, error_string(err))
 
-func _on_song_select_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("song select file status", status)
-	print("song select paths ", paths)
-	print("song select filter idx", _filter_idx)
-	
-	if not status or paths.is_empty():
-		return
-	
-	if paths[0].get_extension() not in ["mp3", "ogg", "wav"]:
-		$Control/create_map_panel/song_file_label.text = "Song has to be an mp3, ogg or wav file."
-		return
-	
-	song_path = paths[0]
-	$Control/create_map_panel/song_file_label.text = "Song: " + str(paths[0])
-	
-	var song_didnt_fail := true
-	if song_path.ends_with(".mp3") or song_path.ends_with(".ogg") or song_path.ends_with(".wav"):
-		if song_path.ends_with(".mp3"):
-			selected_stream = AudioStreamMP3.load_from_file(song_path)
-			print("Song created as mp3 ", selected_stream)
-		elif song_path.ends_with(".ogg"):
-			selected_stream = AudioStreamOggVorbis.load_from_file(song_path)
-			print("Song created as ogg ", selected_stream)
-		elif song_path.ends_with(".wav"):
-			selected_stream = AudioStreamWAV.load_from_file(song_path)
-			print("Song created as wav ", selected_stream)
-		else:
-			song_didnt_fail = false
-			print("Unsupported audio format in: %s" % song_path)
-			selected_stream = null
-			
-	if song_didnt_fail: 
-		$song.stream = selected_stream
-		if "song_file" not in mandatory:
-			mandatory.append("song_file")
-		_check_mandatory()
-		
-		General._set_rpc(str(song_path.get_file()), "Creating a Beatzmap...", "beatzroundcover", "Download now at beatzx.com!", "beatzroundcover", "FEEL. YOUR RHYTHM.", edit_start_time, 0)
-		
-		print("Song saved ", $song.stream)
-		$Control/create_map_panel/song_file_select.text = "Change song file..."
-	
-	if not song_path.get_extension() == "mp3":
-		$Control/create_map_panel/metadata_use_check.button_pressed = false
-		$Control/create_map_panel/metadata_use_check.text = "File is not an mp3."
-	else:
-		$Control/create_map_panel/metadata_use_check.disabled = false
-		$Control/create_map_panel/metadata_use_check.text = "Use Song Metadata"
-	
-	if $Control/create_map_panel/metadata_use_check.button_pressed: _on_metadata_use_check_toggled(true)
-
-func _on_edit_song_select_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("edit song select sta", status)
-	print("edit song select paths ", paths)
-	print("edit song select filter idx", _filter_idx)
-	
-	if not status or paths.is_empty():
-		return
-	
-	if paths[0].get_extension() not in ["mp3", "ogg", "wav"]:
-		$Control/edit_meta_cont/song_file_label.text = "Song has to be an mp3, ogg or wav file."
-		return
-	
-	song_path = paths[0]
-	$Control/edit_meta_cont/song_file_label.text = "Song: " + str(paths[0])
-	$Control/song_details/song_path.text = "Path: " + song_path
-	
-	var song_didnt_fail := true
-	if song_path.ends_with(".mp3") or song_path.ends_with(".ogg") or song_path.ends_with(".wav"):
-		if song_path.ends_with(".mp3"):
-			selected_stream = AudioStreamMP3.load_from_file(song_path)
-			print("Song created as mp3 ", selected_stream)
-		elif song_path.ends_with(".ogg"):
-			selected_stream = AudioStreamOggVorbis.load_from_file(song_path)
-			print("Song created as ogg ", selected_stream)
-		elif song_path.ends_with(".wav"):
-			selected_stream = AudioStreamWAV.load_from_file(song_path)
-			print("Song created as wav ", selected_stream)
-		else:
-			song_didnt_fail = false
-			print("Unsupported audio format in: %s" % song_path)
-			selected_stream = null
-			
-	if song_didnt_fail: 
-		$song.stream = selected_stream
-		print("Song saved ", $song.stream)
-		
-		$Control/edit_meta_cont/song_file_select.text = "Change song file..."
-	
-	if not song_path.get_extension() == "mp3":
-		$Control/edit_meta_cont/metadata_use_check.button_pressed = false
-		$Control/edit_meta_cont/metadata_use_check.text = "File is not an mp3."
-	else:
-		$Control/edit_meta_cont/metadata_use_check.disabled = false
-		$Control/edit_meta_cont/metadata_use_check.text = "Use Song Metadata"
-	
-	if $Control/edit_meta_cont/metadata_use_check.button_pressed: _on_metadata_use_check_toggled(true)
-
-var use_meta_check := false
-
-func _on_metadata_use_check_toggled(toggled_on: bool) -> void:
-	use_meta_check = toggled_on
-	
-	if not toggled_on or not song_path:
-		return
-	
-	# Make sure it's an MP3
-	if song_path.get_extension().to_lower() != "mp3":
-		$Control/create_map_panel/metadata_use_check.button_pressed = false
-		$Control/create_map_panel/metadata_use_check.text = "File is not an mp3."
-		$Control/create_map_panel/metadata_use_check.release_focus()
-		return
-	
-	# Parse ID3 from file
-	var metaRead := MP3ID3Tag.new()
-	var loaded_ok := metaRead.load_file(song_path)
-	if not loaded_ok:
-		print("Failed to load ID3 tags for ", song_path)
-		return
-	
-	# Track name
-	var track := metaRead.getTrackName()
-	if track and track.strip_edges() != "":
-		$Control/create_map_panel/song_name_edit.text = track
-		$Control/create_map_panel/chart_name_edit.text = track
-		$Control/create_map_panel/chart_name_edit.text_changed.emit()
-	else:
-		print("Track name not in metadata")
-	
-	# Artist
-	var artist := metaRead.getArtist()
-	if artist and artist.strip_edges() != "":
-		$Control/create_map_panel/artist_edit.text = artist
-	else:
-		print("Artist not in metadata")
-	
-	# Album
-	var album := metaRead.getAlbum()
-	if album and album.strip_edges() != "":
-		$Control/create_map_panel/album_edit.text = album
-	else:
-		print("Album not in metadata")
-	
-	# Year
-	var year := metaRead.getYear()
-	if year and year.strip_edges() != "":
-		$Control/create_map_panel/year_edit.text = year
-	else:
-		print("Year not in metadata")
-	
-	# Cover (first attached picture)
-	var response: Array = metaRead.getAttachedPictureAndMime(0)
-	if not response.is_empty() and response[0]:
-		var tex: ImageTexture
-		if response[0] is Image: tex = ImageTexture.create_from_image(response[0])
-		album_cover_mime = response[1]
-		if tex:
-			$Control/create_map_panel/album_cover_edit.icon = tex
-			$Control/create_map_panel/cover_img_details.text = str(tex.get_width()) + "x" + str(tex.get_height()) + "\n" + "Attached Album Cover " + response[1] + "\n" + General.format_file_size(response[0].get_data_size())
-	else:
-		$Control/create_map_panel/album_cover_edit.icon = null
-		$Control/create_map_panel/cover_img_details.text = "No Cover Found"
-		print("Cover image not in metadata")
-
-func _on_album_cover_edit_pressed() -> void:
-	var err := DisplayServer.file_dialog_show(
-		"Select an image file.",          # Title
-		Settings.game.last_editor_path,             # Initial path (empty means default)
-		"",                                            
-		true,
-		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,    # Mode: open multiple files
-		General.IMG_FORMATS,   # File filters
-		Callable(self, "_on_album_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("create_album", err, error_string(err))
-
-var album_cover_path: String
-var album_cover_mime: String
-
-func _on_album_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("album file sta", status)
-	print("album file paths ", paths)
-	print("album file filter idx", _filter_idx)
-	
-	if not status or paths.is_empty():
-		return
-	
-	album_cover_path = paths[0]
-	Settings.game.last_editor_path = album_cover_path.get_base_dir()
-	
-	var image := Image.new()
-	var err := image.load(album_cover_path)
-	
-	if err == OK:
-		var tex := ImageTexture.create_from_image(image)
-		$Control/edit_meta_cont/album_cover_edit.icon = tex
-		$Control/create_map_panel/album_cover_edit.icon = tex
-		var text = str(tex.get_width()) + "x" + str(tex.get_height()) + "\n" + paths[0].get_file() + "\n" + General.format_file_size(FileAccess.get_size(paths[0]))
-		$Control/edit_meta_cont/cover_img_details.text = text
-		$Control/create_map_panel/cover_img_details.text = text
-	else:
-		print("Failed to load image: ", album_cover_path)
-
-func _on_remove_album_pressed():
-	album_cover_path = ""
-	
-	$Control/edit_meta_cont/album_cover_edit.icon = null
-	$Control/create_map_panel/album_cover_edit.icon = null
-	$Control/edit_meta_cont/cover_img_details.text = ""
-	$Control/create_map_panel/cover_img_details.text = ""
-
-func _on_rotate_cover_pressed() -> void:
-	if selected_cover == null:
-		print("No cover loaded yet.")
-		return
-
-	# Get the underlying image data
-	var image := Image.new()
-	image.copy_from(selected_cover)
-	
-	if image == null:
-		print("Failed to get image from texture.")
-		return
-	
-	# Rotate and recreate texture
-	image.rotate_90(CLOCKWISE)
-	
-	selected_cover = image
-	
-	$Control/edit_meta_cont/album_cover_edit.icon = ImageTexture.create_from_image(image)
-	$Control/create_map_panel/album_cover_edit.icon = ImageTexture.create_from_image(image)
-
-func _on_bg_img_edit_pressed() -> void:
-	var err := DisplayServer.file_dialog_show(
-		"Select an image file.",          # Title
-		Settings.game.last_editor_path,             # Initial path (empty means default)
-		"",                                            
-		true,
-		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,    # Mode: open multiple files
-		General.IMG_FORMATS,   # File filters
-		Callable(self, "_on_bg_img_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("create_bg_img", err, error_string(err))
-
-var background_img_path: String
-var removed_bg: bool = false
-
-func _on_bg_img_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("bg img sta ", status)
-	print("bg img paths ", paths)
-	print("bg img filter idx ", _filter_idx)
-	
-	if not status or paths.is_empty():
-		return
-	
-	background_img_path = paths[0]
-	Settings.game.last_editor_path = background_img_path.get_base_dir()
-	
-	var image := Image.new()
-	var err := image.load(background_img_path)
-	
-	if err == OK:
-		var tex := ImageTexture.create_from_image(image)
-		$Control/edit_meta_cont/bg_img_edit.icon = tex
-		$Control/create_map_panel/bg_img_edit.icon = tex
-		var text = str(tex.get_width()) + "x" + str(tex.get_height()) + "\n" + paths[0].get_file() + "\n" + General.format_file_size(FileAccess.get_size(paths[0]))
-		$Control/edit_meta_cont/bg_img_details.text = text
-		$Control/create_map_panel/bg_img_details.text = text
-		
-		$Control/edit_meta_cont/bg_img_details.set_meta("background_name", paths[0].get_file())
-		
-		removed_bg = false
-	else:
-		print("Failed to load background image: ", background_img_path, " ", err, " ", error_string(err))
-
-func _on_clear_bg_pressed() -> void:
-	$Control/edit_meta_cont/clear_bg.release_focus()
-	$Control/create_map_panel/clear_bg.release_focus()
-	removed_bg = true
-	background_img_path = ""
-	$Control/edit_meta_cont/bg_img_details.text = "No Background"
-	$Control/edit_meta_cont/bg_img_edit.icon = null
-	$Control/create_map_panel/bg_img_edit.icon = null
-
-func _get_save_path(overwrite: bool = true, only_file: bool = false) -> String:
-	var username := selected_charter.strip_edges()
-	if username == "":
-		username = "Unknown"
-		
-	var user_chart_name := selected_chart_name.strip_edges()
-	if user_chart_name == "":
-		user_chart_name = "Untitled"
-	
-	# Base filename
-	var base_filename := "%s-%s" % [General._sanitize(user_chart_name), username]
-	var base_title := General._sanitize(selected_title, true)
-	var folder_path: String
-	var save_path: String
-	if not selected_beatz_path:
-		if OS.get_name() == "Windows":
-			folder_path = "user://Custom/" + base_title + "/"
-			if only_file: save_path = base_filename + ".beatz"
-			else: save_path = folder_path + base_filename + ".beatz"
-		elif OS.get_name() == "Android":
-			folder_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/" + base_title + "/"
-			if only_file: save_path = base_filename + ".beatz"
-			else: save_path = folder_path + base_filename + ".beatz"
-	else: save_path = selected_beatz_path
-	
-	# Song (1), Song (2), ...
-	if not overwrite:
-		var i := 0
-		@warning_ignore("unused_variable")
-		var copy_folder := base_title + "/"
-
-		while true:
-			var test_name: String
-			if i == 0:
-				test_name = base_title
-			else:
-				test_name = "%s (%d)" % [base_title, i]
-
-			var test_path: String
-
-			if OS.get_name() == "Windows":
-				test_path = "user://Custom/" + test_name + "/"
-			elif OS.get_name() == "Android":
-				test_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/" + test_name + "/"
-			else:
-				test_path = "user://Custom/" + test_name + "/"
-
-			if not DirAccess.dir_exists_absolute(test_path):
-				folder_path = test_path
-				copy_folder = test_name + "/"
-				break
-
-			i += 1
-
-		if only_file:
-			save_path = base_filename + ".beatz"
-		else:
-			save_path = folder_path + base_filename + ".beatz"
-	
-	return save_path
-
-func _on_save_pressed() -> void:
-	var save_path := _get_save_path()
-	$Control/save_to_list/saving_to_lbl.text = "Saving to: " + ProjectSettings.globalize_path(save_path)
-	
-	save_editor_mode()
-
-	transition($Control/save_to_list, "scale", Vector2.ONE, .2, false)
-	$Control/chart_controls/save.release_focus()
-
-func _on_save_to_list_pressed() -> void:
-	$Control/save_to_list/save_to_list.release_focus()
-	_start_encode_thread(notes, song_path)
-	
-	$Control/chart_controls/save.add_theme_color_override("font_color", Color.GRAY)
-	
-	$Control/chart_controls/saved_to_popup.text = "Saving..."
-	$Control/chart_controls/saved_to_popup.size = Vector2(121.0, 40.0)
-	$popups.stop()
-	$popups.play("saved_popup")
-
-func _on_save_copy_to_list_pressed() -> void:
-	$Control/save_to_list/save_copy_to_list.release_focus()
-	_start_encode_thread(notes, song_path, false)
-	
-	$Control/chart_controls/saved_to_popup.text = "Saving\ncopy..."
-	$Control/chart_controls/saved_to_popup.size = Vector2(121.0, 40.0)
-	$popups.stop()
-	$popups.play("saved_popup")
-
-func _on_share_chart_pressed() -> void:
-	$Control/save_to_list/share_to_bx.release_focus()
-	
-	var err := DisplayServer.file_dialog_show(
-		"SHARE your Beatzmap!",
-		"", # starting dir
-		selected_title + " by " + selected_charter, # starting file
-		true,
-		DisplayServer.FILE_DIALOG_MODE_SAVE_FILE,
-		["*.bx"],
-		Callable(self, "_on_share_chart_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("share", err, error_string(err))
-
-func nat_file_dialog_fail(which: String, err: Error, err_string: String):
-	const BASE_CONTACT = "\nPlease contact playbeatzx@gmail.com\nthis error message and screen."
-	print("Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT)
-	match which:
-		"share":
-			$Control/save_to_list/saving_to_lbl.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"create_cover":
-			$Control/create_map_panel/album_cover_edit.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"create_song_file":
-			$Control/create_map_panel/song_file_label.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"diff_texture":
-			$Control/create_map_panel/diff_texture_edit.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-			$Control/edit_meta_cont/diff_texture_edit.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"edit_cover":
-			$Control/edit_meta_cont/album_cover_edit.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"edit_song_file":
-			$Control/edit_meta_cont/song_file_label.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-		"create_bg_img":
-			$Control/edit_meta_cont/bg_img_details.text = "Failed to show native file dialog.\n" + str(err) + " - " + err_string + BASE_CONTACT
-
-func _on_share_chart_file_selected(status: bool, paths: PackedStringArray, filter_idx: int) -> void:
-	print("sta", status)
-	print("paths ", paths)
-	print("filter idx", filter_idx)
-	
-	if paths.is_empty():
-		return
-
-	var save_path = paths[0]
-	if not save_path.ends_with(".bx"):
-		save_path += ".bx"
-
-	_start_encode_thread(notes, song_path, true, true, save_path)
-
-var _encode_thread: Thread
-
-func _start_encode_thread(decoded_notes, current_song_path: String, overwrite: bool = true, share_mode: bool = false, share_save_path: String = "") -> void:
-	if _encode_thread and _encode_thread.is_started():
-		print("Encode already running")
-		return
-	
-	_encode_thread = Thread.new()
-	_encode_thread.start(Callable(self, "_encode_beatz_file_threaded").bind(
-		decoded_notes,
-		current_song_path,
-		overwrite,
-		share_mode,
-		share_save_path
-	))
-
-func _encode_beatz_file_threaded(decoded_notes, current_song_path: String, overwrite: bool, share_mode: bool, share_save_path: String) -> void:
-	_encode_beatz_file(decoded_notes, current_song_path, overwrite, share_mode, share_save_path)
-	
-	call_deferred("_on_encode_finished")
-
-func _on_encode_finished():
-	if _encode_thread:
-		_encode_thread.wait_to_finish()
-		_encode_thread = null
-
-func _encode_beatz_file(decoded_notes, current_song_path: String, overwrite: bool = true, share_mode: bool = false, share_save_path: String = "") -> void:
-	_thread_report("progress", 0)
-	# Make sure we have notes
-	if decoded_notes.is_empty():
-		_thread_report("status_text", "No custom notes found. Record some!")
-		return
-
-	# Encode notes
-	var encoded_notes := General.encode_notes(decoded_notes)
-
-	# Determine note mode based on note types
-	var user_note_mode := 4
-	for note_str in encoded_notes.split(","):
-		if note_str.find("DL") != -1 or note_str.find("DR") != -1:
-			user_note_mode = 6
-		elif note_str.find("UL") != -1 or note_str.find("UR") != -1:
-			user_note_mode = 8
-
-	# Prompt the user for metadata
-	var username := selected_charter.strip_edges()
-	if username == "":
-		username = "Unknown"
-
-	var user_chart_name := selected_chart_name.strip_edges()
-	if user_chart_name == "":
-		user_chart_name = "Untitled"
-
-	var song_name := current_song_path.get_file()
-
-	# Find lowest negative timestamp for start_wait
-	@warning_ignore("unused_variable")
-	var wait := 0.0
-	var negatives: Array = []
-	for n in decoded_notes:
-		if n.has("timestamp") and n.timestamp < 0:
-			negatives.append(n.timestamp)
-	if not negatives.is_empty():
-		wait = -float(negatives.min())  # Convert negative to positive
-	
-	# Format the content for the .beatz file
-	var content := "Song: %s\\" % song_name
-	content += "Charter: %s\\" % username
-	content += "ChartName: %s\\" % user_chart_name
-	content += "noteMode: %d\\" % user_note_mode
-	content += "BPM: %f.3\\" % selected_bpm
-	content += "noteSpeed: %d\\" % 5
-	content += "noteSpawnY: %d\\" % 360
-	content += "Difficulty: %s\\" % selected_difficulty
-	content += "StartWait: %f.2\\" % start_wait
-	content += "PrevStart: 0.0\\PrevEnd: 99999.0\\"
-	content += "BeatOffset: %f.4\\" % local_beat_offset
-	content += "Notes:%s" % encoded_notes
-	
-	# Save info.json
-	var info_dict := {
-		"info": {
-			"title": selected_title,
-			"artist": selected_artist,
-			"album": selected_album,
-			"year": selected_year,
-			"chart": _get_save_path(overwrite, true),
-			"audio": General._sanitize(song_name),
-			"cover": General._sanitize(selected_album) + ".png",
-			"background": background_img_path.get_file(),
-			"video": background_vid_path.get_file(),
-			"cover_loop": cover_loop_vid_path.get_file(),
-			"difficulty_texture": General._sanitize(selected_difficulty) + ".png"
-		}
-	}
-	
-	_thread_report("progress", 10)
-	
-	# ----- SHARE MODE (no saving to disk) -----
-	if share_mode:
-		_thread_report("status_text", "Sharing...")
-		
-		var zip_path = share_save_path
-		var zipper := ZIPPacker.new()
-		if zipper.open(zip_path) != OK:
-			push_error("Could not create zip: %s" % zip_path)
-			_thread_report("error", "Could not create zip at %s" % zip_path)
-			return
-
-		# Add .beatz (in-memory string)
-		var chart_file_name := _get_save_path(overwrite, true).get_file()
-		zipper.start_file(chart_file_name)
-		zipper.write_file(content.to_utf8_buffer())
-		zipper.close_file()
-
-		# Add info.json (in-memory string)
-		zipper.start_file("info.json")
-		zipper.write_file(JSON.stringify(info_dict, "\t").to_utf8_buffer())
-		zipper.close_file()
-
-		# Add audio (if possible)
-		if selected_stream and "data" in selected_stream:
-			zipper.start_file(info_dict["info"]["audio"])
-			zipper.write_file(selected_stream.data)
-			zipper.close_file()
-
-		# Add cover image
-		if selected_cover and selected_cover is Image:
-			var img = selected_cover
-			if img:
-				var cover_name = info_dict["info"]["album"]
-				var ext = cover_name.get_extension().to_lower()
-				
-				var buffer: PackedByteArray
-				
-				if ext == "":
-					if album_cover_mime in ["image/jpeg", "image/jpg", "image/pjpeg"]:
-						buffer = img.save_jpg_to_buffer(1.0)
-					elif album_cover_mime == "image/png":
-						buffer = img.save_png_to_buffer()
-					else: # save as png if mime from attached cover is not recognized
-						buffer = img.save_png_to_buffer()
-
-				
-				match ext:
-					"png":
-						buffer = img.save_png_to_buffer()
-					"jpg", "jpeg":
-						buffer = img.save_jpg_to_buffer(1.0)
-					"webp":
-						buffer = img.save_webp_to_buffer(false, 1.0)
-					"exr":
-						buffer = img.save_exr_to_buffer()
-					"hdr":
-						buffer = img.save_hdr_to_buffer()
-					_:
-						push_warning("Unsupported background format '%s', saving as PNG instead." % ext)
-						cover_name = cover_name.get_basename() + ".png"
-						buffer = img.save_png_to_buffer()
-
-				zipper.start_file(cover_name)
-				zipper.write_file(buffer)
-				zipper.close_file()
-		
-		# Add background image with correct format
-		if selected_background and selected_background is Image:
-			var img := selected_background
-			if img:
-				var bg_name = info_dict["info"]["background"]
-				var ext = bg_name.get_extension().to_lower()
-
-				var buffer: PackedByteArray
-				match ext:
-					"png":
-						buffer = img.save_png_to_buffer()
-					"jpg", "jpeg":
-						buffer = img.save_jpg_to_buffer(1.0)
-					"webp":
-						buffer = img.save_webp_to_buffer(false, 1.0)
-					"exr":
-						buffer = img.save_exr_to_buffer()
-					"hdr":
-						buffer = img.save_hdr_to_buffer()
-					_:
-						push_warning("Unsupported background format '%s', saving as PNG instead." % ext)
-						bg_name = bg_name.get_basename() + ".png"
-						buffer = img.save_png_to_buffer()
-
-				zipper.start_file(bg_name)
-				zipper.write_file(buffer)
-				zipper.close_file()
-
-
-		# Add difficulty texture
-		if selected_diff_texture and selected_diff_texture is Texture2D:
-			var img = selected_diff_texture.get_image()
-			if img:
-				zipper.start_file(info_dict["info"]["difficulty_texture"])
-				zipper.write_file(img.save_png_to_buffer())
-				zipper.close_file()
-		
-		# Add video background if one is set
-		if background_vid_path != "" and FileAccess.file_exists(background_vid_path):
-			var video_file_name := background_vid_path.get_file()
-			info_dict["info"]["video"] = video_file_name
-
-			var video_bytes := FileAccess.get_file_as_bytes(background_vid_path)
-			if not video_bytes.is_empty():
-				print("Adding background video to .bx:", video_file_name)
-				zipper.start_file(video_file_name)
-				zipper.write_file(video_bytes)
-				zipper.close_file()
-			else:
-				push_warning("Video file could not be read or is empty: %s" % background_vid_path)
-		else:
-			print("No background video set or file missing skipping video")
-		
-		# Add cover loop video if one is set
-		if cover_loop_vid_path != "" and FileAccess.file_exists(cover_loop_vid_path):
-			var video_file_name := cover_loop_vid_path.get_file()
-			info_dict["info"]["cover_loop"] = video_file_name
-
-			var video_bytes := FileAccess.get_file_as_bytes(cover_loop_vid_path)
-			if not video_bytes.is_empty():
-				print("Adding cover loop video to .bx:", video_file_name)
-				zipper.start_file(video_file_name)
-				zipper.write_file(video_bytes)
-				zipper.close_file()
-			else:
-				push_warning("Video file could not be read or is empty: %s" % cover_loop_vid_path)
-		else:
-			print("No cover loop video set or file missing skipping video")
-		
-		
-		zipper.close()
-
-		# Rename zip to .bx
-		if not zip_path.ends_with(".bx"):
-			var final_path = zip_path.get_basename() + ".bx"
-			DirAccess.rename_absolute(zip_path, final_path)
-			print("Shared chart packaged to %s" % final_path)
-		else:
-			print("Shared chart packaged to %s" % zip_path)
-		
-		_thread_report("status_text", "Shared succesfully!")
-		_thread_report("done", true)
-		return
-	
-	# Build base save path and folder
-	var save_path := _get_save_path(overwrite)
-	var folder_path := save_path.get_base_dir()
-	
-	var already_exists := FileAccess.file_exists(save_path)
-
-	# Make sure folder exists
-	DirAccess.make_dir_recursive_absolute(folder_path)
-	
-	# Save the .beatz file
-	var file := FileAccess.open(save_path, FileAccess.WRITE)
-	if file:
-		file.store_string(content)
-		file.close()
-		print("Notes exported to %s successfully." % save_path)
-		saved = true
-		_thread_report("save_text", "Saved")
-		_thread_report("song_path", "Path: " + ProjectSettings.globalize_path(folder_path).path_join(song_path.get_file()))
-		
-		_thread_report("progress", 20)
-		
-		_thread_report("tooltip", "Open " + ProjectSettings.globalize_path(selected_beatz_path.get_base_dir()) + " in your explorer.")
-	else:
-		push_error("Failed to save file: %s, due to %s" % [save_path, error_string(FileAccess.get_open_error())] )
-		_thread_report("error", "Failed to save.")
-		return
-
-	# Save audio
-	if selected_stream and selected_stream is AudioStream:
-		var audio_save_path := folder_path + "/" + General._sanitize(song_name)
-		var audio_file := FileAccess.open(audio_save_path, FileAccess.WRITE)
-		if audio_file:
-			# Save raw data (works if stream has `data` property, like AudioStreamMP3/WAV)
-			if selected_stream.has_method("save_to_wav"): 
-				# safer if it’s a generated stream
-				selected_stream.save_to_wav(audio_save_path)
-				_thread_report("progress", 30)
-			elif "data" in selected_stream: 
-				audio_file.store_buffer(selected_stream.data)
-				_thread_report("progress", 30)
-				audio_file.close()
-			print("Saved audio to %s" % audio_save_path)
-
-	# Save cover image
-	if selected_cover and selected_cover is Image:
-		var img = selected_cover
-		var ext = album_cover_path.get_extension()
-		
-		if ext == "":
-			if album_cover_mime in ["image/jpeg", "image/jpg", "image/pjpeg"]:
-				ext = "jpg"
-			elif album_cover_mime == "image/png":
-				ext = "png"
-			else: # save as png if mime from attached cover is not recognized
-				ext = "png"
-		
-		if img:
-			var cover_save_path: String = folder_path + "/" + General._sanitize(selected_album) + "." + ext
-			General.save_image_with_correct_extension(img, cover_save_path)
-			_thread_report("progress", 40)
-			print("Saved cover image to %s" % cover_save_path)
-	
-	# Save background image
-	if selected_background and selected_background is Image:
-		var img = selected_background
-		var bg_save_path := folder_path + "/" + background_img_path.get_file()
-		if img and not removed_bg:
-			General.save_image_with_correct_extension(img, bg_save_path)
-			print("Saved background image to %s" % bg_save_path)
-		elif removed_bg:
-			if FileAccess.file_exists(bg_save_path):
-				var err := DirAccess.remove_absolute(bg_save_path)
-				if err == OK:
-					print("Removed difficulty texture: %s" % bg_save_path)
-				else:
-					print("Failed to remove difficulty texture: %s (error %s, %s)" % [bg_save_path, err, error_string(err)])
-		
-		_thread_report("progress", 50)
-	
-	
-	# Save difficulty texture
-	if selected_diff_texture and selected_diff_texture is Texture2D:
-		var img = selected_diff_texture.get_image()
-		var ext = diff_texture_path.get_extension()
-		var diff_tex_save_path: String = folder_path + "/" + General._sanitize(selected_difficulty) + "." + ext
-		if img and not removed_diff_texture:
-			General.save_image_with_correct_extension(img, diff_tex_save_path)
-			print("Saved difficulty texture to %s" % diff_tex_save_path)
-		elif removed_diff_texture:
-			if FileAccess.file_exists(diff_tex_save_path):
-				var err := DirAccess.remove_absolute(diff_tex_save_path)
-				if err == OK:
-					print("Removed difficulty texture: %s" % diff_tex_save_path)
-				else:
-					print("Failed to remove difficulty texture: %s (error %s, %s)" % [diff_tex_save_path, err, error_string(err)])
-		
-		_thread_report("progress", 60)
-	
-	
-	# Save video background if one is set
-	if background_vid_path != "" and FileAccess.file_exists(background_vid_path):
-		print("Copying video to chart folder ", background_vid_path)
-		var video_file_name := background_vid_path.get_file()
-		var video_save_path := folder_path.path_join(video_file_name)
-		
-		# Copy video file into the chart folder using OS.execute wrapper
-		General.copy_video(background_vid_path, video_save_path)
-		
-		# Store the filename in info.json
-		info_dict["info"]["video"] = video_file_name
-		print("Copied and saved background video to %s" % video_save_path)
-	else:
-		print("No background video set or file missing")
-	
-	_thread_report("progress", 70)
-	
-	# Save cover loop background if one is set
-	if cover_loop_vid_path != "" and FileAccess.file_exists(cover_loop_vid_path):
-		print("Copying cover loop video to chart folder ", cover_loop_vid_path)
-		var video_file_name := cover_loop_vid_path.get_file()
-		var video_save_path := folder_path.path_join(video_file_name)
-		
-		# Copy video file into the chart folder using OS.execute wrapper
-		General.copy_video(cover_loop_vid_path, video_save_path)
-		
-		# Store the filename in info.json
-		info_dict["info"]["cover_loop"] = video_file_name
-		print("Copied and saved cover loop video to %s" % video_save_path)
-	else:
-		print("No cover loop video set or file missing")
-	
-	_thread_report("progress", 80)
-	
-	var info_save_path := folder_path + "/info.json"
-	var info_file := FileAccess.open(info_save_path, FileAccess.WRITE)
-	if info_file:
-		info_file.store_string(JSON.stringify(info_dict, "\t"))
-		info_file.close()
-		print("Saved info.json to %s" % info_save_path)
-		
-		var song_id := "SONGID " + selected_title + " " + str(Time.get_unix_time_from_system(), "_", randi())
-		var id_file := FileAccess.open(folder_path.path_join(".songid"), FileAccess.WRITE)
-		id_file.store_string(song_id)
-		id_file.close()
-
-		General.save_or_replace_song_id(song_id)
-		print("Made unique ID: ", song_id)
-		
-		var text = "%s | %s, by %s | %d\n\nChart: %s | \"%s\" by %s | Custom" % [
-			selected_album,
-			selected_title,
-			selected_artist,
-			selected_year,
-			selected_difficulty.to_pascal_case(),
-			selected_chart_name,
-			selected_charter
-		]
-		
-		var ext = album_cover_path.get_extension()
-		if ext == "":
-			if album_cover_mime in ["image/jpeg", "image/jpg", "image/pjpeg"]:
-				ext = "jpg"
-			elif album_cover_mime == "image/png":
-				ext = "png"
-			else: # save as png if mime from attached cover is not recognized
-				ext = "png"
-		
-		var list_entry: Dictionary = {
-			"text": text,
-			"disabled": false,
-			"metadata": {
-				"beatz_path": ProjectSettings.globalize_path(save_path),
-				"id": song_id,
-				"song_name": selected_title if selected_title != null and selected_title != "" else "",
-				"album": selected_album if selected_album != null and selected_album != "" else "",
-				"artist": selected_artist if selected_artist != null and selected_artist != "" else "",
-				"year": selected_year if selected_year != null else 1980,
-				"diff_texture": selected_diff_texture,
-				"diff_texture_path": diff_texture_path if diff_texture_path != null and diff_texture_path != "" else "",
-				"bpm": selected_bpm if selected_bpm != null else 120.0,
-				"charter": selected_charter if selected_charter != null and selected_charter != "" else "",
-				"difficulty": selected_difficulty if selected_difficulty != null and selected_difficulty != "" else "",
-				"speed": note_speed,
-				"cover_path": ProjectSettings.globalize_path(folder_path + "/" + General._sanitize(selected_album) + "." + ext),
-				"stream": ProjectSettings.globalize_path(folder_path + "/" + General._sanitize(song_name)),
-				"date_modified": Time.get_unix_time_from_system(),
-				"local_beat_offset": local_beat_offset if local_beat_offset != null else 0.0,
-				"selected_background": selected_background,
-				"background_vid": background_vid_path if background_vid_path != null and background_vid_path != "" else "",
-				"cover_loop": cover_loop_vid_path if cover_loop_vid_path != null and cover_loop_vid_path != "" else ""
-			}
-		}
-		
-		selected_beatz_path = ProjectSettings.globalize_path(save_path)
-		current_song_path = folder_path + "/" + General._sanitize(song_name)
-		
-		if album_cover_path: album_cover_path = folder_path + "/" + General._sanitize(selected_album) + "." + ext
-		
-		if diff_texture_path: diff_texture_path = folder_path + "/" + General._sanitize(selected_difficulty) + "." + diff_texture_path.get_extension()
-		
-		if background_img_path: background_img_path = folder_path + "/" + General._sanitize(background_img_path.get_file())
-		if background_vid_path: background_vid_path = folder_path.path_join(background_vid_path.get_file())
-		if cover_loop_vid_path: cover_loop_vid_path = folder_path.path_join(cover_loop_vid_path.get_file())
-		
-		if (
-			not (overwrite and already_exists)
-			and Settings.game.keep_list_in_ram
-		):
-			print("Adding to list as")
-			print(JSON.stringify(list_entry, "\t", false))
-
-			var inserted := false
-			var new_title := selected_title.to_lower()
-
-			var keys := Beatz.LIST.keys()
-			keys.sort()
-
-			for key in keys:
-				var existing = Beatz.LIST[key]
-
-				if not existing.has("metadata"):
-					continue
-
-				var existing_title := str(
-					existing["metadata"].get("song_name", "")
-				).to_lower()
-
-				if new_title < existing_title:
-					var rebuilt := {}
-					var inserted_index := false
-
-					for rebuild_key in keys:
-						if rebuild_key == key and not inserted_index:
-							rebuilt[rebuilt.size() + 1] = list_entry
-							inserted_index = true
-
-						rebuilt[rebuilt.size() + 1] = Beatz.LIST[rebuild_key]
-
-					Beatz.LIST = rebuilt
-					inserted = true
-					break
-
-			if not inserted:
-				Beatz.LIST[Beatz.LIST.size() + 1] = list_entry
-		
-		General.delete_folder_recursive("user://Temp/Covers")
-		
-		_thread_report("done", true)
-		_thread_report("status_text", "Saved succesfully!")
-
-var _encode_result := {}
-
-func _thread_report(key: String, value):
-	_encode_result[key] = value
-	call_deferred("_apply_encode_update", key, value)
-
-
-func _apply_encode_update(key: String, value):
-	var tb = null
-	if OS.get_name() == "Windows" and Engine.has_singleton("TBProgress"):
-		tb = Engine.get_singleton("TBProgress")
-	
-	match key:
-		"progress":
-			if tb: tb.set_progress(value, 90)
-			$Control/chart_controls/save.text = str(value) + "%"
-			
-			$Control/chart_controls/exit.disabled = true
-			$Control/exit_warn/exit.disabled = true
-			
-			$Control/save_to_list/save_to_list.disabled = true
-			$Control/save_to_list/save_copy_to_list.disabled = true
-			$Control/save_to_list/share_to_bx.disabled = true
-			
-		"status_text":
-			$Control/save_to_list/saving_to_lbl.text = value
-		
-		"save_text":
-			$Control/chart_controls/save.text = value
-		
-		"song_path":
-			$Control/song_details/song_path.text = value
-		
-		"tooltip":
-			$Control/edit_meta_cont/explorer_open_btn.tooltip_text = value
-		
-		"error":
-			if tb: tb.set_error()
-			$Control/save_to_list/saving_to_lbl.text = value
-			
-			set_save_warn()
-			
-			$Control/chart_controls/saved_to_popup.text = "Error!"
-			$Control/chart_controls/saved_to_popup.size = Vector2(121.0, 40.0)
-			$popups.stop()
-			$popups.play("saved_popup")
-			
-			$Control/chart_controls/exit.disabled = false
-			$Control/exit_warn/exit.disabled = false
-			
-			$Control/save_to_list/save_to_list.disabled = false
-			$Control/save_to_list/save_copy_to_list.disabled = false
-			$Control/save_to_list/share_to_bx.disabled = false
-		
-		"done":
-			if tb: tb.clear()
-			saved = true
-			save.emit()
-			$Control/chart_controls/save.text = "Saved"
-			
-			if menu_open: $Control/chart_controls/save.add_theme_color_override("font_color", Color.GREEN)
-			else:  $Control/chart_controls/save.add_theme_color_override("font_color", Color.WHITE)
-			
-			$Control/chart_controls/saved_to_popup.text = "Saved!"
-			$Control/chart_controls/saved_to_popup.size = Vector2(121.0, 40.0)
-			$popups.stop()
-			$popups.play("saved_popup")
-			
-			$Control/chart_controls/exit.disabled = false
-			$Control/exit_warn/exit.disabled = false
-			
-			$Control/save_to_list/save_to_list.disabled = false
-			$Control/save_to_list/save_copy_to_list.disabled = false
-			$Control/save_to_list/share_to_bx.disabled = false
-
-
-func _on_saving_back_pressed() -> void:
-	$Control/save_to_list/back.release_focus()
-	restore_editor_mode()
-	
-	transition($Control/save_to_list, "scale", Vector2.ZERO, .2, true)
-
-func _on_chart_name_edit_text_changed() -> void:
-	print("na")
-	if "chart_name" not in mandatory:
-		mandatory.append("chart_name")
-	_check_mandatory()
-
-func _on_bpm_edit_text_changed(_new_text: String) -> void:
-	if "bpm" not in mandatory:
-		mandatory.append("bpm")
-	_check_mandatory()
-
-func _check_mandatory() -> void:
-	var required = ["song_file", "chart_name", "bpm"]
-	if required.all(func(x): return x in mandatory):
-		$Control/create_map_panel/mandatory_notice.hide()
-		$Control/create_map_panel/complete_setup_btn.disabled = false
-		$Control/create_map_panel/complete_setup_btn.mouse_default_cursor_shape = Input.CURSOR_POINTING_HAND
-	else:
-		print("no ", mandatory)
 
 func _on_view_notes_array_pressed() -> void:
 	$Control/editor_controls/view_notes_array.release_focus()
@@ -4033,7 +2398,7 @@ func _on_beat_offset_text_submitted(new_text: String) -> void:
 	var value = float(text)
 	
 	local_beat_offset = value
-	_update_visible_beatlines()
+	ChartDisplaySystem._update_visible_beatlines()
 	$Control/tools/beat_offset.text = ""
 	$Control/tools/beat_offset_lbl.text = "Beatlines set off by " + str(value) + " ms."
 	$Control/tools/beat_offset_value.text = "(Current offset: %s)" % [str(value)]
@@ -4052,12 +2417,6 @@ func _on_beat_offset_text_changed(_new_text: String) -> void:
 	#	return
 	$Control/tools/beat_offset_lbl.text = "Offset beatlines by specified time"
 
-func _on_save_to_list_mouse_entered() -> void:
-	$Control/save_to_list/saving_to_lbl.text = "Saving to: " + ProjectSettings.globalize_path(_get_save_path(true))
-
-func _on_save_copy_to_list_mouse_entered() -> void:
-	$Control/save_to_list/saving_to_lbl.text = "Saving to: " + ProjectSettings.globalize_path(_get_save_path(false))
-
 func _on_settings_btn_pressed() -> void:
 	$Control/editor_controls/settings_btn.release_focus()
 	if menu_open: return
@@ -4072,56 +2431,54 @@ func _on_back_pressed() -> void:
 	$AnimationPlayer.play("back_to_edit")
 	transition($Control/fps, "modulate", Color.WHITE, 0.0, true)
 
-func _on_diff_texture_edit_pressed() -> void:
-	var err := DisplayServer.file_dialog_show(
-		"Select an image file.",          # Title
-		"",
-		"",                                            # Initial path (empty means default)
-		true,
-		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,    # Mode: open multiple files
-		General.IMG_FORMATS,   # File filters
-		Callable(self, "_on_diff_texture_file_selected")
-	)
-	if err != OK:
-		nat_file_dialog_fail("diff_texture", err, error_string(err))
-
-var diff_texture_path: String
-var removed_diff_texture: bool = false
-
-func _on_diff_texture_file_selected(status, paths: PackedStringArray, _filter_idx: int):
-	print("sta", status)
-	print("paths ", paths)
-	print("filter idx", _filter_idx)
-	
-	if not status or paths.is_empty():
-		return
-	
-	diff_texture_path = paths[0]
-
-	var image := Image.new()
-	var err := image.load(diff_texture_path)
-	if err == OK:
-		var tex := ImageTexture.create_from_image(image)
-		$Control/edit_meta_cont/diff_texture_edit.icon = tex
-		$Control/create_map_panel/diff_texture_edit.icon = tex
-		removed_diff_texture = false
-	else:
-		print("Failed to load image: ", diff_texture_path)
-
-func _on_clear_diff_texture_pressed() -> void:
-	$Control/edit_meta_cont/clear_diff.release_focus()
-	$Control/create_map_panel/clear_diff.release_focus()
-	removed_diff_texture = true
-	diff_texture_path = ""
-	$Control/edit_meta_cont/diff_texture_edit.icon = null
-	$Control/create_map_panel/diff_texture_edit.icon = null
 
 func _on_explorer_open_btn_pressed() -> void:
 	General.explorer(ProjectSettings.globalize_path(selected_beatz_path.get_base_dir()))
 
+func _setup_editor_help_pages() -> void:
+	var rows: GridContainer = $Control/help/help_pages/Keybinds/keybind_rows
+	for child in rows.get_children():
+		child.queue_free()
+
+	var keybind_pages: Array[Dictionary] = [
+		{"action": "editor_save", "label": "Save", "resource": "UI_Save"},
+		{"action": "editor_save_copy", "label": "Save Copy", "resource": "UI_EditorSaveCopy"},
+		{"action": "editor_share", "label": "Share", "resource": "UI_EditorShare"},
+		{"action": "editor_place", "label": "Place Notes", "resource": "UI_EditorPlace"},
+		{"action": "editor_delete", "label": "Delete Notes", "resource": "UI_EditorDelete"},
+		{"action": "editor_view", "label": "View Notes", "resource": "UI_EditorView"},
+		{"action": "editor_playtest", "label": "Playtest", "resource": "UI_EditorPlaytest"},
+		{"action": "record", "label": "Record", "resource": "UI_Record"},
+		{"action": "quit", "label": "Quit (No Save)", "resource": "UI_Quit"},
+		{"action": "save_quit", "label": "Save and Quit", "resource": "UI_SaveQuit"},
+	]
+
+	for entry in keybind_pages:
+		var action_label: Label = Label.new()
+		action_label.text = str(entry["label"])
+		action_label.custom_minimum_size = Vector2(320.0, 45.0)
+		action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		action_label.add_theme_font_size_override("font_size", 22)
+		action_label.tooltip_text = str(entry["action"])
+		rows.add_child(action_label)
+
+		var icon_rect: TextureRect = TextureRect.new()
+		icon_rect.custom_minimum_size = Vector2(150.0, 45.0)
+		icon_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+		var resource_path: String = "res://Resources/KeybindResources/%s.tres" % entry["resource"]
+		var icon_resource: Texture2D = load(resource_path) as Texture2D
+		if icon_resource:
+			icon_rect.texture = icon_resource
+		else:
+			push_error("Could not load keybind resource: %s" % resource_path)
+		rows.add_child(icon_rect)
+
 func _on_help_btn_pressed() -> void:
 	save_editor_mode()
 	$Control/editor_controls/help_btn.release_focus()
+	$Control/help/help_pages.current_tab = 0
 	transition($Control/help, "scale", Vector2.ONE, 0.2, false)
 
 func _on_help_exit_pressed() -> void:
@@ -4135,552 +2492,9 @@ func _on_settings_editor_brightness_changed(value: float) -> void:
 func _on_settings_editor_note_backdrop_opacity_changed(opacity: float) -> void:
 	$note_backdrop.self_modulate = Color(0.0, 0.0, 0.0, opacity)
 
-func _on_bg_vid_edit_pressed() -> void:
-	var dialog := FileDialog.new()
-	dialog.title = "Select a video file"
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	dialog.filters = General.VIDEO_FORMATS
-	dialog.force_native = true
-	dialog.use_native_dialog = true
-	dialog.connect("file_selected", Callable(self, "_on_bg_vid_file_selected"))
-	add_child(dialog)
-	dialog.popup_centered()
-
-var background_vid_path: String
-var removed_bg_vid: bool = false
-
-func _on_bg_vid_file_selected(path: String) -> void:
-	background_vid_path = ProjectSettings.globalize_path(path)
-	Settings.game.last_editor_path = background_vid_path.get_base_dir()
-
-	print("Selected video: ", background_vid_path)
-	
-	if Settings.misc.editor_bg_videos:
-		var video_node: VideoPlayback = $Control/VideoPlayback
-		video_node.enable_audio = false
-		video_node.enable_auto_play = false
-		
-		video_node.close()
-		
-		print("loading vid")
-		video_node.set_video_path(background_vid_path)
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.set_video_path(background_vid_path)
-		$Control/create_map_panel/bg_vid_edit/VideoPlayback.set_video_path(background_vid_path)
-		print("After load")
-		
-		video_node.show()
-		
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.show()
-		$Control/create_map_panel/bg_vid_edit/VideoPlayback.show()
-		
-		# Wait until the GoZen video finishes loading
-		video_node.video_loaded.connect(func():
-			print("Video loaded, generating preview...")
-
-			var total_frames = video_node.get_video_frame_count()
-			var fps = video_node.get_video_framerate()
-			var res = video_node.video.get_actual_resolution()
-
-			# Calculate duration in seconds
-			var duration_sec: float = 0.0
-			if fps > 0:
-				duration_sec = total_frames / fps
-
-			# Format duration as mm:ss
-			@warning_ignore("integer_division")
-			var minutes = int(duration_sec) / 60
-			var seconds = int(duration_sec) % 60
-			var duration_str = "%02d:%02d" % [minutes, seconds]
-
-			# Seek middle frame for preview
-			@warning_ignore("integer_division")
-			var mid_frame = int(total_frames / 2)
-			video_node.seek_frame(mid_frame)
-
-			# File size
-			var file_size := FileAccess.get_size(path)
-			var file_size_str := General.format_file_size(file_size)
-
-			# Combine all details
-			var details_text = (
-				str(res.x) + "x" + str(res.y) + "\n" +
-				str(round(fps)) + " FPS\n" +
-				"Length: " + duration_str + "\n" +
-				file_size_str + "\n" +
-				path.get_file()
-			)
-			
-			$Control/edit_meta_cont/bg_vid_details.text = details_text
-			$Control/create_map_panel/bg_vid_details.text = details_text
-		)
-	else:
-		var disabled_text: String = "Your video has been saved but\nyou have disabled BG Videos\nin the editor.\n(%s)" % background_vid_path.get_file() if background_vid_path != "" else ""
-		$Control/edit_meta_cont/bg_vid_details.text = disabled_text
-		$Control/create_map_panel/bg_vid_details.text = disabled_text
-
-func _on_clear_bg_vid_pressed() -> void:
-	$Control/edit_meta_cont/clear_bg_vid.release_focus()
-	$Control/create_map_panel/clear_bg_vid.release_focus()
-	
-	removed_bg_vid = true
-	background_vid_path = ""
-	$Control/VideoPlayback.close()
-	
-	$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.close()
-	$Control/create_map_panel/bg_vid_edit/VideoPlayback.close()
-	
-	$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.hide()
-	$Control/create_map_panel/bg_vid_edit/VideoPlayback.hide()
-	
-	$Control/VideoPlayback.hide()
-	
-	$Control/edit_meta_cont/bg_vid_details.text = "No Background"
-	$Control/edit_meta_cont/bg_vid_edit.icon = null
-	$Control/create_map_panel/bg_vid_details.text = "No Background"
-	$Control/create_map_panel/bg_vid_edit.icon = null
-
-func _on_settings_editor_bg_vids_toggled(toggled_on: bool) -> void:
-	if toggled_on:
-		$Control/VideoPlayback.process_mode = Node.PROCESS_MODE_ALWAYS
-		$Control/VideoPlayback.show()
-		
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.process_mode = Node.PROCESS_MODE_ALWAYS
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.show()
-		
-		if background_vid_path:
-			print("Setting bg vid as ", background_vid_path)
-			_on_bg_vid_file_selected(background_vid_path)
-	else:
-		print("Closing bg vid ", background_vid_path)
-		$Control/VideoPlayback.close()
-		$Control/VideoPlayback.process_mode = Node.PROCESS_MODE_DISABLED
-		$Control/VideoPlayback.hide()
-		
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.close()
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.process_mode = Node.PROCESS_MODE_DISABLED
-		$Control/edit_meta_cont/bg_vid_edit/VideoPlayback.hide()
-		
-		var disabled_text: String = "Your video has been saved but\nyou have disabled BG Videos\nin the editor.\n(%s)" % background_vid_path.get_file() if background_vid_path != "" else ""
-		$Control/edit_meta_cont/bg_vid_details.text = disabled_text
-		$Control/create_map_panel/bg_vid_details.text = disabled_text
-
-func _on_settings_editor_cover_loops_toggled(toggled_on: bool) -> void:
-	if toggled_on and cover_loop_vid_path:
-		$Control/song_details/sha/cover_loop.process_mode = Node.PROCESS_MODE_ALWAYS
-		$Control/song_details/sha/cover_loop.show()
-		
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.process_mode = Node.PROCESS_MODE_ALWAYS
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.show()
-		
-		$Control/song_details/sha/cover_spin.hide()
-		
-		print("Setting cover loop as ", cover_loop_vid_path)
-		_on_cover_loop_vid_file_selected(cover_loop_vid_path)
-	else:
-		print("Closing bg vid ", cover_loop_vid_path)
-		$Control/song_details/sha/cover_loop.close()
-		$Control/song_details/sha/cover_loop.process_mode = Node.PROCESS_MODE_DISABLED
-		$Control/song_details/sha/cover_loop.hide()
-		
-		$Control/song_details/sha/cover_spin.show()
-		
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.close()
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.process_mode = Node.PROCESS_MODE_DISABLED
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.hide()
-		
-		
-		var disabled_text: String = "Your video has been saved but\nyou have disabled Cover Loop Videos\nin the editor.\n(%s)" % cover_loop_vid_path.get_file() if cover_loop_vid_path != "" else ""
-		$Control/edit_meta_cont/cover_loop_details.text = disabled_text
-		$Control/create_map_panel/bg_vid_details.text = disabled_text
-
-func _on_import_from_beatz_pressed() -> void:
-	var dialog := FileDialog.new()
-	dialog.title = "Select a .beatz file"
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	dialog.filters = [".beatz", ".chart", ".osu", ".qua", "*"]
-	dialog.force_native = true
-	dialog.use_native_dialog = true
-	dialog.connect("file_selected", Callable(self, "_on_dotbeatz_file_selected"))
-	add_child(dialog)
-	dialog.popup_centered()
-
-func _on_dotbeatz_file_selected(path: String):
-	var file: String = ProjectSettings.globalize_path(path)
-	var as_text = FileAccess.open(file, FileAccess.READ).get_as_text()
-	var imported = General.import_beatz_file(as_text)
-	notes = imported.notes as Array
-	selected_bpm = imported.bpm
-	selected_difficulty = imported.difficulty
-	local_beat_offset = imported.local_beat_offset
-	selected_charter = imported.charter
-	selected_chart_name = imported.chart_name
-	
-	$Control/create_map_panel/diff_edit.text = imported.difficulty
-	$Control/create_map_panel/chart_name_edit.text = imported.chart_name
-	$Control/create_map_panel/charter_edit.text = imported.charter
-	$Control/create_map_panel/bpm_edit.text = str(imported.bpm)
-	
-	var t: String = "Imported %s\nTotal notes: %d | BPM %0.2f" % [file.get_file(), imported.note_count, selected_bpm]
-	$Control/create_map_panel/beatz_details.text = t
-	$Control/tools/beatz_details.text = t
-
-func _on_clear_imported_notes_pressed(reimported: bool = false) -> void:
-	notes = []
-	if not reimported: selected_bpm = 120.0
-	if not reimported: selected_difficulty = "Hard"
-	if not reimported: local_beat_offset = 0.0
-	
-	$Control/create_map_panel/beatz_details.text = "No Imported Notes"
-
-var cover_loop_vid_path: String
-var removed_cover_loop_vid: bool = false
-
-func _on_cover_loop_edit_pressed() -> void:
-	var dialog := FileDialog.new()
-	dialog.title = "Select a video file"
-	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	dialog.filters = General.VIDEO_FORMATS
-	dialog.force_native = true
-	dialog.use_native_dialog = true
-	dialog.connect("file_selected", Callable(self, "_on_cover_loop_vid_file_selected"))
-	add_child(dialog)
-	dialog.popup_centered()
-
-func _on_cover_loop_vid_file_selected(path: String) -> void:
-	cover_loop_vid_path = ProjectSettings.globalize_path(path)
-	Settings.game.last_editor_path = cover_loop_vid_path.get_base_dir()
-
-	print("Selected cover loop video: ", cover_loop_vid_path)
-	
-	if Settings.misc.editor_cover_loops:
-		var video_node: VideoPlayback = $Control/song_details/sha/cover_loop
-		video_node.enable_audio = false
-		
-		video_node.close()
-		
-		print("loading vid")
-		video_node.set_video_path(cover_loop_vid_path)
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.set_video_path(cover_loop_vid_path)
-		$Control/create_map_panel/cover_loop_edit/VideoPlayback.set_video_path(cover_loop_vid_path)
-		print("After load")
-		
-		video_node.show()
-		$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.show()
-		$Control/create_map_panel/cover_loop_edit/VideoPlayback.show()
-		
-		$Control/song_details/sha/cover_spin.hide()
-		
-		## Wait until the GoZen video finishes loading
-		video_node.video_loaded.connect(func():
-			print("Video loaded, generating preview...")
-#
-			var total_frames: int = video_node.get_video_frame_count()
-			var fps: float  = video_node.get_video_framerate()
-			var res = video_node.video.get_actual_resolution()
-#
-			# Calculate duration in seconds
-			var duration_sec: float = 0.0
-			if fps > 0:
-				duration_sec = total_frames / fps
-#
-			# Format duration as mm:ss
-			@warning_ignore("integer_division")
-			var minutes = int(duration_sec) / 60
-			var seconds = int(duration_sec) % 60
-			var duration_str = "%02d:%02d" % [minutes, seconds]
-#
-			# Seek middle frame for preview
-			@warning_ignore("integer_division")
-			var mid_frame = int(total_frames / 2)
-			video_node.seek_frame(mid_frame)
-
-			# File size
-			var file_size := FileAccess.get_size(path)
-			var file_size_str := General.format_file_size(file_size)
-
-			# Combine all details
-			var details_text = (
-				str(res.x) + "x" + str(res.y) + "\n" +
-				str(round(fps)) + " FPS\n" +
-				"Length: " + duration_str + "\n" +
-				file_size_str + "\n" +
-				path.get_file()
-			)
-			
-			$Control/edit_meta_cont/cover_loop_details.text = details_text
-			$Control/create_map_panel/cover_loop_details.text = details_text
-		)
-	else:
-		var disabled_text: String = "Your video has been saved but\nyou have disabled Cover Loop Videos\nin the editor.\n(%s)" % cover_loop_vid_path.get_file() if cover_loop_vid_path != "" else ""
-		$Control/edit_meta_cont/cover_loop_details.text = disabled_text
-		$Control/create_map_panel/cover_loop_details.text = disabled_text
-
-func _on_clear_loop_pressed() -> void:
-	$Control/edit_meta_cont/clear_loop.release_focus()
-	$Control/create_map_panel/clear_loop.release_focus()
-	
-	removed_cover_loop_vid = true
-	cover_loop_vid_path = ""
-	$Control/song_details/sha/cover_loop.close()
-	$Control/song_details/sha/cover_loop.hide()
-	
-	$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.close()
-	$Control/create_map_panel/cover_loop_edit/VideoPlayback.close()
-	
-	$Control/edit_meta_cont/cover_loop_edit/VideoPlayback.hide()
-	$Control/create_map_panel/cover_loop_edit/VideoPlayback.hide()
-	
-	$Control/song_details/sha/cover_spin.show()
-	
-	$Control/edit_meta_cont/cover_loop_details.text = "No Cover Loop Video"
-	$Control/edit_meta_cont/cover_loop_edit.icon = null
-	$Control/create_map_panel/cover_loop_details.text = "No Cover Loop Video"
-	$Control/create_map_panel/cover_loop_edit.icon = null
 
 
-func _on_fetch_cover_pressed() -> void:
-	print("Fetch cover pressed")
-	
-	var exe_path = "res://covit.exe"
-	print("Executable path:", exe_path)
-	
-	var temp_dir = "user://Temp/Covers"
-	print("Temp directory:", temp_dir)
-	
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(temp_dir))
-	print("Temp directory ensured:", ProjectSettings.globalize_path(temp_dir))
-	
-	var args = [
-		"--address", "https://covers.musichoarders.xyz/",
-		"--input", song_path,
-		"--query-sources", "applemusic",
-		"--primary-output", ProjectSettings.globalize_path(temp_dir + "/cover"),
-		"--secondary-output", ProjectSettings.globalize_path(temp_dir + "/cover.mp4"),
-		"--primary-overwrite",
-		"--secondary-overwrite",
-		"--remote-agent", "BeatzX 1.6.0",
-		"--remote-text", "Beatz X uses covers.musichoarders.xyz to fetch artwork."
-	]
-	
-	print("Arguments:", args)
-	
-	var pid = OS.create_process(ProjectSettings.globalize_path(exe_path), args)
-	print("Process started with PID:", pid)
-	
-	await _wait_for_process(pid)
-	print("Process finished")
-	
-	await get_tree().create_timer(2.0).timeout
-	_load_temp_cover(temp_dir)
 
-
-func _wait_for_process(pid: int) -> void:
-	print("Waiting for process:", pid)
-	
-	while OS.is_process_running(pid):
-		await get_tree().process_frame
-	
-	print("Process is no longer running:", pid)
-
-
-func _load_temp_cover(temp_dir: String) -> void:
-	print("Loading temp cover from:", temp_dir)
-	
-	var jpg_path = temp_dir + "/cover.jpg"
-	var png_path = temp_dir + "/cover.png"
-	var mp4_path = temp_dir + "/cover.mp4"
-	
-	print("Checking JPG path:", jpg_path)
-	print("Checking PNG path:", png_path)
-	print("Checking MP4 path:", mp4_path)
-	
-	var image_path := ""
-	
-	if FileAccess.file_exists(jpg_path):
-		print("JPG cover found")
-		image_path = jpg_path
-	elif FileAccess.file_exists(png_path):
-		print("PNG cover found")
-		image_path = png_path
-	else:
-		print("No JPG or PNG cover found")
-	
-	if image_path != "":
-		var img = Image.new()
-		var err = img.load(image_path)
-		print("Image load result:", err)
-		
-		var tex = ImageTexture.create_from_image(img)
-		print("Texture created from image")
-		
-		if err == OK:
-			$Control/edit_meta_cont/album_cover_edit.icon = tex
-			$Control/create_map_panel/album_cover_edit.icon = tex
-			var text = str(tex.get_width()) + "x" + str(tex.get_height()) + "\n" + image_path.get_file() + "\n" + General.format_file_size(FileAccess.get_size(image_path))
-			$Control/edit_meta_cont/cover_img_details.text = text
-			$Control/create_map_panel/cover_img_details.text = text
-		print("Assigned texture to album_cover_edit")
-		
-		var remove_err = DirAccess.remove_absolute(ProjectSettings.globalize_path(image_path))
-		print("Removed image file, result:", remove_err)
-	
-	if FileAccess.file_exists(mp4_path):
-		print("MP4 cover found")
-		
-		cover_loop_vid_path = ProjectSettings.globalize_path(mp4_path)
-		
-		print("Selected cover loop video: ", mp4_path)
-	
-		if Settings.misc.editor_cover_loops:
-			var video_node: VideoPlayback = $Control/song_details/sha/cover_loop
-			video_node.enable_audio = false
-			
-			video_node.close()
-			
-			print("loading vid")
-			video_node.set_video_path(mp4_path)
-			print("After load")
-			
-			video_node.show()
-			
-			## Wait until the GoZen video finishes loading
-			video_node.video_loaded.connect(func():
-				print("Video loaded, generating preview...")
-	#
-				var total_frames: int = video_node.get_video_frame_count()
-				var fps: float  = video_node.get_video_framerate()
-				var res = video_node.video.get_actual_resolution()
-	#
-				# Calculate duration in seconds
-				var duration_sec: float = 0.0
-				if fps > 0:
-					duration_sec = total_frames / fps
-	#
-				# Format duration as mm:ss
-				@warning_ignore("integer_division")
-				var minutes = int(duration_sec) / 60
-				var seconds = int(duration_sec) % 60
-				var duration_str = "%02d:%02d" % [minutes, seconds]
-
-				# Seek middle frame for preview
-				@warning_ignore("integer_division")
-				var mid_frame = int(total_frames / 2)
-				video_node.seek_frame(mid_frame)
-				await get_tree().process_frame
-
-				# Capture current frame as preview image
-				var tex = video_node.video_texture.get_texture()
-
-				# Apply to icon
-				$Control/edit_meta_cont/cover_loop_edit.icon = tex
-				$Control/create_map_panel/cover_loop_edit.icon = tex
-
-				# File size
-				var file_size := FileAccess.get_size(mp4_path)
-				var file_size_str := General.format_file_size(file_size)
-
-				# Combine all details
-				var details_text = (
-					str(res.x) + "x" + str(res.y) + "\n" +
-					str(round(fps)) + " FPS\n" +
-					"Length: " + duration_str + "\n" +
-					file_size_str + "\n" +
-					mp4_path.get_file()
-				)
-				
-				$Control/edit_meta_cont/cover_loop_details.text = details_text
-				$Control/create_map_panel/cover_loop_details.text = details_text
-			)
-		else:
-			var disabled_text: String = "Your Cover Loop Video has been saved but\nyou have disabled Cover Loop Videos\nin the editor.\n(%s)" % cover_loop_vid_path.get_file() if cover_loop_vid_path != "" else ""
-			$Control/edit_meta_cont/cover_loop_details.text = disabled_text
-			$Control/create_map_panel/cover_loop_details.text = disabled_text
-	else:
-		print("No MP4 cover found")
-
-func _on_search_bg_vid_pressed() -> void:
-	var query = $Control/edit_meta_cont/artist_edit.text.replace(" ", "+") + "+" + $Control/edit_meta_cont/song_name_edit.text.replace(" ", "+")
-	
-	OS.shell_open("https://cobalt.meowing.de")
-	await get_tree().process_frame
-	OS.shell_open("https://youtube.com/results?search_query=" + query)
-
-var songbpm_url: String = ""
-var songbpm_url_exists: bool = true
-
-var _request_cooldown := false
-var _pending_request_url := ""
-
-func clean_song_title(song: String) -> String:
-	# remove anything in parentheses first
-	song = song.replace(".", "")
-	song = song.replace("(", "").replace(")", "")
-	return song.strip_edges()
-
-func _on_search_bpm_pressed() -> void:
-	if songbpm_url_exists:
-		OS.shell_open(songbpm_url)
-	else:
-		var query = (
-			$Control/edit_meta_cont/song_name_edit.text + " " +
-			$Control/edit_meta_cont/artist_edit.text + " bpm"
-		).uri_encode()
-
-		OS.shell_open("https://www.google.com/search?q=" + query)
-
-func _on_search_bpm_mouse_entered() -> void:
-	var artist: String = $Control/edit_meta_cont/artist_edit.text
-	var song: String = clean_song_title($Control/edit_meta_cont/song_name_edit.text)
-
-	var artist_slug: String = artist.replace(" ", "-").to_lower()
-	var song_slug: String = song.replace(" ", "-").to_lower()
-
-	if song.strip_edges().is_empty():
-		songbpm_url = "https://songbpm.com/@%s" % artist_slug
-	else:
-		songbpm_url = "https://songbpm.com/@%s/%s" % [artist_slug, song_slug]
-
-	if song.strip_edges().is_empty():
-		$Control/edit_meta_cont/search_bpm.tooltip_text = 'This will open SongBPM.com and search for "%s" as "%s"' % [artist, songbpm_url]
-	else:
-		$Control/edit_meta_cont/search_bpm.tooltip_text = 'This will open SongBPM.com and search for "%s %s" as "%s"' % [artist, song, songbpm_url]
-
-	# debounce logic
-	_pending_request_url = songbpm_url
-
-	if _request_cooldown:
-		return
-
-	_request_cooldown = true
-	$HTTPRequest.cancel_request()
-	$HTTPRequest.request(songbpm_url, [], HTTPClient.METHOD_HEAD)
-
-	await get_tree().create_timer(0.75).timeout
-	_request_cooldown = false
-
-	# if user hovered again during cooldown, re-request latest URL once
-	if _pending_request_url != songbpm_url:
-		_on_search_bpm_mouse_entered()
-
-func _on_search_bpm_focus_entered() -> void:
-	_on_search_bpm_mouse_entered()
-
-func _on_http_request_request_completed(result: int, response_code: int, _headers: PackedStringArray, _body: PackedByteArray) -> void:
-	print(response_code)
-
-	songbpm_url_exists = (
-		result == HTTPRequest.RESULT_SUCCESS
-		and response_code >= 200
-		and response_code < 400
-	)
-
-	if songbpm_url_exists:
-		print("%s Exists" % songbpm_url)
-	else:
-		print("%s Not found" % songbpm_url)
 
 var tool_thread: Thread
 var tool_running: bool = false
@@ -4712,7 +2526,7 @@ func _tool_finish_deferred(text: String, modified: bool) -> void:
 	if tool_thread:
 		tool_thread.wait_to_finish()
 	
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 
 
 func _start_tool_thread(method: Callable) -> void:
@@ -4931,7 +2745,7 @@ func _on_settings_note_offset_changed(new_offset: float) -> void:
 	_on_reload_pressed()
 
 func _on_save_and_quit_btn_pressed() -> void:
-	_on_save_to_list_pressed()
+	SaveSystem._on_save_to_list_pressed()
 	await save
 	print("Closing after saving")
 	transition($Control/close_warn, "scale", Vector2.ZERO, .2, true)
@@ -4947,7 +2761,7 @@ func _on_cancel_quit_btn_pressed() -> void:
 	$Control/chart_controls/save.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_settings_show_error_notes_toggled(_toggled_on: bool) -> void:
-	_setup_notes()
+	ChartDisplaySystem._setup_notes()
 
 func _on_exit_to_menu_pressed() -> void:
 	var scene_request := SceneLoader.load_scene("res://Scenes/main_menu.tscn")
@@ -4969,778 +2783,14 @@ func _on_exit_to_menu_pressed() -> void:
 	get_tree().current_scene = main
 
 func _on_save_and_menu_pressed() -> void:
-	_on_save_to_list_pressed()
+	SaveSystem._on_save_to_list_pressed()
 	await save
 	_on_exit_to_menu_pressed()
 
-var type_map = [
-	"Effect",
-	"Upleft",
-	"Downleft",
-	"Left",
-	"Down",
-	"Up",
-	"Right",
-	"Downright",
-	"Upright"
-]
 
-func get_note_by_id(id: String) -> Dictionary:
-	for n in notes:
-		if n.get("id", "") == id:
-			return n
-	return {}
-
-func _on_singular_ctx_hold_edit_text_submitted(new_text: String) -> void:
-	if ctx_note == null:
-		return
-
-	var before := get_note_by_id(ctx_note.note_id)
-
-	var value := float(new_text)
-	var idx = ctx_note.note_index
-
-	if idx < 0 or idx >= notes.size():
-		return
-
-	notes[idx]["hold"] = max(value, 0.0)
-	ctx_note.hold_ms = max(value, 0.0)
-
-	_apply_note_changes()
-
-	push_history({
-		"mode": "hold",
-		"before": [before.duplicate(true)],
-		"after": [notes[idx].duplicate(true)],
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	hide_all_note_context_menus()
-	$note_context/hold_edit.release_focus()
-
-func _on_singular_ctx_timestamp_edit_text_submitted(new_text: String) -> void:
-	if ctx_note == null:
-		return
-
-	var before := get_note_by_id(ctx_note.note_id)
-
-	var value := float(new_text)
-	var idx = ctx_note.note_index
-
-	if idx < 0 or idx >= notes.size():
-		return
-
-	notes[idx]["timestamp"] = value
-	ctx_note.timestamp = value
-
-	_apply_note_changes()
-
-	var after = notes[idx].duplicate(true)
-
-	push_history({
-		"mode": "move",
-		"before": [before.duplicate(true)],
-		"after": [after],
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	calculate_difficulty_threaded()
-	hide_all_note_context_menus()
-	$note_context/timestamp_edit.release_focus()
-
-
-func _on_singular_ctx_type_drop_item_selected(index: int) -> void:
-	if ctx_note == null:
-		return
-
-	var before := get_note_by_id(ctx_note.note_id)
-
-	var idx = ctx_note.note_index
-	if idx < 0 or idx >= notes.size():
-		return
-
-	notes[idx]["type"] = type_map[index]
-	ctx_note.type = type_map[index]
-	ctx_note.set_type(ctx_note.type)
-
-	_apply_note_changes()
-
-	var after = notes[idx].duplicate(true)
-
-	push_history({
-		"mode": "move",
-		"before": [before.duplicate(true)],
-		"after": [after],
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	calculate_difficulty_threaded()
-	hide_all_note_context_menus()
-	$note_context/type_drop.release_focus()
-
-
-func _on_singular_ctx_delete_pressed() -> void:
-	if ctx_note == null:
-		return
-
-	delete_notes([ctx_note])
-
-	ctx_note = null
-	ctx_note_index = -1
-
-	_reindex_notes()
-
-	$note_context/btns_cont/delete.release_focus()
-	$note_context.hide()
-
-func _on_singular_ctx_to_grid_pressed() -> void:
-	$note_context/btns_cont/to_grid_cont/to_grid.release_focus()
-
-	align_notes_to_grid([ctx_note])
-	
-	hide_all_note_context_menus()
-
-func _on_singular_ctx_snap_pressed() -> void:
-	var btn = $note_context/btns_cont/to_grid_cont/snap
-
-	btn.release_focus()
-
-	cycle_context_snap(btn)
-
-func _reindex_notes():
-	for i in range(notes.size()):
-		var node = rendered_notes.get(i)
-		if node:
-			node.note_index = i
-
-func _on_multiple_ctx_timestamp_edit_text_submitted(new_text: String) -> void:
-	if ctx_multiple_notes.is_empty():
-		return
-
-	_sort_ctx_multiple_notes()
-
-	var target_timestamp := float(new_text)
-	var first_note = ctx_multiple_notes[0]
-	var delta = target_timestamp - first_note.timestamp
-
-	var before := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			before.append(snap.duplicate(true))
-
-	for n in ctx_multiple_notes:
-		n.timestamp += delta
-
-		var y = (
-			(n.timestamp + OFFSET + BASE_TIME)
-			* note_speed / 10.0
-		) * -1
-
-		n.position.y = y
-
-	var after := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			after.append(snap.duplicate(true))
-
-	push_history({
-		"mode": "multi",
-		"before": before,
-		"after": after,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	_apply_multiple_note_changes()
-	hide_all_note_context_menus()
-	_setup_notes()
-	$multiple_note_context/timestamp_edit.release_focus()
-
-
-func _on_multiple_ctx_align_pressed() -> void:
-	if ctx_multiple_notes.is_empty():
-		return
-
-	_sort_ctx_multiple_notes()
-
-	var target_timestamp = ctx_multiple_notes[0].timestamp
-
-	var before := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			before.append(snap.duplicate(true))
-
-	for n in ctx_multiple_notes:
-		n.timestamp = target_timestamp
-
-		var y = (
-			(n.timestamp + OFFSET + BASE_TIME)
-			* note_speed / 10.0
-		) * -1
-
-		n.position.y = y
-
-	var after := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			after.append(snap.duplicate(true))
-
-	push_history({
-		"mode": "multi",
-		"before": before,
-		"after": after,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	_apply_multiple_note_changes()
-	hide_all_note_context_menus()
-	_setup_notes()
-	$multiple_note_context/btns_cont/align.release_focus()
-
-
-func _on_multiple_ctx_stream_pressed() -> void:
-	if ctx_multiple_notes.size() < 3:
-		return
-
-	_sort_ctx_multiple_notes()
-
-	var first = ctx_multiple_notes[0]
-	var last = ctx_multiple_notes[-1]
-
-	var start_time = first.timestamp
-	var end_time = last.timestamp
-	var count := ctx_multiple_notes.size()
-
-	var spacing = (end_time - start_time) / float(count - 1)
-
-	var before := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			before.append(snap.duplicate(true))
-
-	for i in range(count):
-		var n = ctx_multiple_notes[i]
-
-		n.timestamp = start_time + (spacing * i)
-
-		var y = (
-			(n.timestamp + OFFSET + BASE_TIME)
-			* note_speed / 10.0
-		) * -1
-
-		n.position.y = y
-
-	var after := []
-
-	for n in ctx_multiple_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			after.append(snap.duplicate(true))
-
-	push_history({
-		"mode": "multi",
-		"before": before,
-		"after": after,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	_apply_multiple_note_changes()
-	hide_all_note_context_menus()
-	_setup_notes()
-	$multiple_note_context/btns_cont/stream.release_focus()
-
-func _sort_ctx_multiple_notes():
-	ctx_multiple_notes.sort_custom(func(a, b):
-		return a.timestamp < b.timestamp
-	)
-
-func _on_multiple_ctx_delete_pressed() -> void:
-	$multiple_note_context/btns_cont/delete.release_focus()
-	
-	delete_notes(ctx_multiple_notes)
-
-func delete_notes(targets: Array) -> void:
-	if targets.is_empty():
-		return
-
-	var before := []
-	var indices := []
-
-	for n in targets:
-		if not is_instance_valid(n):
-			continue
-
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			before.append(snap.duplicate(true))
-
-		indices.append(n.note_index)
-
-	indices.sort()
-	indices.reverse()
-
-	for idx in indices:
-		if idx >= 0 and idx < notes.size():
-			notes.remove_at(idx)
-
-		if rendered_notes.has(idx):
-			var obj = rendered_notes[idx]
-			if is_instance_valid(obj):
-				obj.queue_free()
-			rendered_notes.erase(idx)
-
-	selected_notes.clear()
-	ctx_multiple_notes.clear()
-
-	_setup_notes()
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-	push_history({
-		"mode": "multi_delete",
-		"before": before,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	hide_all_note_context_menus()
-
-var context_snap_division := "1/4"
-
-func cycle_context_snap(button: Button) -> void:
-	var options = ["1/2", "1/4", "1/8", "1/16", "1/32", "1/64"]
-
-	var current_index = options.find(context_snap_division)
-
-	if current_index == -1:
-		current_index = 0
-
-	current_index = (current_index + 1) % options.size()
-
-	context_snap_division = options[current_index]
-
-	button.text = context_snap_division
-
-func get_snap_interval_from_division(div: String) -> float:
-	match div:
-		"1/2":
-			return doubles
-
-		"1/4":
-			return quads
-
-		"1/8":
-			return eights
-
-		"1/16":
-			return sixteenths
-
-		"1/32":
-			return thirtyseconds
-
-		"1/64":
-			return sixtyfourths
-
-	return 0.0
-
-func snap_timestamp_to_division(timestamp: float, div: String) -> float:
-	var interval := get_snap_interval_from_division(div)
-
-	if interval <= 0.0:
-		return timestamp
-
-	var snapped_value = snapped(timestamp, interval)
-
-	return snapped_value
-
-func align_notes_to_grid(target_notes: Array):
-	var before := []
-
-	for n in target_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			before.append(snap.duplicate(true))
-
-	for n in target_notes:
-		if not is_instance_valid(n):
-			continue
-
-		var snapped_timestamp = snap_timestamp_to_division(
-			n.timestamp,
-			context_snap_division
-		)
-
-		# visual node
-		n.timestamp = snapped_timestamp
-
-		# actual chart data
-		if n.note_index >= 0 and n.note_index < notes.size():
-			notes[n.note_index]["timestamp"] = snapped_timestamp
-
-		var new_y = (
-			(snapped_timestamp + BASE_TIME - OFFSET)
-			* note_speed
-			/ zoom
-		) * -1.0
-
-		n.position.y = new_y
-
-	var after := []
-
-	for n in target_notes:
-		var snap = get_note_by_id(n.note_id)
-		if snap:
-			after.append(snap.duplicate(true))
-
-	push_history({
-		"mode": "multi",
-		"before": before,
-		"after": after,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-func _on_multiple_ctx_to_grid_pressed() -> void:
-	$multiple_note_context/btns_cont/to_grid_cont/to_grid.release_focus()
-
-	align_notes_to_grid(selected_notes)
-	hide_all_note_context_menus()
-
-func _on_multiple_ctx_snap_pressed() -> void:
-	$multiple_note_context/btns_cont/to_grid_cont/snap.release_focus()
-
-	cycle_context_snap($multiple_note_context/btns_cont/to_grid_cont/snap)
-
-
-func _on_settings_editor_diff_graph_toggled(toggled_on: bool) -> void:
-	if not toggled_on:
-		for color in $Control/chart_controls/chart_scroll.get_children():
-			color.queue_free()
-	else:
-		update_difficulty_graph()
-
-
-func _on_settings_selection_box_quality_changed(toggled_on: bool) -> void:
-	if toggled_on: selection_box = $selection_box_hq
-	else: selection_box = $selection_box
-
-var copied_notes: Array = []
-
-var flip_note_map := {
-	"Left": "Right",
-	"Right": "Left",
-
-	"Upleft": "Upright",
-	"Upright": "Upleft",
-
-	"Downleft": "Downright",
-	"Downright": "Downleft",
-
-	"Up": "Down",
-	"Down": "Up",
-	"Effect": "Effect"
-}
-
-func _on_multiple_ctx_copy_pressed() -> void:
-	copy_selected_notes()
-
-	hide_all_note_context_menus()
-
-	$note_context/btns_cont/copycutpaste/copy.release_focus()
-
-
-func _on_multiple_ctx_cut_pressed() -> void:
-	cut_selected_notes()
-
-	hide_all_note_context_menus()
-
-	$multiple_note_context/btns_cont/copycutpaste/cut.release_focus()
-
-func _on_multiple_ctx_mirror_pressed() -> void:
-	if ctx_multiple_notes.is_empty():
-		return
-
-	var before := []
-
-	for n in ctx_multiple_notes:
-		if not is_instance_valid(n):
-			continue
-
-		var snap = get_note_by_id(n.note_id)
-
-		if snap.is_empty():
-			continue
-
-		before.append(snap.duplicate(true))
-
-	for n in ctx_multiple_notes:
-		if not is_instance_valid(n):
-			continue
-
-		var idx = n.note_index
-
-		if idx < 0 or idx >= notes.size():
-			continue
-
-		var old_type: String = notes[idx]["type"]
-
-		if not flip_note_map.has(old_type):
-			continue
-
-		var new_type: String = flip_note_map[old_type]
-
-		notes[idx]["type"] = new_type
-
-		n.type = new_type
-		n.set_type(new_type)
-
-	var after := []
-
-	for n in ctx_multiple_notes:
-		if not is_instance_valid(n):
-			continue
-
-		var snap = get_note_by_id(n.note_id)
-
-		if snap.is_empty():
-			continue
-
-		after.append(snap.duplicate(true))
-
-	push_history({
-		"mode": "multi",
-		"before": before,
-		"after": after,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	_apply_multiple_note_changes()
-
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-	hide_all_note_context_menus()
-	$multiple_note_context/btns_cont/mirror.release_focus()
-
-func _on_singular_ctx_copy_pressed() -> void:
-	copy_selected_notes()
-
-	hide_all_note_context_menus()
-	$note_context/btns_cont/copycutpaste/copy.release_focus()
-
-
-func _on_singular_ctx_cut_pressed() -> void:
-	cut_selected_notes()
-
-	hide_all_note_context_menus()
-	$note_context/btns_cont/copycutpaste/cut/cut.release_focus()
-
-func _on_singular_ctx_flip_pressed() -> void:
-	if ctx_note == null:
-		return
-
-	var idx = ctx_note.note_index
-
-	if idx < 0 or idx >= notes.size():
-		return
-
-	var before = notes[idx].duplicate(true)
-
-	var old_type: String = notes[idx]["type"]
-
-	if not flip_note_map.has(old_type):
-		return
-
-	var new_type: String = flip_note_map[old_type]
-
-	notes[idx]["type"] = new_type
-
-	ctx_note.type = new_type
-	ctx_note.set_type(new_type)
-
-	var after = notes[idx].duplicate(true)
-
-	push_history({
-		"mode": "move",
-		"before": [before],
-		"after": [after],
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	_apply_note_changes()
-
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-	hide_all_note_context_menus()
-	$note_context/btns_cont/flip.release_focus()
-
-
-
-
-
-var no_ctx_place_hold := 0.0
-var no_ctx_place_type := "Left"
-
-func _on_no_ctx_hold_edit_text_changed(new_text: String) -> void:
-	no_ctx_place_hold = max(float(new_text), 0.0)
-
-
-func _on_no_ctx_type_drop_item_selected(index: int) -> void:
-	if index < 0 or index >= type_map.size():
-		return
-
-	no_ctx_place_type = type_map[index]
-
-
-func _on_no_ctx_place_pressed() -> void:
-	var local_pos = $notes.to_local(ctx_menu_anchor_pos - Vector2(15, 15))
-
-	var timestamp = (
-		((local_pos.y * -1.0) * zoom / note_speed)
-		- BASE_TIME
-		- OFFSET * 2
-	)
-
-	var new_note := {
-		"id": str(Time.get_ticks_usec()),
-		"type": no_ctx_place_type,
-		"timestamp": snappedf(timestamp, 0.01),
-		"hold": no_ctx_place_hold
-	}
-
-	notes.append(new_note)
-
-	push_history({
-		"mode": "place",
-		"note": new_note.duplicate(true),
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	hide_all_note_context_menus()
-
-	_setup_notes()
-
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-	$no_note_context/place.release_focus()
-
-
-func _on_no_ctx_paste_pressed() -> void:
-	paste_copied_notes(true)
-
-	$no_note_context/btns_cont/paste.release_focus()
-
-func copy_selected_notes():
-	if selected_notes.is_empty():
-		return
-
-	copied_notes.clear()
-
-	for n in selected_notes:
-		if not is_instance_valid(n):
-			continue
-
-		var snap = get_note_by_id(n.note_id)
-
-		if snap.is_empty():
-			continue
-
-		copied_notes.append(snap.duplicate(true))
-
-
-func cut_selected_notes():
-	if selected_notes.is_empty():
-		return
-
-	copy_selected_notes()
-	delete_notes(selected_notes)
-
-
-func paste_copied_notes(use_context_menu_position := false):
-	if copied_notes.is_empty():
-		return
-
-	var paste_pos: Vector2
-
-	if use_context_menu_position:
-		paste_pos = ctx_menu_anchor_pos - Vector2(15, 15)
-	else:
-		paste_pos = get_global_mouse_position()
-
-	var local_pos = $notes.to_local(paste_pos)
-
-	var target_timestamp = (
-		((local_pos.y * -1.0) * zoom / note_speed)
-		- BASE_TIME
-		- OFFSET * 2
-	)
-
-	var pasted_notes := []
-
-	var first_timestamp = copied_notes[0]["timestamp"]
-
-	for note in copied_notes:
-		first_timestamp = min(
-			first_timestamp,
-			note["timestamp"]
-		)
-
-	for note in copied_notes:
-		var new_note = note.duplicate(true)
-
-		var relative_offset = (
-			note["timestamp"] - first_timestamp
-		)
-
-		new_note["id"] = General.generate_note_id()
-
-		new_note["timestamp"] = snappedf(
-			target_timestamp + relative_offset,
-			0.01
-		)
-
-		notes.append(new_note)
-
-		pasted_notes.append(
-			new_note.duplicate(true)
-		)
-
-	push_history({
-		"mode": "multi_place",
-		"notes": pasted_notes,
-		"scroll": $Control/chart_controls/chart_scroll.value
-	})
-
-	hide_all_note_context_menus()
-
-	_setup_notes()
-
-	set_save_warn()
-	calculate_difficulty_threaded()
-
-func _on_no_ctx_create_stream_pressed() -> void:
+func _on_edit_meta_artist_edit_text_submitted(new_text: String) -> void:
 	pass # Replace with function body.
 
 
-func _on_no_ctx_space_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_no_ctx_place_jack_pressed() -> void:
-	pass # Replace with function body.
-
-
-func _on_no_ctx_jack_quantity_pressed() -> void:
+func _on_edit_meta_add_artist_pressed() -> void:
 	pass # Replace with function body.

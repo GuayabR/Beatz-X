@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://dsc6fkstdgxrv"]
+[gd_scene load_steps=30 format=3 uid="uid://dsc6fkstdgxrv"]
 
 [ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="1_4fh0t"]
 [ext_resource type="Script" uid="uid://bwqqicuy3wel1" path="res://Scenes/playing_bar.gd" id="2_fvuyv"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://6cvc1r2mkha7" path="res://Resources/BeatzCoverX.png" id="3_wgpxw"]
 [ext_resource type="Texture2D" uid="uid://b1c78vvnpvxgb" path="res://Resources/misc/shadow.png" id="4_awyuj"]
 [ext_resource type="Texture2D" uid="uid://ct36npe78bfsk" path="res://Resources/misc/cover_mask.png" id="5_07vmw"]
-[ext_resource type="Texture2D" uid="uid://bm0dkdq3wwl4s" path="res://Resources/icon.svg" id="6_fvuyv"]
 [ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="7_qrvwj"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pofvn"]
@@ -21,6 +20,30 @@ light_mode = 2
 interpolation_mode = 2
 offsets = PackedFloat32Array(0, 0.67469877)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Shader" id="Shader_marquee_fade"]
+code = "shader_type canvas_item;
+
+uniform float left_edge = 0.0;
+uniform float right_edge = 1.0;
+uniform float fade_width = 0.01;
+uniform bool fade_enabled = true;
+
+void fragment() {
+	if (fade_enabled) {
+		float fade_in = smoothstep(left_edge, left_edge + fade_width, SCREEN_UV.x);
+		float fade_out = 1.0 - smoothstep(right_edge - fade_width, right_edge, SCREEN_UV.x);
+		COLOR.a *= fade_in * fade_out;
+	}
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_marquee_fade"]
+shader = SubResource("Shader_marquee_fade")
+shader_parameter/left_edge = 0.0
+shader_parameter/right_edge = 1.0
+shader_parameter/fade_width = 0.01
+shader_parameter/fade_enabled = true
 
 [sub_resource type="Animation" id="Animation_fvuyv"]
 length = 0.001
@@ -1457,20 +1480,6 @@ scale = Vector2(192.03064, 0.9601532)
 points = PackedVector2Array(0, 102.06702, 0, 32.2865)
 gradient = SubResource("Gradient_fvuyv")
 
-[node name="square_cover" type="TextureRect" parent="."]
-visible = false
-self_modulate = Color(1, 1, 1, 0.36078432)
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -67.0
-offset_right = 67.0
-grow_vertical = 0
-texture = ExtResource("3_wgpxw")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="cover_mask2" type="TextureRect" parent="."]
 modulate = Color(1, 1, 1, 0.43529412)
 layout_mode = 1
@@ -1478,17 +1487,16 @@ anchors_preset = 9
 anchor_bottom = 1.0
 offset_left = 33.0
 offset_top = -29.00003
-offset_right = 99.99989
-offset_bottom = -37.097137
+offset_right = 100.0
+offset_bottom = -37.00003
 grow_vertical = 2
 scale = Vector2(3.2222285, 3.2222285)
-pivot_offset = Vector2(33, 33)
+pivot_offset = Vector2(33.5, 33.5)
 texture = ExtResource("4_awyuj")
 expand_mode = 1
 stretch_mode = 4
 
 [node name="cover_mask" type="TextureRect" parent="."]
-clip_children = 1
 z_index = 2
 layout_mode = 1
 anchors_preset = 9
@@ -1506,14 +1514,30 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="cover" type="TextureRect" parent="cover_mask"]
-layout_mode = 0
-offset_right = 67.0
-offset_bottom = 67.0
-scale = Vector2(1.025, 1.025)
-pivot_offset = Vector2(33, 33)
-texture = ExtResource("6_fvuyv")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.00010681152
+offset_bottom = 0.09710693
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(33.5, 33.5)
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
+
+[node name="square_cover" type="TextureRect" parent="cover_mask"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_wgpxw")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="VideoPlayback" type="Control" parent="cover_mask"]
 layout_mode = 1
@@ -1606,13 +1630,20 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="title" type="RichTextLabel" parent="title_artist_cont"]
+[node name="title" type="Control" parent="title_artist_cont"]
+clip_contents = true
+custom_minimum_size = Vector2(1, 45)
 layout_mode = 2
+
+[node name="text" type="RichTextLabel" parent="title_artist_cont/title"]
+material = SubResource("ShaderMaterial_marquee_fade")
+layout_mode = 1
+offset_right = 340.0
+offset_bottom = 45.0
 theme_override_font_sizes/normal_font_size = 18
 theme_override_font_sizes/bold_font_size = 32
 bbcode_enabled = true
 text = "[b]Title[/b]"
-fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1626,33 +1657,47 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="artist" type="RichTextLabel" parent="title_artist_cont"]
+[node name="artist" type="Control" parent="title_artist_cont"]
+clip_contents = true
+custom_minimum_size = Vector2(1, 45)
 layout_mode = 2
+
+[node name="text" type="RichTextLabel" parent="title_artist_cont/artist"]
+material = SubResource("ShaderMaterial_marquee_fade")
+layout_mode = 1
+offset_right = 340.0
+offset_bottom = 45.0
 theme_override_font_sizes/normal_font_size = 20
 text = "Artist"
-fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="album" type="RichTextLabel" parent="."]
+[node name="album" type="Control" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(560, 37)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -573.0
+offset_left = -809.5
 offset_top = -24.5
-offset_right = -486.0
+offset_right = -249.5
 offset_bottom = 12.5
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="text" type="RichTextLabel" parent="album"]
+material = SubResource("ShaderMaterial_marquee_fade")
+layout_mode = 1
+offset_right = 560.0
+offset_bottom = 37.0
 theme_override_font_sizes/normal_font_size = 24
 theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true
 text = "[b]Album[/b]"
-fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1818,6 +1863,78 @@ text = ""
 icon_alignment = 1
 expand_icon = true
 
+[node name="external_previous" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -93.0
+offset_top = -18.540253
+offset_right = -48.0
+offset_bottom = 26.459747
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(22, 22)
+tooltip_text = "Previous external track"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+expand_icon = true
+
+[node name="external_playpause" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.5
+offset_top = -18.5
+offset_right = 22.5
+offset_bottom = 26.5
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(22, 22)
+tooltip_text = "Play or pause external media"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+expand_icon = true
+
+[node name="external_next" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -18.538849
+offset_right = 93.00061
+offset_bottom = 26.461151
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(22, 22)
+tooltip_text = "Next external track"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_outline_color = Color(1, 0, 0.65882355, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_qrvwj")
+theme_override_font_sizes/font_size = 26
+text = ""
+expand_icon = true
+
 [node name="go_to_song" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 8
@@ -1936,5 +2053,8 @@ libraries = {
 [connection signal="pressed" from="previous" to="." method="_on_previous_pressed"]
 [connection signal="pressed" from="playpause" to="." method="_on_playpause_pressed"]
 [connection signal="pressed" from="next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="external_previous" to="." method="_on_external_previous_pressed"]
+[connection signal="pressed" from="external_playpause" to="." method="_on_external_playpause_pressed"]
+[connection signal="pressed" from="external_next" to="." method="_on_external_next_pressed"]
 [connection signal="pressed" from="go_to_song" to="." method="_on_go_to_song_pressed"]
 [connection signal="pressed" from="go_to_album" to="." method="_on_go_to_album_pressed"]

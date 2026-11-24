@@ -1240,6 +1240,29 @@ scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
 
+[node name="square_playing_bar_cover_toggle" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Show the playing bar cover as a stationary square.
+Circular covers can rotate, scale with audio, do both, or stay still."
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_constants/h_separation = 15
+theme_override_font_sizes/font_size = 40
+text = "Square Playing Bar Cover"
+
+[node name="space_square_playing_bar_cover" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
 [node name="note_speed_label" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 unique_name_in_owner = true
 visible = false
@@ -3394,6 +3417,59 @@ theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 50
 text = "Show Chart Alignment "
 
+[node name="monitor_windows_media_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+tooltip_text = "Automatically detect media playing through Windows and display its metadata and playback controls in the playing bar."
+text = "Monitor Windows Media"
+
+[node name="space_windows_media" type="RichTextLabel" parent="ScrollContainer/settings_list"]
+custom_minimum_size = Vector2(650, 10)
+layout_mode = 2
+mouse_filter = 2
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+justification_flags = 162
+
+[node name="only_monitor_on_main_menu_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+tooltip_text = "Only detect and display external media while on the main menu. External media will be requested to pause when entering gameplay or other editing environments."
+text = "Only Monitor on Main Menu"
+
+[node name="unpause_external_media_on_main_menu_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+tooltip_text = "Automatically request playback when returning to the main menu if external media is paused."
+text = "Unpause External Media on Main Menu"
+
+[node name="match_external_media_cover_loops_check" type="CheckButton" parent="ScrollContainer/settings_list"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("4_6vr2p")
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 50
+tooltip_text = "Match external media albums with local cover loop videos. Requires Cover Loops in Playing Bar to be enabled to display them."
+text = "Match Cover Loops with External Media"
+
 [node name="space9" type="RichTextLabel" parent="ScrollContainer/settings_list"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(650, 10)
@@ -3589,7 +3665,6 @@ offset_bottom = 506.0
 grow_horizontal = 2
 grow_vertical = 2
 follow_focus = true
-horizontal_scroll_mode = 0
 scroll_deadzone = 1
 
 [node name="settings_list" type="GridContainer" parent="keybinds_layer/ScrollContainer"]
@@ -3623,64 +3698,9 @@ scroll_active = false
 horizontal_alignment = 1
 justification_flags = 162
 
-[node name="GridContainer" type="GridContainer" parent="keybinds_layer/ScrollContainer/settings_list"]
+[node name="binding_rows" type="VBoxContainer" parent="keybinds_layer/ScrollContainer/settings_list"]
 layout_mode = 2
-columns = 2
-
-[node name="l_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Left: "
-
-[node name="l_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-custom_minimum_size = Vector2(650, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "{KEY}"
-
-[node name="d_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Down: "
-
-[node name="d_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-custom_minimum_size = Vector2(650, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "{KEY}"
-
-[node name="u_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Up: "
-
-[node name="u_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-custom_minimum_size = Vector2(650, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "{KEY}"
-
-[node name="r_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Right: "
-
-[node name="r_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-custom_minimum_size = Vector2(650, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "{KEY}"
-
-[node name="back_lbl" type="Label" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "Pause: "
-
-[node name="pause_btn" type="Button" parent="keybinds_layer/ScrollContainer/settings_list/GridContainer"]
-custom_minimum_size = Vector2(650, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "{KEY}"
+theme = ExtResource("4_6vr2p")
 
 [node name="input_listen_cont" type="Panel" parent="keybinds_layer"]
 layout_mode = 1
@@ -3704,31 +3724,31 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -71.0
+offset_left = -300.0
 offset_top = 10.5
-offset_right = 71.0
+offset_right = 300.0
 offset_bottom = 48.5
 grow_horizontal = 2
-theme_override_font_sizes/normal_font_size = 25
+theme_override_font_sizes/normal_font_size = 30
 text = "Input Name"
 fit_content = true
 autowrap_mode = 0
 
-[node name="listening_lbl2" type="RichTextLabel" parent="keybinds_layer/input_listen_cont"]
+[node name="listening_lbl" type="RichTextLabel" parent="keybinds_layer/input_listen_cont"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -173.0
+offset_left = -300.0
 offset_top = -44.0
-offset_right = 173.0
+offset_right = 300.0
 offset_bottom = 7.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/normal_font_size = 38
-text = "Listening for Input..."
+theme_override_font_sizes/normal_font_size = 30
+text = "Listening for input..."
 fit_content = true
 autowrap_mode = 0
 horizontal_alignment = 1
@@ -3823,6 +3843,7 @@ libraries = {
 [connection signal="toggled" from="ScrollContainer/settings_list/cover_loops_in_selected_bg_toggle" to="." method="_on_cover_loops_in_selected_bg_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/editor_cover_loops_toggle" to="." method="_on_editor_cover_loops_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/cover_loops_playing_bar_toggle" to="." method="_on_cover_loops_playing_bar_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/square_playing_bar_cover_toggle" to="." method="_on_square_playing_bar_cover_toggled"]
 [connection signal="item_selected" from="ScrollContainer/settings_list/note_speed_drop" to="." method="_on_note_speed_item_selected"]
 [connection signal="focus_entered" from="ScrollContainer/settings_list/note_speed_value_lbl" to="." method="_on_note_speed_value_lbl_focus_entered"]
 [connection signal="focus_exited" from="ScrollContainer/settings_list/note_speed_value_edit" to="." method="_on_menu_song_vol_edit_2_focus_exited"]
@@ -3914,15 +3935,14 @@ libraries = {
 [connection signal="toggled" from="ScrollContainer/settings_list/borderless_check" to="." method="_on_borderless_check_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/drp_toggle" to="." method="_on_drp_toggle_toggled"]
 [connection signal="toggled" from="ScrollContainer/settings_list/show_chart_alignment" to="." method="_on_show_chart_alignment_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/monitor_windows_media_check" to="." method="_on_monitor_windows_media_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/only_monitor_on_main_menu_check" to="." method="_on_only_monitor_on_main_menu_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/unpause_external_media_on_main_menu_check" to="." method="_on_unpause_external_media_on_main_menu_check_toggled"]
+[connection signal="toggled" from="ScrollContainer/settings_list/match_external_media_cover_loops_check" to="." method="_on_match_external_media_cover_loops_toggled"]
 [connection signal="pressed" from="ScrollContainer/settings_list/credits_btn" to="." method="_on_credits_btn_pressed"]
 [connection signal="pressed" from="ScrollContainer/settings_list/see_tos" to="." method="_on_see_tos_pressed"]
 [connection signal="pressed" from="ScrollContainer/settings_list/see_github" to="." method="_on_see_github_pressed"]
 [connection signal="pressed" from="ScrollContainer/settings_list/check_for_update" to="." method="_on_check_for_update_pressed"]
 [connection signal="meta_clicked" from="ScrollContainer/settings_list/copyright" to="." method="_on_copyright_meta_clicked"]
-[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/l_btn" to="." method="_on_l_btn_pressed"]
-[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/d_btn" to="." method="_on_d_btn_pressed"]
-[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/u_btn" to="." method="_on_u_btn_pressed"]
-[connection signal="pressed" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/r_btn" to="." method="_on_r_btn_pressed"]
-[connection signal="button_up" from="keybinds_layer/ScrollContainer/settings_list/GridContainer/pause_btn" to="." method="_on_pause_btn_button_up"]
 [connection signal="pressed" from="keybinds_layer/input_listen_cont/cancel" to="." method="_on_cancel_pressed"]
 [connection signal="pressed" from="keybinds_layer/input_listen_cont/ok" to="." method="_on_ok_pressed"]

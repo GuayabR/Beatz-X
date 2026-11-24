@@ -681,7 +681,6 @@ tracks/26/keys = {
 "values": [Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="Animation" id="Animation_cbgmd"]
 resource_name = "back"
 tracks/0/type = "value"
@@ -876,7 +875,6 @@ tracks/15/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_nwwfm"]
 resource_name = "back_from_die"
@@ -1694,7 +1692,6 @@ tracks/15/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_gt3je"]
 resource_name = "pause"
@@ -3977,7 +3974,6 @@ tracks/85/keys = {
 "values": [Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="Animation" id="Animation_jut3y"]
 resource_name = "edit_from_end"
 length = 0.8667
@@ -4101,7 +4097,6 @@ tracks/9/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_1w6v2"]
 resource_name = "end_screen_to_main"
@@ -4418,7 +4413,6 @@ tracks/25/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_gsvbx"]
 resource_name = "fade_out"
@@ -4879,7 +4873,6 @@ tracks/37/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
-
 
 [sub_resource type="Animation" id="Animation_6vcvc"]
 resource_name = "init"
@@ -5388,7 +5381,6 @@ tracks/41/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
-
 
 [sub_resource type="Animation" id="Animation_2daye"]
 resource_name = "init_after_fade"
@@ -6309,7 +6301,6 @@ tracks/44/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
-
 
 [sub_resource type="Animation" id="Animation_s8vy0"]
 resource_name = "reset_from_end"
@@ -9763,9 +9754,9 @@ drag_and_drop_selection_enabled = false
 
 [node name="loading_progress" type="ProgressBar" parent="."]
 visible = false
+modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 12
-layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -9778,6 +9769,7 @@ offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
+theme = ExtResource("15_u50mg")
 show_percentage = false
 
 [node name="mbl_buttons" type="Node2D" parent="."]

@@ -2,6 +2,7 @@ extends Node
 
 signal loading_status(status: ResourceLoader.ThreadLoadStatus, progress: float)
 signal scene_loaded(scene: PackedScene)
+signal scene_transition_requested(destination_path: String)
 
 class SceneLoadRequest extends RefCounted:
 	signal completed(scene: PackedScene)
@@ -101,6 +102,8 @@ func _finish_active_request(scene: PackedScene) -> void:
 	_loading_path = ""
 	loaded_scene = scene
 
+	if scene != null:
+		scene_transition_requested.emit(request.path)
 	request.finish(scene)
 	if scene != null:
 		scene_loaded.emit(scene)

@@ -26,6 +26,21 @@ var note_id: String = ""
 
 var is_recording_hold: bool = false
 
+var _recording_range_modulate: Color = Color.WHITE
+var _recording_range_dimmed: bool = false
+
+func apply_recording_range_dim() -> void:
+	if not _recording_range_dimmed:
+		_recording_range_modulate = modulate
+		_recording_range_dimmed = true
+	modulate = Color(0.6, 0.6, 0.6, 0.6)
+
+func restore_recording_range_modulate() -> void:
+	if not _recording_range_dimmed:
+		return
+	modulate = _recording_range_modulate
+	_recording_range_dimmed = false
+
 signal editor_hovered(note)
 signal editor_unhovered(note)
 signal editor_pressed(note, event)

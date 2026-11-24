@@ -10,6 +10,15 @@ const INPUTS: Dictionary[Variant, Variant] = {
 	"pause": 4,
 }
 
+const LEGACY_DEFAULT_KEYBINDS: Dictionary = {
+	"noteLeft": [KEY_Q, KEY_Z, KEY_LEFT, KEY_3],
+	"noteDown": [KEY_W],
+	"noteUp": [KEY_O],
+	"noteRight": [KEY_P],
+	"pause-back": [KEY_ESCAPE],
+}
+const MAX_KEYBIND_EVENTS := 5
+
 var settings: Dictionary[String, Variant] = {
 	"game": {
 		"username": "",
@@ -21,6 +30,10 @@ var settings: Dictionary[String, Variant] = {
 		"master_vol": 100.0,
 		"song_vol": 80.0,
 		"menu_song_vol": 75.0,
+		"monitor_windows_media": false,
+		"only_monitor_on_main_menu": false,
+		"unpause_external_media_on_main_menu": false,
+		"match_external_media_cover_loops": true,
 		"sfx_vol": 40.0,
 		"output_device": "Default",
 		"input_device": "Default",
@@ -72,6 +85,7 @@ var settings: Dictionary[String, Variant] = {
 		"cover_loops_selected_song": true,
 		"editor_cover_loops": true,
 		"cover_loops_playing_bar": true,
+		"square_playing_bar_cover": false,
 		"editor_seek_vid_along_scroll": true,
 		"editor_show_note_hold_ends": true,
 		"editor_waveform_color": Color(1.0, 1.0, 1.0, 0.25),
@@ -201,13 +215,8 @@ var settings: Dictionary[String, Variant] = {
 			"16000": 8.0,
 		},
 	},
-	"keybinds": {
-		"noteLeft": [KEY_Q, KEY_Z, KEY_LEFT, KEY_3],
-		"noteDown": [KEY_W],
-		"noteUp": [KEY_O],
-		"noteRight": [KEY_P],
-		"pause-back": [KEY_ESCAPE]
-	}
+	"keybinds": {},
+	"pause_back_bindings_migrated": false
 }
 
 # Aliases
@@ -229,15 +238,21 @@ var keybinds: Dictionary:
 func _ready() -> void:
 	print("Settings Global node loaded")
 	_load()
-	#_apply_keybinds()
+	_apply_keybinds()
 	_apply_display_settings()
 
 func _save():
 	print("Saving settings")
-	var file = FileAccess.open(General.SETTINGS_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify([settings], "\t", false))
-		file.close()
+	var file: FileAccess = FileAccess.open(General.SETTINGS_PATH, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to open settings file for writing: %s (%s)" % [General.SETTINGS_PATH, error_string(FileAccess.get_open_error())])
+		return
+
+	file.store_string(JSON.stringify([settings], "\t", false))
+	var write_error: int = file.get_error()
+	file.close()
+	if write_error != OK:
+		push_error("Failed to write settings file: %s (%s)" % [General.SETTINGS_PATH, error_string(write_error)])
 
 func _apply_display_settings(): # On load, instantly apply any new display related settings like fps or window mode
 	# Fps mode
@@ -321,40 +336,324 @@ func _load():
 		_save()
 
 func _apply_keybinds() -> void:
-	for action_name in settings["keybinds"].keys():
-		if InputMap.has_action(action_name):
-			InputMap.action_erase_events(action_name)
-			print("Erased ", action_name)
-		else:
+	var saved_keybinds: Variant = settings.get("keybinds", {})
+	if typeof(saved_keybinds) != TYPE_DICTIONARY:
+		push_warning("Ignoring invalid saved keybind data.")
+		return
+
+	if not bool(settings.get("pause_back_bindings_migrated", false)):
+		if not _migrate_pause_back_keybinds(saved_keybinds):
+			return
+		settings["pause_back_bindings_migrated"] = true
+		_save()
+
+	for raw_action_name in saved_keybinds.keys():
+		var action_name: StringName = StringName(raw_action_name)
+		var raw_events: Variant = saved_keybinds[raw_action_name]
+		if typeof(raw_events) != TYPE_ARRAY:
+			push_warning("Ignoring invalid keybind list for '%s'." % action_name)
+			continue
+		var raw_events_array: Array = raw_events
+
+		if _is_legacy_default_keybinds(str(action_name), raw_events_array):
+			continue
+
+		var loaded_events: Array[InputEvent] = []
+		var valid_events: bool = true
+		if raw_events_array.size() > MAX_KEYBIND_EVENTS:
+			push_warning(
+				"Keybind '%s' has more than %d inputs; ignoring extras."
+				% [action_name, MAX_KEYBIND_EVENTS]
+			)
+
+		for event_index in mini(raw_events_array.size(), MAX_KEYBIND_EVENTS):
+			var raw_event: Variant = raw_events_array[event_index]
+			var input_event: InputEvent = _deserialize_keybind_event(raw_event)
+			if input_event == null:
+				valid_events = false
+				break
+			loaded_events.append(input_event)
+
+		if not valid_events:
+			push_warning("Ignoring invalid saved keybinds for '%s'." % action_name)
+			continue
+
+		if not InputMap.has_action(action_name):
 			InputMap.add_action(action_name)
-			print("Not found, added ", action_name)
+		InputMap.action_erase_events(action_name)
+		for input_event in loaded_events:
+			InputMap.action_add_event(action_name, input_event)
 
-		for raw_val in settings["keybinds"][action_name]:
-			var val: int = int(raw_val) # Convert from float to int
-			var ev: InputEvent = null
+func _migrate_pause_back_keybinds(saved_keybinds: Dictionary) -> bool:
+	var pause_events: Array[InputEvent] = []
+	if saved_keybinds.has("pause-back"):
+		var raw_pause_events: Variant = saved_keybinds["pause-back"]
+		if typeof(raw_pause_events) != TYPE_ARRAY:
+			push_warning("Cannot migrate invalid saved 'pause-back' keybinds.")
+			return false
+		for raw_event in raw_pause_events:
+			var input_event: InputEvent = _deserialize_keybind_event(raw_event)
+			if input_event == null:
+				push_warning("Cannot migrate invalid saved 'pause-back' keybinds.")
+				return false
+			pause_events.append(input_event)
+	else:
+		pause_events.assign(InputMap.action_get_events(&"pause-back"))
 
-			# Detect input type
-			if val >= KEY_SPACE: # Assume keyboard key
-				var key_event := InputEventKey.new()
-				key_event.keycode = key_event.val
-				ev = key_event
-			elif val >= MOUSE_BUTTON_LEFT and val <= MOUSE_BUTTON_XBUTTON2:
-				var mouse_event := InputEventMouseButton.new()
-				mouse_event.button_index = mouse_event.val
-				ev = mouse_event
-			elif val >= JOY_BUTTON_A and val <= JOY_BUTTON_RIGHT_SHOULDER:
-				var joy_event := InputEventJoypadButton.new()
-				joy_event.button_index = joy_event.val
-				ev = joy_event
-			elif val >= JOY_AXIS_LEFT_X and val <= JOY_AXIS_TRIGGER_RIGHT:
-				var axis_event := InputEventJoypadMotion.new()
-				axis_event.axis = axis_event.val
-				axis_event.axis_value = 1.0
-				ev = axis_event
+	for legacy_action in ["controller-pause", "controller-back"]:
+		if not saved_keybinds.has(legacy_action):
+			continue
+		var raw_legacy_events: Variant = saved_keybinds[legacy_action]
+		if typeof(raw_legacy_events) != TYPE_ARRAY:
+			push_warning("Ignoring invalid saved keybind list for '%s'." % legacy_action)
+			continue
+		for raw_event in raw_legacy_events:
+			var legacy_event: InputEvent = _deserialize_keybind_event(raw_event)
+			if legacy_event == null:
+				push_warning("Ignoring invalid saved keybind in '%s'." % legacy_action)
+				continue
+			if not _has_matching_keybind_event(pause_events, legacy_event):
+				pause_events.append(legacy_event)
 
-			if ev:
-				print("Created ", action_name, " with ", ev.as_text())
-				InputMap.action_add_event(action_name, ev)
+	for button_index in [JOY_BUTTON_START, JOY_BUTTON_B]:
+		if _has_joypad_button_event(pause_events, button_index):
+			continue
+		while pause_events.size() >= MAX_KEYBIND_EVENTS:
+			var removable_index: int = pause_events.size() - 1
+			while removable_index >= 0:
+				var existing_event: InputEvent = pause_events[removable_index]
+				if not _is_pause_back_controller_button(existing_event):
+					break
+				removable_index -= 1
+			if removable_index < 0:
+				push_warning("Cannot migrate 'pause-back' keybinds within the input limit.")
+				return false
+			pause_events.remove_at(removable_index)
+
+		var joypad_event: InputEventJoypadButton = InputEventJoypadButton.new()
+		joypad_event.button_index = button_index as JoyButton
+		pause_events.append(joypad_event)
+
+	var serialized_events: Array[Dictionary] = []
+	for input_event in pause_events:
+		var serialized_event: Dictionary = _serialize_keybind_event(input_event)
+		if serialized_event.is_empty():
+			push_warning("Cannot migrate unsupported input event in 'pause-back'.")
+			return false
+		serialized_events.append(serialized_event)
+
+	saved_keybinds["pause-back"] = serialized_events
+	saved_keybinds.erase("controller-pause")
+	saved_keybinds.erase("controller-back")
+	return true
+
+func _has_joypad_button_event(events: Array[InputEvent], button_index: int) -> bool:
+	for input_event in events:
+		if input_event is InputEventJoypadButton and input_event.button_index == button_index:
+			return true
+	return false
+
+func _has_matching_keybind_event(events: Array[InputEvent], candidate: InputEvent) -> bool:
+	for input_event in events:
+		if input_event.is_match(candidate, true):
+			return true
+	return false
+
+func _is_pause_back_controller_button(input_event: InputEvent) -> bool:
+	return input_event is InputEventJoypadButton and input_event.button_index in [JOY_BUTTON_START, JOY_BUTTON_B]
+
+func apply_keybind_event(action_name: StringName, event_index: int, new_event: InputEvent) -> bool:
+	if not InputMap.has_action(action_name) or new_event == null:
+		push_warning("Cannot update keybind for '%s'." % action_name)
+		return false
+
+	var saved_keybinds: Variant = settings.get("keybinds", {})
+	if typeof(saved_keybinds) != TYPE_DICTIONARY:
+		push_warning("Cannot update keybinds because saved keybind data is invalid.")
+		return false
+
+	var updated_events: Array[InputEvent] = []
+	updated_events.assign(InputMap.action_get_events(action_name))
+	if event_index == -1:
+		if updated_events.size() >= MAX_KEYBIND_EVENTS:
+			push_warning("Cannot add a sixth input to keybind '%s'." % action_name)
+			return false
+		updated_events.append(new_event)
+	elif event_index >= 0 and event_index < updated_events.size():
+		updated_events[event_index] = new_event
+	else:
+		push_warning("Cannot update keybind '%s': binding index is out of range." % action_name)
+		return false
+
+	var serialized_events: Array[Dictionary] = []
+	for input_event in updated_events:
+		var serialized_event: Dictionary = _serialize_keybind_event(input_event)
+		if serialized_event.is_empty():
+			push_warning("Cannot save unsupported input event for '%s'." % action_name)
+			return false
+		serialized_events.append(serialized_event)
+
+	InputMap.action_erase_events(action_name)
+	for input_event in updated_events:
+		InputMap.action_add_event(action_name, input_event)
+	saved_keybinds[str(action_name)] = serialized_events
+	return true
+
+func remove_keybind_event(action_name: StringName, event_index: int) -> bool:
+	if not InputMap.has_action(action_name):
+		push_warning("Cannot remove keybind for unknown action '%s'." % action_name)
+		return false
+
+	var events: Array[InputEvent] = []
+	events.assign(InputMap.action_get_events(action_name))
+	if event_index < 0 or event_index >= events.size():
+		push_warning("Cannot remove keybind '%s': binding index is out of range." % action_name)
+		return false
+	events.remove_at(event_index)
+
+	var serialized_events: Array[Dictionary] = []
+	for input_event in events:
+		var serialized_event: Dictionary = _serialize_keybind_event(input_event)
+		if serialized_event.is_empty():
+			push_warning("Cannot save unsupported input event for '%s'." % action_name)
+			return false
+		serialized_events.append(serialized_event)
+
+	var saved_keybinds: Variant = settings.get("keybinds", {})
+	if typeof(saved_keybinds) != TYPE_DICTIONARY:
+		push_warning("Cannot update keybinds because saved keybind data is invalid.")
+		return false
+
+	InputMap.action_erase_events(action_name)
+	for input_event in events:
+		InputMap.action_add_event(action_name, input_event)
+	saved_keybinds[str(action_name)] = serialized_events
+	return true
+
+func _is_legacy_default_keybinds(action_name: String, raw_events: Array) -> bool:
+	if not LEGACY_DEFAULT_KEYBINDS.has(action_name):
+		return false
+
+	var legacy_defaults: Array = LEGACY_DEFAULT_KEYBINDS[action_name]
+	if raw_events.size() != legacy_defaults.size():
+		return false
+
+	for index in range(raw_events.size()):
+		if typeof(raw_events[index]) != TYPE_INT and typeof(raw_events[index]) != TYPE_FLOAT:
+			return false
+		if int(raw_events[index]) != legacy_defaults[index]:
+			return false
+	return true
+
+func _deserialize_keybind_event(value: Variant) -> InputEvent:
+	if value is Dictionary:
+		var event_data: Dictionary = value
+		var device: int = int(event_data.get("device", -1))
+		match str(event_data.get("type", "")):
+			"key":
+				var key_event: InputEventKey = InputEventKey.new()
+				key_event.device = device
+				key_event.keycode = int(event_data.get("keycode", 0)) as Key
+				key_event.physical_keycode = int(event_data.get("physical_keycode", 0)) as Key
+				key_event.key_label = int(event_data.get("key_label", 0)) as Key
+				key_event.unicode = int(event_data.get("unicode", 0))
+				key_event.location = int(event_data.get("location", 0)) as KeyLocation
+				key_event.alt_pressed = bool(event_data.get("alt", false))
+				key_event.shift_pressed = bool(event_data.get("shift", false))
+				key_event.ctrl_pressed = bool(event_data.get("ctrl", false))
+				key_event.meta_pressed = bool(event_data.get("meta", false))
+				return key_event
+			"mouse_button":
+				var mouse_event: InputEventMouseButton = InputEventMouseButton.new()
+				mouse_event.device = device
+				mouse_event.button_index = int(event_data.get("button_index", 0)) as MouseButton
+				mouse_event.alt_pressed = bool(event_data.get("alt", false))
+				mouse_event.shift_pressed = bool(event_data.get("shift", false))
+				mouse_event.ctrl_pressed = bool(event_data.get("ctrl", false))
+				mouse_event.meta_pressed = bool(event_data.get("meta", false))
+				return mouse_event
+			"joypad_button":
+				var joy_button_event: InputEventJoypadButton = InputEventJoypadButton.new()
+				joy_button_event.device = device
+				joy_button_event.button_index = int(event_data.get("button_index", 0)) as JoyButton
+				joy_button_event.pressure = float(event_data.get("pressure", 0.0))
+				joy_button_event.pressed = bool(event_data.get("pressed", false))
+				return joy_button_event
+			"joypad_motion":
+				var joy_motion_event: InputEventJoypadMotion = InputEventJoypadMotion.new()
+				joy_motion_event.device = device
+				joy_motion_event.axis = int(event_data.get("axis", 0)) as JoyAxis
+				joy_motion_event.axis_value = float(event_data.get("axis_value", 1.0))
+				return joy_motion_event
+		return null
+
+	if typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT:
+		var legacy_value: int = int(value)
+		if legacy_value >= KEY_SPACE:
+			var legacy_key_event: InputEventKey = InputEventKey.new()
+			legacy_key_event.keycode = legacy_value as Key
+			return legacy_key_event
+		if legacy_value >= MOUSE_BUTTON_LEFT and legacy_value <= MOUSE_BUTTON_XBUTTON2:
+			var legacy_mouse_event: InputEventMouseButton = InputEventMouseButton.new()
+			legacy_mouse_event.button_index = legacy_value as MouseButton
+			return legacy_mouse_event
+		if legacy_value >= JOY_BUTTON_A and legacy_value <= JOY_BUTTON_RIGHT_SHOULDER:
+			var legacy_joy_button_event: InputEventJoypadButton = InputEventJoypadButton.new()
+			legacy_joy_button_event.button_index = legacy_value as JoyButton
+			return legacy_joy_button_event
+		if legacy_value >= JOY_AXIS_LEFT_X and legacy_value <= JOY_AXIS_TRIGGER_RIGHT:
+			var legacy_joy_motion_event: InputEventJoypadMotion = InputEventJoypadMotion.new()
+			legacy_joy_motion_event.axis = legacy_value as JoyAxis
+			legacy_joy_motion_event.axis_value = 1.0
+			return legacy_joy_motion_event
+
+	return null
+
+func _serialize_keybind_event(input_event: InputEvent) -> Dictionary:
+	if input_event is InputEventKey:
+		var key_event: InputEventKey = input_event as InputEventKey
+		return {
+			"type": "key",
+			"device": key_event.device,
+			"keycode": key_event.keycode,
+			"physical_keycode": key_event.physical_keycode,
+			"key_label": key_event.key_label,
+			"unicode": key_event.unicode,
+			"location": key_event.location,
+			"alt": key_event.alt_pressed,
+			"shift": key_event.shift_pressed,
+			"ctrl": key_event.ctrl_pressed,
+			"meta": key_event.meta_pressed
+		}
+	if input_event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = input_event as InputEventMouseButton
+		return {
+			"type": "mouse_button",
+			"device": mouse_event.device,
+			"button_index": mouse_event.button_index,
+			"alt": mouse_event.alt_pressed,
+			"shift": mouse_event.shift_pressed,
+			"ctrl": mouse_event.ctrl_pressed,
+			"meta": mouse_event.meta_pressed
+		}
+	if input_event is InputEventJoypadButton:
+		var joy_button_event: InputEventJoypadButton = input_event as InputEventJoypadButton
+		return {
+			"type": "joypad_button",
+			"device": joy_button_event.device,
+			"button_index": joy_button_event.button_index,
+			"pressure": joy_button_event.pressure,
+			"pressed": joy_button_event.pressed
+		}
+	if input_event is InputEventJoypadMotion:
+		var joy_motion_event: InputEventJoypadMotion = input_event as InputEventJoypadMotion
+		return {
+			"type": "joypad_motion",
+			"device": joy_motion_event.device,
+			"axis": joy_motion_event.axis,
+			"axis_value": joy_motion_event.axis_value
+		}
+	return {}
 
 func parse_any_color(value) -> Color:
 	if typeof(value) == TYPE_COLOR:

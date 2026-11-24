@@ -22,6 +22,7 @@ signal loaded_song_meta(title: String)
 signal loaded_song(title: String)
 
 var add_queue := []
+var add_queue_index: int = 0
 var processing_index := 0
 var grouped_songs := {}
 
@@ -50,30 +51,32 @@ func _ready():
 			print("Failed to load image at path:", Settings.misc.menu_bg_img_path)
 
 func _process(_delta) -> void:
-	if add_queue.is_empty():
+	if not scan_finished:
 		return
 	
-	for item in add_queue:
-		var entry = item["entry"]
-		var idx = list.add_item(entry["text"], entry["cover"])
-		list.set_item_metadata(idx, entry["metadata"])
-		list.set_item_tooltip_enabled(idx, false)
+	if processing_index < pending_scan_results.size():
+		var data: Dictionary = pending_scan_results[processing_index]
+		_finalize_custom_folder_entry(data)
+		var entry_data: Dictionary = add_queue[add_queue_index]["entry"]
+		var item_index: int = list.add_item(entry_data["text"], entry_data["cover"])
+		list.set_item_metadata(item_index, entry_data["metadata"])
+		list.set_item_tooltip_enabled(item_index, false)
+		all_items.append({
+			"text": entry_data["text"],
+			"icon": entry_data["cover"],
+			"metadata": entry_data["metadata"],
+			"disabled": false,
+		})
 		processing_index += 1
-	
-	if processing_index >= add_queue.size():
-		for i in range(list.get_item_count()):
-			all_items.append({
-				"text": list.get_item_text(i),
-				"icon": list.get_item_icon(i),
-				"metadata": list.get_item_metadata(i),
-				"disabled": list.is_item_disabled(i),
-			})
-		print("Done")
-		# Once done, stop processing
-		set_process(false)
+		add_queue_index += 1
+		_update_song_loading_progress()
+		return
+
+	_finish_album_loading()
 
 func load_album():
 	print("Loading album charts")
+	$TransitionRect.modulate = Color.WHITE
 	$album_side/names/album_name.text = selected_album
 	$album_side/names/album_artist.text = selected_artist
 	$album_side/names/album_year.text = str(selected_year)
@@ -106,142 +109,209 @@ func load_album():
 	_load_songs(selected_album)
 	
 	loaded_charts.emit()
-	
-	$init.play("init")
 
 @onready var list = $charts_side/song_list
 
 var scan_threads := []
 var scan_results := []
 var scan_mutex := Mutex.new()
+var pending_scan_results: Array[Dictionary] = []
+var remaining_scan_threads: int = 0
+var scan_finished: bool = false
+var loading_complete: bool = false
 
 func emit_loaded(type: int, title: String):
 	match type:
-		0: loading_song.emit(title)
-		1: loaded_song_meta.emit(title)
-		2: loaded_song.emit(title)
+		0:
+			loading_song.emit(title)
+			$center_bottom/loading_text.text = "Searching song folder:\n%s" % title
+		1:
+			loaded_song_meta.emit(title)
+			$center_bottom/loading_text.text = "Reading song metadata:\n%s" % title
+		2:
+			loaded_song.emit(title)
 
 var cover_loop_sources: Dictionary = {}
 var cover_loop_values: Array[String] = []
 var average_cover_loop: String = ""
 
-func _load_songs(album_filter: String):
+func _load_songs(album_filter: String) -> void:
 	list.clear()
 	add_queue.clear()
+	all_items.clear()
+	scan_threads.clear()
+	scan_results.clear()
+	pending_scan_results.clear()
 	processing_index = 0
-	grouped_songs = {}
-	
+	add_queue_index = 0
+	remaining_scan_threads = 0
+	scan_finished = false
+	loading_complete = false
+	grouped_songs.clear()
+
 	cover_loop_values.clear()
 	cover_loop_sources.clear()
 	average_cover_loop = ""
-	
+
 	$album_side/cover_anim_cont/outline/mask/VideoPlayback.close()
 	$album_side/cover_anim_cont/outline/mask/VideoPlayback.hide()
+	$center_bottom/loading_text.text = "Searching for songs in album..."
+	$center_bottom/loading_text.modulate = Color.WHITE
+	$center_bottom/loading_text.show()
+	$center_bottom/loading_progress.modulate = Color.WHITE
+	$center_bottom/loading_progress.indeterminate = true
+	$center_bottom/loading_progress.show()
+	print("Starting threaded song scan for album: ", album_filter)
 
-	print("Starting song scan", " for album: " + album_filter)
-
-	# Scan user://Custom folders with info.json bundles
-	var base_custom_dir: DirAccess
+	var custom_path: String
 	if OS.get_name() == "Android":
-		base_custom_dir = DirAccess.open("storage/emulated/0/Android/data/com.guayabr.beatzx/Custom")
+		custom_path = "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom"
 	else:
-		base_custom_dir = DirAccess.open("user://Custom")
+		custom_path = "user://Custom"
+	var base_custom_dir: DirAccess = DirAccess.open(custom_path)
+	if base_custom_dir == null:
+		push_error(
+			"Failed to open custom songs directory at '%s': %s"
+			% [custom_path, error_string(DirAccess.get_open_error())]
+		)
+		_finish_song_scan()
+		return
 
-	if base_custom_dir:
-		base_custom_dir.list_dir_begin()
-		var entry_name := base_custom_dir.get_next()
-		while entry_name != "":
-			if base_custom_dir.current_is_dir() and entry_name != "Charts":
-				var folder_path = "user://Custom/" + entry_name if OS.get_name() == "Windows" else "storage/emulated/0/Android/data/com.guayabr.beatzx/Custom/" + entry_name
+	base_custom_dir.list_dir_begin()
+	var entry_name: String = base_custom_dir.get_next()
+	while entry_name != "":
+		if base_custom_dir.current_is_dir() and entry_name != "Charts":
+			_start_scan_thread(custom_path.path_join(entry_name), album_filter)
+		entry_name = base_custom_dir.get_next()
+	base_custom_dir.list_dir_end()
 
-				# If album filter is active, check info.json first before starting a thread
-				if album_filter != null:
-					var info_path = folder_path + "/info.json"
-					if FileAccess.file_exists(info_path):
-						var file := FileAccess.open(info_path, FileAccess.READ)
-						if file:
-							var content := file.get_as_text()
-							file.close()
-							var parsed = JSON.parse_string(content)
-							if parsed and parsed.has("info"):
-								var album_name := str(parsed["info"].get("album", ""))
-								if album_name == album_filter:
-									_start_scan_thread(folder_path)
-					else:
-						# If info.json missing, skip
-						pass
-			entry_name = base_custom_dir.get_next()
-		base_custom_dir.list_dir_end()
-	else:
-		print_debug("Failed to open custom songs directory.")
+	if remaining_scan_threads == 0:
+		_finish_song_scan()
 
-	# Wait for all scanning threads to finish
-	for thread in scan_threads:
+func _start_scan_thread(folder_path: String, album_filter: String) -> void:
+	var thread: Thread = Thread.new()
+	var error: Error = thread.start(
+		Callable(self, "_thread_scan_folder").bind(folder_path, album_filter),
+		Thread.PRIORITY_LOW
+	)
+	if error != OK:
+		push_error(
+			"Failed to start album song scan for '%s': %s"
+			% [folder_path, error_string(error)]
+		)
+		return
+	scan_threads.append(thread)
+	remaining_scan_threads += 1
+
+func _thread_scan_folder(folder_path: String, album_filter: String) -> void:
+	var data: Dictionary = _scan_custom_folder_data(folder_path, album_filter)
+	if not data.is_empty():
+		scan_mutex.lock()
+		scan_results.append(data)
+		scan_mutex.unlock()
+	call_deferred("_on_scan_thread_finished", not data.is_empty())
+
+func _on_scan_thread_finished(song_found: bool) -> void:
+	remaining_scan_threads -= 1
+	if song_found:
+		scan_mutex.lock()
+		var found_count: int = scan_results.size()
+		scan_mutex.unlock()
+		$center_bottom/loading_text.text = "Found %d matching song(s)..." % found_count
+	if remaining_scan_threads <= 0:
+		_finish_song_scan()
+
+func _finish_song_scan() -> void:
+	if scan_finished:
+		return
+	scan_finished = true
+
+	for thread: Thread in scan_threads:
 		thread.wait_to_finish()
 	scan_threads.clear()
 
-	# Finalize data
-	for data in scan_results:
-		_finalize_custom_folder_entry(data)
+	scan_mutex.lock()
+	pending_scan_results.clear()
+	for scan_data in scan_results:
+		var scan_entry: Dictionary = scan_data
+		pending_scan_results.append(scan_entry)
 	scan_results.clear()
-	
-	# Determine most common cover_loop and resolve full path
-	if cover_loop_values.size() > 0:
-		var counts := {}
-		for loop_name in cover_loop_values:
-			counts[loop_name] = counts.get(loop_name, 0) + 1
-		
-		var max_count := 0
-		var most_common := ""
-		for key in counts.keys():
-			if counts[key] > max_count:
-				max_count = counts[key]
-				most_common = key
-		
-		if most_common != "" and cover_loop_sources.has(most_common):
-			var folder_path = cover_loop_sources[most_common][0]
-			average_cover_loop = ProjectSettings.globalize_path(folder_path.path_join(most_common))
-		else:
-			average_cover_loop = ""
-		
-		print(average_cover_loop)
+	scan_mutex.unlock()
+	pending_scan_results.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return str(a.get("song_title", "")).to_lower() < str(b.get("song_title", "")).to_lower()
+	)
+
+	$center_bottom/loading_progress.indeterminate = false
+	$center_bottom/loading_progress.max_value = maxf(float(pending_scan_results.size()), 1.0)
+	$center_bottom/loading_progress.value = 0.0
+	if pending_scan_results.is_empty():
+		$center_bottom/loading_text.text = "No songs found in this album."
+	else:
+		$center_bottom/loading_text.text = "Loading 0/%d songs..." % pending_scan_results.size()
+	set_process(true)
+
+func _update_song_loading_progress() -> void:
+	$center_bottom/loading_progress.value = processing_index
+	$center_bottom/loading_text.text = "Loaded %d/%d songs..." % [
+		processing_index,
+		pending_scan_results.size()
+	]
+
+func _finish_cover_loop() -> void:
+	if cover_loop_values.is_empty():
+		average_cover_loop = ""
+		return
+
+	var counts: Dictionary = {}
+	for loop_name: String in cover_loop_values:
+		counts[loop_name] = int(counts.get(loop_name, 0)) + 1
+	var max_count: int = 0
+	var most_common: String = ""
+	for key: String in counts:
+		if int(counts[key]) > max_count:
+			max_count = int(counts[key])
+			most_common = key
+
+	if most_common != "" and cover_loop_sources.has(most_common):
+		var folder_path: String = cover_loop_sources[most_common][0]
+		average_cover_loop = ProjectSettings.globalize_path(folder_path.path_join(most_common))
 		$album_side/cover_anim_cont/outline/mask/VideoPlayback.set_video_path(average_cover_loop)
 		$album_side/cover_anim_cont/outline/mask/VideoPlayback.show()
 	else:
 		average_cover_loop = ""
 
-	
-	# Merge and sort
-	var all_entries: Array = []
-	for diff_entries in grouped_songs.values():
-		all_entries.append_array(diff_entries)
-	all_entries.sort_custom(func(a, b):
-		return a["metadata"]["song_name"].to_lower() < b["metadata"]["song_name"].to_lower()
+func _finish_album_loading() -> void:
+	if loading_complete:
+		return
+	loading_complete = true
+	_finish_cover_loop()
+	$init.play("init")
+	$center_bottom/loading_progress.value = $center_bottom/loading_progress.max_value
+	if processing_index > 0:
+		$center_bottom/loading_text.text = "Loaded %d song(s)." % processing_index
+	print("Loaded %d songs for album '%s'." % [processing_index, selected_album])
+	set_process(false)
+	var loading_fade: Tween = create_tween().set_parallel()
+	loading_fade.tween_property(
+		$center_bottom/loading_text,
+		"modulate",
+		Color.TRANSPARENT,
+		0.5
+	)
+	loading_fade.tween_property(
+		$center_bottom/loading_progress,
+		"modulate",
+		Color.TRANSPARENT,
+		0.5
+	)
+	loading_fade.finished.connect(func() -> void:
+		if is_instance_valid(self):
+			$center_bottom/loading_text.hide()
+			$center_bottom/loading_progress.hide()
 	)
 
-	# Add to queue
-	for entry in all_entries:
-		add_queue.append({"type": "entry", "entry": entry})
-
-	print("Queued %d songs%s" % [
-		add_queue.size(),
-		( " (album: %s)" % album_filter if album_filter != "" else "")
-	])
-
-func _start_scan_thread(folder_path: String) -> void:
-	var thread = Thread.new()
-	scan_threads.append(thread)
-	thread.start(Callable(self, "_thread_scan_folder").bind(folder_path), Thread.PRIORITY_LOW)
-
-func _thread_scan_folder(folder_path: String) -> void:
-	var data: Dictionary = _scan_custom_folder_data(folder_path)
-	if not data.is_empty():
-		scan_mutex.lock()
-		scan_results.append(data)
-		scan_mutex.unlock()
-
 # THREAD-SAFE: Reads files and returns a data dictionary with pure data (no textures or streams)
-func _scan_custom_folder_data(folder: String) -> Dictionary:
+func _scan_custom_folder_data(folder: String, album_filter: String) -> Dictionary:
 	print("Scanning ", folder)
 	var _data: Dictionary[Variant, Variant] = {}
 
@@ -250,6 +320,16 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 		return {}
 
 	var file_name := folder.get_file()
+	var filter_file: FileAccess = FileAccess.open(info_path, FileAccess.READ)
+	if filter_file == null:
+		return {}
+	var info_json: Variant = JSON.parse_string(filter_file.get_as_text())
+	filter_file.close()
+	if typeof(info_json) != TYPE_DICTIONARY or not info_json.has("info"):
+		return {}
+	var filter_info: Variant = info_json["info"]
+	if typeof(filter_info) != TYPE_DICTIONARY or str(filter_info.get("album", "")) != album_filter:
+		return {}
 	
 	call_deferred_thread_group("emit_loaded", 0, file_name)
 
@@ -275,23 +355,17 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 			print("Failed to create .songid file at: ", id_file_path)
 			return {}
 
-	var info_file := FileAccess.open(info_path, FileAccess.READ)
-	if not info_file:
-		return {}
-
-	var info_text := info_file.get_as_text()
-	info_file.close()
-
-	var info_json = JSON.parse_string(info_text)
-	if info_json == null or not info_json.has("info"):
-		return {}
-
 	# Make a deep copy so we can detect changes later
-	var original_info = info_json["info"].duplicate(true)
-	var info = original_info.duplicate(true)
+	var original_info: Dictionary = info_json["info"].duplicate(true)
+	var info: Dictionary = original_info.duplicate(true)
 
 	var song_title = info.get("title", "Unknown Title")
-	var artist_name = info.get("artist", "Unknown Artist")
+	var artists: Array[String] = General.artist_names_from_info(info)
+	var artist_name := str(info.get("artist", ""))
+	if artist_name.strip_edges() == "":
+		artist_name = General.artist_credit_from_names(artists)
+	if artist_name == "":
+		artist_name = "Unknown Artist"
 	var album_name = info.get("album", "Unknown Album")
 	var year = info.get("year", 0)
 	
@@ -310,12 +384,6 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 	var vid_path = info.get("video", "")
 	
 	var cover_loop = info.get("cover_loop", "")
-	
-	if cover_loop != "":
-		cover_loop_values.append(cover_loop)
-		if not cover_loop_sources.has(cover_loop):
-			cover_loop_sources[cover_loop] = []
-		cover_loop_sources[cover_loop].append(folder)
 	
 	var difficulty
 	var nspeed
@@ -380,6 +448,7 @@ func _scan_custom_folder_data(folder: String) -> Dictionary:
 		"id": id,
 		"song_title": song_title,
 		"artist_name": artist_name,
+		"artists": artists,
 		"album_name": album_name,
 		"year": year,
 		"bpm": bpm,
@@ -424,6 +493,11 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 	var video = data["video"]
 	
 	var cover_loop = data["cover_loop"]
+	if cover_loop != "":
+		cover_loop_values.append(cover_loop)
+		if not cover_loop_sources.has(cover_loop):
+			cover_loop_sources[cover_loop] = []
+		cover_loop_sources[cover_loop].append(beatz_path.get_base_dir())
 	
 	print("scanning ", beatz_path)
 	
@@ -440,20 +514,20 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 	if audio_ext not in  ["mp3", "ogg", "wav"]:
 		print("Unsupported audio format in: %s" % audio_path)
 	
-	var cover_texture
-	
-	if image_path != "" and FileAccess.file_exists(image_path):
-		var img := Image.new()
-		var err := img.load(image_path)
-		if err == OK:
-			img.resize(420, 420)
-			cover_texture = ImageTexture.create_from_image(img)
-		else:
-			print("Failed to load image at %s, using default cover." % image_path)
-			cover_texture = load("res://Resources/misc/noCover.png")
-	else:
-		print("No image found for %s, using default cover." % album_name)
-		cover_texture = load("res://Resources/misc/noCover.png")
+	#var cover_texture
+	#
+	#if image_path != "" and FileAccess.file_exists(image_path):
+		#var img := Image.new()
+		#var err := img.load(image_path)
+		#if err == OK:
+			#img.resize(300, 300)
+			#cover_texture = ImageTexture.create_from_image(img)
+		#else:
+			#print("Failed to load image at %s, using default cover." % image_path)
+			#cover_texture = load("res://Resources/misc/noCover.png")
+	#else:
+		#print("No image found for %s, using default cover." % album_name)
+		#cover_texture = load("res://Resources/misc/noCover.png")
 
 	var text = "%s | %s, by %s | %d\n\nChart: %s | \"%s\" by %s | Custom" % [
 		album_name,
@@ -467,13 +541,14 @@ func _finalize_custom_folder_entry(data: Dictionary) -> void:
 
 	var entry := {
 		"text": text,
-		"cover": cover_texture,
+		"cover": ImageTexture.create_from_image(selected_cover),
 		"metadata": {
 			"beatz_path": beatz_path,
 			"id": id,
 			"song_name": song_title,
 			"album": album_name,
 			"artist": artist_name,
+			"artists": data.get("artists", []),
 			"year": year,
 			"diff_texture_path": diff_texture,
 			"bpm": bpm,
@@ -581,7 +656,7 @@ func _on_song_selected(index: int) -> void:
 	
 	var background_vid_path = metadata["background_vid"]
 	
-	var cover_loop_vid_path = metadata["cover_loop"]
+	var cover_loop_vid_path: String = str(metadata.get("cover_loop", ""))
 	
 	#var speed = metadata["speed"]
 	# Ignore separators (they have no metadata or missing stream)
@@ -607,11 +682,14 @@ func _on_song_selected(index: int) -> void:
 		
 		main.set("selected_cover", cover_texture)
 		main.set("selected_artist", artist)
+		main.set("selected_artists", General.artist_names_from_info(metadata))
 		main.set("selected_year", year)
 		
 		main.set("start_wait", beatz_data["start_wait"])
 		main.set("preview_start", beatz_data["preview_start"])
 		main.set("preview_end", beatz_data["preview_end"])
+		main.set("fade_in", beatz_data.get("fade_in", false))
+		main.set("fade_out", beatz_data.get("fade_out", false))
 		
 		main.set("selected_difficulty", beatz_data["difficulty"])
 		main.set("selected_diff_texture", diff_texture_path)
@@ -631,6 +709,8 @@ func _on_song_selected(index: int) -> void:
 		
 		main.set("selected_bpm", bpm)
 		main.set("selected_charter", charter)
+		if not cover_texture.is_empty():
+			main.set("colors", General.extract_dominant_colors(cover_texture))
 		
 		get_tree().root.add_child(main)
 		get_tree().current_scene.queue_free()

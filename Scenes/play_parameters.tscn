@@ -1,0 +1,450 @@
+[gd_scene load_steps=4 format=3 uid="uid://tasjm3qftive"]
+
+[ext_resource type="Script" uid="uid://cgv8fdq814kyp" path="res://Scenes/play_parameters.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://d0tonfhb15522" path="res://Resources/Themes/buttons.tres" id="2_buttons"]
+[ext_resource type="Theme" uid="uid://bjp4vqou7f4gl" path="res://Resources/Themes/editor_theme.tres" id="3_editor"]
+
+[node name="play_parameters" type="Control"]
+z_index = 100
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -382.0
+offset_top = -250.0
+offset_right = 382.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(382, 250)
+theme = ExtResource("3_editor")
+
+[node name="title" type="RichTextLabel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 25.0
+offset_right = 180.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 42
+text = "Play Parameters"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="playback_speed_label" type="RichTextLabel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 100.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Playback Speed: 1.00x"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="playback_speed_edit" type="LineEdit" parent="Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 100.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+focus_mode = 1
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="playback_speed_slider" type="HSlider" parent="Panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 62.0
+offset_top = -110.0
+offset_right = -62.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+min_value = 0.01
+max_value = 8.0
+step = 0.01
+value = 1.0
+
+[node name="start_position_label" type="RichTextLabel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 220.0
+offset_right = 180.0
+offset_bottom = 260.0
+grow_horizontal = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Start Position: 0:00"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="start_position_edit" type="LineEdit" parent="Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 220.0
+offset_right = 180.0
+offset_bottom = 260.0
+grow_horizontal = 2
+focus_mode = 1
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="start_position_slider" type="HSlider" parent="Panel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 62.0
+offset_top = 10.0
+offset_right = -62.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+step = 0.01
+
+[node name="play" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -126.0
+offset_right = 172.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+theme_override_font_sizes/font_size = 28
+text = "Play"
+
+[node name="cancel" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -62.0
+offset_right = 172.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+theme_override_font_sizes/font_size = 24
+text = "Cancel"
+
+[node name="RecordingPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -382.0
+offset_top = -330.0
+offset_right = 382.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(382, 330)
+theme = ExtResource("3_editor")
+
+[node name="title" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 24.0
+offset_right = 200.0
+offset_bottom = 75.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 42
+text = "Recording Parameters"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="recording_cover" type="TextureRect" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -325.0
+offset_top = -230.0
+offset_right = -175.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+
+[node name="recording_title" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 100.0
+offset_right = 320.0
+offset_bottom = 140.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 22
+fit_content = true
+autowrap_mode = 2
+
+[node name="recording_artist" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 140.0
+offset_right = 320.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 22
+fit_content = true
+autowrap_mode = 2
+
+[node name="recording_album" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 180.0
+offset_right = 320.0
+offset_bottom = 220.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 22
+fit_content = true
+autowrap_mode = 2
+
+[node name="recording_year" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 220.0
+offset_right = 320.0
+offset_bottom = 260.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 22
+fit_content = true
+autowrap_mode = 0
+
+[node name="recording_speed_label" type="RichTextLabel" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 270.0
+offset_right = 180.0
+offset_bottom = 310.0
+grow_horizontal = 2
+focus_mode = 1
+mouse_default_cursor_shape = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 24
+text = "Recording Speed: 1.00x"
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="recording_speed_edit" type="LineEdit" parent="RecordingPanel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 270.0
+offset_right = 180.0
+offset_bottom = 310.0
+grow_horizontal = 2
+focus_mode = 1
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.47058824)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+alignment = 1
+context_menu_enabled = false
+emoji_menu_enabled = false
+virtual_keyboard_type = 3
+middle_mouse_paste_enabled = false
+
+[node name="recording_speed_slider" type="HSlider" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 62.0
+offset_top = -10.0
+offset_right = -62.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+min_value = 0.01
+max_value = 8.0
+step = 0.01
+value = 1.0
+
+[node name="change_file" type="Button" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -270.0
+offset_right = 172.0
+offset_bottom = -226.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+theme_override_font_sizes/font_size = 20
+text = "Change Audio File"
+
+[node name="record" type="Button" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -200.0
+offset_right = 172.0
+offset_bottom = -146.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+theme_override_font_sizes/font_size = 28
+text = "Start Recording"
+
+[node name="cancel" type="Button" parent="RecordingPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -132.0
+offset_right = 172.0
+offset_bottom = -98.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_buttons")
+theme_override_font_sizes/font_size = 24
+text = "Cancel"
+
+[connection signal="focus_entered" from="Panel/playback_speed_label" to="." method="_on_playback_speed_label_focus_entered"]
+[connection signal="focus_exited" from="Panel/playback_speed_edit" to="." method="_on_playback_speed_edit_focus_exited"]
+[connection signal="text_submitted" from="Panel/playback_speed_edit" to="." method="_on_playback_speed_edit_text_submitted"]
+[connection signal="value_changed" from="Panel/playback_speed_slider" to="." method="_on_playback_speed_value_changed"]
+[connection signal="focus_entered" from="Panel/start_position_label" to="." method="_on_start_position_label_focus_entered"]
+[connection signal="focus_exited" from="Panel/start_position_edit" to="." method="_on_start_position_edit_focus_exited"]
+[connection signal="text_submitted" from="Panel/start_position_edit" to="." method="_on_start_position_edit_text_submitted"]
+[connection signal="value_changed" from="Panel/start_position_slider" to="." method="_on_start_position_value_changed"]
+[connection signal="pressed" from="Panel/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Panel/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="focus_entered" from="RecordingPanel/recording_speed_label" to="." method="_on_recording_speed_label_focus_entered"]
+[connection signal="focus_exited" from="RecordingPanel/recording_speed_edit" to="." method="_on_recording_speed_edit_focus_exited"]
+[connection signal="text_submitted" from="RecordingPanel/recording_speed_edit" to="." method="_on_recording_speed_edit_text_submitted"]
+[connection signal="value_changed" from="RecordingPanel/recording_speed_slider" to="." method="_on_recording_speed_value_changed"]
+[connection signal="pressed" from="RecordingPanel/change_file" to="." method="_on_change_file_pressed"]
+[connection signal="pressed" from="RecordingPanel/record" to="." method="_on_record_pressed"]
+[connection signal="pressed" from="RecordingPanel/cancel" to="." method="_on_cancel_pressed"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://72iwv8sulrfp"]
+[gd_scene load_steps=33 format=3 uid="uid://72iwv8sulrfp"]
 
 [ext_resource type="Script" uid="uid://b8v6i072uumyo" path="res://Scenes/main_list.gd" id="1_53lae"]
 [ext_resource type="Texture2D" uid="uid://byed1ljwunwsj" path="res://Resources/defaultBG.png" id="1_t4y1h"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://ivx7m2bfysip" path="res://addons/gde_gozen/video_playback.gd" id="12_v7441"]
 [ext_resource type="FontFile" uid="uid://cslg4n53jxcm5" path="res://Resources/misc/otfs/Font Awesome 7 Free-Solid-900.otf" id="13_dy18g"]
 [ext_resource type="PackedScene" uid="uid://c710qquuxbtvy" path="res://Scenes/album_view.tscn" id="16_4d6o5"]
+[ext_resource type="PackedScene" uid="uid://3pp0ln2sx50u" path="res://Scenes/artist_view.tscn" id="16_artist"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4d6o5"]
 content_margin_top = 172.0
@@ -171,7 +172,6 @@ tracks/11/keys = {
 "values": [Color(1, 1, 1, 0)]
 }
 
-
 [sub_resource type="Animation" id="Animation_l6r1o"]
 resource_name = "back"
 length = 0.7
@@ -284,7 +284,6 @@ tracks/8/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
-
 [sub_resource type="Animation" id="Animation_4d6o5"]
 resource_name = "go_to_album"
 length = 0.55
@@ -336,7 +335,6 @@ tracks/3/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
-
 
 [sub_resource type="Animation" id="Animation_eobli"]
 resource_name = "go_to_selected"
@@ -402,58 +400,32 @@ tracks/4/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
-
 [sub_resource type="Animation" id="Animation_j4mli"]
 resource_name = "loaded_album"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("center_bottom/loading_text:modulate")
+tracks/0/path = NodePath("TransitionRect:modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.033333335),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.03333333),
+"transitions": PackedFloat32Array(0.36602157, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("TransitionRect:modulate")
+tracks/1/path = NodePath("album_view:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.03333333),
-"transitions": PackedFloat32Array(0.36602157, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("album_view:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(0, 0)]
 }
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("center_bottom/loading_progress:modulate")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.033333335),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_1wh5s"]
 _data = {
@@ -996,9 +968,27 @@ offset_top = 24.0
 offset_right = 371.0
 offset_bottom = 138.0
 grow_horizontal = 2
+theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 35
-text = "You will create a new Chart
-Would you like to start editing or
+text = "You will create a new Chart."
+horizontal_alignment = 1
+
+[node name="create_subtitle" type="Label" parent="center/create_panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -199.0
+offset_top = -55.0
+offset_right = 199.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 28
+text = "Would you like to start editing or
 add a song and start recording?"
 horizontal_alignment = 1
 
@@ -1009,12 +999,12 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -0.75
-offset_top = -134.0
+offset_top = -95.0
 offset_right = 0.75
-offset_bottom = -76.0
+offset_bottom = -37.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 50
+theme_override_constants/separation = 22
 alignment = 1
 
 [node name="edit" type="Button" parent="center/create_panel/HBoxContainer"]
@@ -1431,6 +1421,7 @@ drag_and_drop_selection_enabled = false
 
 [node name="loading_progress" type="ProgressBar" parent="center_bottom"]
 visible = false
+modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 12
 layout_mode = 1
@@ -1479,7 +1470,13 @@ libraries = {
 z_index = 4
 layout_mode = 1
 offset_left = 1920.0
-offset_right = 1920.0034
+offset_right = 1920.0039
+
+[node name="artist_view" parent="." instance=ExtResource("16_artist")]
+z_index = 4
+layout_mode = 1
+offset_left = 1920.0
+offset_right = 1920.0039
 
 [connection signal="focus_entered" from="background" to="." method="_on_background_focus_entered"]
 [connection signal="focus_entered" from="song_list_sprite" to="." method="_on_background_focus_entered"]

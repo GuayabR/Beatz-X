@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "windows_media_monitor_library_init"
+compatibility_minimum = "4.5"
+reloadable = false
+
+[libraries]
+
+windows.debug.x86_64 = "res://addons/windows_media_detector/bin/windows/WindowsMediaMonitor.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/windows_media_detector/bin/windows/WindowsMediaMonitor.windows.template_release.x86_64.dll"

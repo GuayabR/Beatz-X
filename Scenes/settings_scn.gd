@@ -46,6 +46,8 @@ signal cover_loops_toggled(toggled_on: bool)
 signal cover_loop_selected_song_toggled(toggled_on: bool)
 signal editor_cover_loops_toggled(toggled_on: bool)
 signal cover_loops_playing_bar_toggled(toggled_on: bool)
+signal square_playing_bar_cover_toggled(toggled_on: bool)
+signal external_cover_loop_matching_toggled(toggled_on: bool)
 
 signal edit_show_hold_ends_toggled(toggled_on: bool)
 
@@ -55,7 +57,9 @@ signal editor_diff_graph_toggled(toggled_on: bool)
 
 signal selection_box_quality_changed(toggled_on: bool)
 
-var input_listened
+var input_listened: InputEvent = null
+var pending_keybind_action: StringName = StringName("")
+var pending_keybind_index: int = -1
 var screen: String = "stgs"
 
 func _on_epic_logged_in(user_data: Dictionary, product_data: Dictionary):
@@ -83,6 +87,7 @@ func _ready() -> void:
 		%ver.tooltip_text = "%s (%s) Version %s\nApplication built 06/11/2026" % [General.NAME, General.port, General.VERSION]
 	
 	_apply_loaded_settings()
+	_populate_keybinds()
 	
 	%output_device_drop.clear()
 	%input_device_drop.clear()
@@ -117,12 +122,23 @@ func _ready() -> void:
 	%max_threads_spin.tooltip_text = "The more threads the song list uses to load covers, the faster all visible covers will load/unload.\nIf you have a high number of threads set, it might cause the game to lag if you scroll the song list too fast.\nRecommended to use half of your CPU's thread count. (Which is %d)" % int(OS.get_processor_count() / 2)
 
 func _input(event: InputEvent) -> void:
-	if screen == "binds" and event.is_action_pressed("pause-back"):
-		$switch.play("to_stgs")
+	if Settings.listening:
+		if event is InputEventMouseButton and _is_pointer_over_listen_panel():
+			return
 
-	if Settings.listening and (event is InputEventKey or event is InputEventMouseButton or event is InputEventJoypadButton) and event.pressed:
-		$keybinds_layer/input_listen_cont/listening_lbl2.text = event.as_text()
-		input_listened = event
+		var captured_event: InputEvent = _normalize_input_event(event)
+		if captured_event != null:
+			input_listened = captured_event
+			$keybinds_layer/input_listen_cont/listening_lbl.text = captured_event.as_text()
+			$keybinds_layer/input_listen_cont/ok.disabled = false
+			get_viewport().set_input_as_handled()
+		return
+
+	if screen == "binds" and event.is_action_pressed("pause-back") and (
+		not event is InputEventJoypadButton
+		or (event as InputEventJoypadButton).button_index == JOY_BUTTON_B
+	):
+		$switch.play("to_stgs")
 
 func _apply_loaded_settings():
 	if General.epic_user_info: _on_epic_logged_in(General.epic_user_info, General.epic_product_info)
@@ -220,6 +236,7 @@ func _apply_loaded_settings():
 	%editor_cover_loops_toggle.set_pressed_no_signal(Settings.misc.editor_cover_loops)
 	
 	%cover_loops_playing_bar_toggle.set_pressed_no_signal(Settings.misc.cover_loops_playing_bar)
+	%square_playing_bar_cover_toggle.set_pressed_no_signal(Settings.misc.square_playing_bar_cover)
 	
 	# Apply note style 
 	var note_styles = {
@@ -489,6 +506,14 @@ func _apply_loaded_settings():
 		%check_for_update.hide()
 	
 	%show_chart_alignment.set_pressed_no_signal(Settings.other.show_chart_alignment)
+	%monitor_windows_media_check.set_pressed_no_signal(Settings.game.monitor_windows_media)
+	%only_monitor_on_main_menu_check.set_pressed_no_signal(Settings.game.only_monitor_on_main_menu)
+	%unpause_external_media_on_main_menu_check.set_pressed_no_signal(Settings.game.unpause_external_media_on_main_menu)
+	%match_external_media_cover_loops_check.set_pressed_no_signal(Settings.game.match_external_media_cover_loops)
+	%only_monitor_on_main_menu_check.disabled = not Settings.game.monitor_windows_media
+	%unpause_external_media_on_main_menu_check.disabled = not (
+		Settings.game.monitor_windows_media and Settings.game.only_monitor_on_main_menu
+	)
 
 func _connect_popup(btn: OptionButton) -> void:
 	var popup: PopupMenu = btn.get_popup()
@@ -1107,20 +1132,163 @@ func _on_bg_img_file_selected(status, paths: PackedStringArray, _filter_idx: int
 	else:
 		print("Failed to load image: ", paths[0], " ", err, " ", error_string(err))
 
-func _on_l_btn_pressed() -> void:
-	start_listening(General.INPUTS.left)
+func _populate_keybinds() -> void:
+	var bindings_container: VBoxContainer = $keybinds_layer/ScrollContainer/settings_list/binding_rows as VBoxContainer
+	for child in bindings_container.get_children():
+		bindings_container.remove_child(child)
+		child.queue_free()
 
-func _on_d_btn_pressed() -> void:
-	start_listening(General.INPUTS.down)
+	var action_names: Array[StringName] = InputMap.get_actions()
+	action_names.sort()
+	var max_binding_count: int = 1
+	for action_name in action_names:
+		if str(action_name).begins_with("ui_"):
+			continue
+		max_binding_count = maxi(max_binding_count, InputMap.action_get_events(action_name).size())
 
-func _on_u_btn_pressed() -> void:
-	start_listening(General.INPUTS.up)
+	_add_keybind_header(max_binding_count)
+	for action_name in action_names:
+		if str(action_name).begins_with("ui_"):
+			continue
+		_add_keybind_row(action_name, InputMap.action_get_events(action_name), max_binding_count)
 
-func _on_r_btn_pressed() -> void:
-	start_listening(General.INPUTS.right)
+func _add_keybind_header(binding_count: int) -> void:
+	var bindings_container: VBoxContainer = $keybinds_layer/ScrollContainer/settings_list/binding_rows as VBoxContainer
+	var header_row: HBoxContainer = HBoxContainer.new()
+	var action_label: Label = Label.new()
+	action_label.text = "Action"
+	action_label.custom_minimum_size = Vector2(300.0, 55.0)
+	action_label.add_theme_font_size_override("font_size", 26)
+	header_row.add_child(action_label)
+	for binding_index in range(binding_count):
+		var binding_header: Label = Label.new()
+		binding_header.text = "Button %d" % (binding_index + 1)
+		binding_header.custom_minimum_size = Vector2(205.0, 55.0)
+		binding_header.add_theme_font_size_override("font_size", 24)
+		header_row.add_child(binding_header)
+	var add_header: Label = Label.new()
+	add_header.text = "Add"
+	add_header.custom_minimum_size = Vector2(80.0, 55.0)
+	add_header.add_theme_font_size_override("font_size", 24)
+	header_row.add_child(add_header)
+	bindings_container.add_child(header_row)
 
-func _on_pause_btn_button_up() -> void:
-	start_listening(General.INPUTS.pause)
+func _add_keybind_row(action_name: StringName, events: Array[InputEvent], binding_count: int) -> void:
+	var bindings_container: VBoxContainer = $keybinds_layer/ScrollContainer/settings_list/binding_rows as VBoxContainer
+	var row: HBoxContainer = HBoxContainer.new()
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var action_label: Label = Label.new()
+	action_label.text = _format_input_action_name(action_name)
+	action_label.custom_minimum_size = Vector2(300.0, 55.0)
+	action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	action_label.add_theme_font_size_override("font_size", 26)
+	row.add_child(action_label)
+
+	if events.is_empty():
+		_add_keybind_cell(row, action_name, -1, "Click to set the first binding.", false)
+		for _binding_index in range(1, binding_count):
+			_add_keybind_spacer(row)
+	else:
+		for binding_index in range(binding_count):
+			if binding_index < events.size():
+				_add_keybind_cell(row, action_name, binding_index, "Click to change this binding.", true)
+			else:
+				_add_keybind_spacer(row)
+
+	if events.is_empty():
+		var add_spacer: Control = Control.new()
+		add_spacer.custom_minimum_size = Vector2(80.0, 55.0)
+		row.add_child(add_spacer)
+	else:
+		var add_button: Button = Button.new()
+		add_button.text = "+"
+		add_button.tooltip_text = "Add another binding."
+		add_button.custom_minimum_size = Vector2(80.0, 55.0)
+		add_button.pressed.connect(_on_keybind_button_pressed.bind(action_name, -1))
+		row.add_child(add_button)
+	bindings_container.add_child(row)
+
+func _add_keybind_spacer(row: HBoxContainer) -> void:
+	var spacer: Control = Control.new()
+	spacer.custom_minimum_size = Vector2(205.0, 55.0)
+	row.add_child(spacer)
+
+func _add_keybind_cell(row: HBoxContainer, action_name: StringName, event_index: int, tooltip: String, can_remove: bool) -> void:
+	var cell: HBoxContainer = HBoxContainer.new()
+	cell.custom_minimum_size = Vector2(205.0, 55.0)
+	var binding_button: Button = Button.new()
+	var icon_path: String = _keybind_icon_path(action_name)
+	var icon_resource: ControllerIconTexture = load(icon_path) as ControllerIconTexture
+	if icon_resource == null:
+		push_error("Could not load controller icon texture: %s" % icon_path)
+	else:
+		var binding_icon: ControllerIconTexture = icon_resource.duplicate() as ControllerIconTexture
+		binding_icon.set("force_input", maxi(event_index, 0))
+		binding_button.icon = binding_icon
+	binding_button.text = ""
+	binding_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	binding_button.add_theme_constant_override("icon_max_width", 54)
+	binding_button.expand_icon = true
+	binding_button.tooltip_text = tooltip
+	binding_button.custom_minimum_size = Vector2(100.0, 55.0)
+	binding_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	binding_button.pressed.connect(_on_keybind_button_pressed.bind(action_name, event_index))
+	cell.add_child(binding_button)
+	if can_remove:
+		var remove_button: Button = Button.new()
+		remove_button.text = "X"
+		remove_button.tooltip_text = "Remove this binding."
+		remove_button.custom_minimum_size = Vector2(36.0, 55.0)
+		remove_button.pressed.connect(_on_keybind_remove_pressed.bind(action_name, event_index))
+		cell.add_child(remove_button)
+	row.add_child(cell)
+
+func _on_keybind_remove_pressed(action_name: StringName, event_index: int) -> void:
+	if not Settings.remove_keybind_event(action_name, event_index):
+		return
+	ControllerIcons.refresh()
+	_populate_keybinds()
+	save_stgs()
+
+func _keybind_icon_path(action_name: StringName) -> String:
+	var resource_name: String = str(action_name)
+	match resource_name:
+		"pause-back":
+			resource_name = "Back"
+		"autoHit":
+			resource_name = "Autohit"
+		"editor_save":
+			resource_name = "Save"
+		_:
+			var name_parts: PackedStringArray = resource_name.replace("-", "_").split("_", false)
+			resource_name = ""
+			for name_part in name_parts:
+				resource_name += name_part.substr(0, 1).to_upper() + name_part.substr(1)
+	return "res://Resources/KeybindResources/UI_%s.tres" % resource_name
+
+func _format_input_action_name(action_name: StringName) -> String:
+	var action_regex: RegEx = RegEx.new()
+	action_regex.compile("([a-z0-9])([A-Z])")
+	var formatted_name: String = action_regex.sub(str(action_name), "$1 $2", true)
+	return formatted_name.replace("_", " ").replace("-", " ").capitalize()
+
+func _on_keybind_button_pressed(action_name: StringName, event_index: int) -> void:
+	if Settings.listening:
+		return
+
+	pending_keybind_action = action_name
+	pending_keybind_index = event_index
+	input_listened = null
+	$keybinds_layer/input_listen_cont/input_lbl.text = _format_input_action_name(action_name)
+	$keybinds_layer/input_listen_cont/listening_lbl.text = "Listening for input..."
+	$keybinds_layer/input_listen_cont/ok.disabled = true
+
+	var focus_owner: Control = get_viewport().gui_get_focus_owner()
+	if focus_owner:
+		focus_owner.release_focus()
+
+	Settings.listening = true
+	open_listen_panel()
 
 func open_listen_panel():
 	var t = create_tween()
@@ -1130,32 +1298,73 @@ func close_listen_panel():
 	var t = create_tween()
 	t.tween_property($keybinds_layer/input_listen_cont, "scale", Vector2.ZERO, 0.25).set_trans(Tween.TRANS_CIRC)
 
-func start_listening(input_name: int):
-	Settings.listening = true
-	match input_name:
-		General.INPUTS.left: 
-			$keybinds_layer/input_listen_cont/input_lbl.text = "Note Left"
-			open_listen_panel()
-		General.INPUTS.down: 
-			$keybinds_layer/input_listen_cont/input_lbl.text = "Note Down"
-			open_listen_panel()
-		General.INPUTS.up: 
-			$keybinds_layer/input_listen_cont/input_lbl.text = "Note Up"
-			open_listen_panel()
-		General.INPUTS.right: 
-			$keybinds_layer/input_listen_cont/input_lbl.text = "Note Right"
-			open_listen_panel()
-		General.INPUTS.pause: 
-			$keybinds_layer/input_listen_cont/input_lbl.text = "Pause"
-			open_listen_panel()
+func _is_pointer_over_listen_panel() -> bool:
+	var hovered_control: Control = get_viewport().gui_get_hovered_control()
+	if hovered_control == null:
+		return false
+
+	var listen_panel: Panel = $keybinds_layer/input_listen_cont as Panel
+	return hovered_control == listen_panel or listen_panel.is_ancestor_of(hovered_control)
+
+func _normalize_input_event(event: InputEvent) -> InputEvent:
+	if event is InputEventKey:
+		var key_event: InputEventKey = event as InputEventKey
+		if not key_event.pressed or key_event.echo:
+			return null
+	elif event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+		if not mouse_event.pressed:
+			return null
+	elif event is InputEventJoypadButton:
+		var joy_button_event: InputEventJoypadButton = event as InputEventJoypadButton
+		if not joy_button_event.pressed:
+			return null
+	elif event is InputEventJoypadMotion:
+		var joy_motion_event: InputEventJoypadMotion = event as InputEventJoypadMotion
+		if absf(joy_motion_event.axis_value) < 0.6:
+			return null
+	else:
+		return null
+
+	var captured_event: InputEvent = event.duplicate() as InputEvent
+	if captured_event is InputEventKey:
+		var captured_key: InputEventKey = captured_event as InputEventKey
+		captured_key.pressed = false
+		captured_key.echo = false
+	elif captured_event is InputEventMouseButton:
+		var captured_mouse: InputEventMouseButton = captured_event as InputEventMouseButton
+		captured_mouse.pressed = false
+	elif captured_event is InputEventJoypadButton:
+		var captured_joy_button: InputEventJoypadButton = captured_event as InputEventJoypadButton
+		# Match the project defaults so the binding works with any controller.
+		captured_joy_button.device = -1
+	elif captured_event is InputEventJoypadMotion:
+		var captured_joy_motion: InputEventJoypadMotion = captured_event as InputEventJoypadMotion
+		captured_joy_motion.device = -1
+		captured_joy_motion.axis_value = 1.0 if captured_joy_motion.axis_value > 0.0 else -1.0
+	return captured_event
 
 func _on_ok_pressed() -> void:
+	if input_listened == null or pending_keybind_action == StringName(""):
+		return
+	if not Settings.apply_keybind_event(pending_keybind_action, pending_keybind_index, input_listened):
+		return
+
 	Settings.listening = false
+	input_listened = null
+	pending_keybind_action = StringName("")
+	pending_keybind_index = -1
+	ControllerIcons.refresh()
+	_populate_keybinds()
 	save_stgs()
 	close_listen_panel()
 
 func _on_cancel_pressed() -> void:
 	Settings.listening = false
+	input_listened = null
+	pending_keybind_action = StringName("")
+	pending_keybind_index = -1
+	$keybinds_layer/input_listen_cont/ok.disabled = true
 	close_listen_panel()
 
 func _on_see_github_pressed() -> void:
@@ -1548,6 +1757,17 @@ func _on_cover_loops_playing_bar_toggled(toggled_on: bool) -> void:
 	cover_loops_playing_bar_toggled.emit(toggled_on)
 	save_stgs()
 
+func _on_square_playing_bar_cover_toggled(toggled_on: bool) -> void:
+	%square_playing_bar_cover_toggle.release_focus()
+	Settings.misc.square_playing_bar_cover = toggled_on
+	square_playing_bar_cover_toggled.emit(toggled_on)
+	save_stgs()
+
+func _on_match_external_media_cover_loops_toggled(toggled_on: bool) -> void:
+	Settings.game.match_external_media_cover_loops = toggled_on
+	external_cover_loop_matching_toggled.emit(toggled_on)
+	save_stgs()
+
 func _on_note_particle_fx_item_selected(index: int) -> void:
 	Settings.misc.note_particle_fx = index
 	save_stgs()
@@ -1598,6 +1818,28 @@ func hold_thresh_to_rm_edit_value_changed(value: float) -> void:
 
 func _on_show_chart_alignment_toggled(toggled_on: bool) -> void:
 	Settings.other.show_chart_alignment = toggled_on
+	save_stgs()
+
+func _on_monitor_windows_media_check_toggled(toggled_on: bool) -> void:
+	Settings.game.monitor_windows_media = toggled_on
+	%only_monitor_on_main_menu_check.disabled = not toggled_on
+	%unpause_external_media_on_main_menu_check.disabled = not (
+		toggled_on and Settings.game.only_monitor_on_main_menu
+	)
+	WindowsMediaIntegration.apply_settings()
+	save_stgs()
+
+func _on_only_monitor_on_main_menu_check_toggled(toggled_on: bool) -> void:
+	Settings.game.only_monitor_on_main_menu = toggled_on
+	%unpause_external_media_on_main_menu_check.disabled = not (
+		Settings.game.monitor_windows_media and toggled_on
+	)
+	WindowsMediaIntegration.apply_settings()
+	save_stgs()
+
+func _on_unpause_external_media_on_main_menu_check_toggled(toggled_on: bool) -> void:
+	Settings.game.unpause_external_media_on_main_menu = toggled_on
+	WindowsMediaIntegration.apply_settings()
 	save_stgs()
 
 func _on_load_all_covers_check_toggled(toggled_on: bool) -> void:

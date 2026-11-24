@@ -204,7 +204,10 @@ func _compare_colors_by_frequency(a: String, b: String) -> int:
 	return result
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause-back"):
+	if event.is_action_pressed("pause-back") and (
+		not event is InputEventJoypadButton
+		or (event as InputEventJoypadButton).button_index == JOY_BUTTON_B
+	):
 		_on_back_pressed()
 	elif event.is_action_pressed("ui_accept"):
 		_on_play_button_up()
